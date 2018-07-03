@@ -13,10 +13,14 @@
     "lint": "./node_modules/eslint/bin/eslint.js ."
   },
   "dependencies": {
+    "compression": "^1.7.2",
     "config": "^1.30.0",
+    "cors": "^2.8.4",
     "debug": "~2.6.9",
     "dotenv": "^6.0.0",
     "express": "~4.16.0",
+    "express-validator": "^5.2.0",
+    "helmet": "^3.12.1",
     "http-errors": "~1.6.2",
     "module-alias": "^2.1.0",
     "morgan": "~1.9.0",
@@ -27,10 +31,10 @@
     "winston": "^3.0.0"
   },
   "devDependencies": {
-    "nodemon": "^1.17.5",
     "eslint": "^4.19.1",
     "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-standard": "^3.1.0"
+    "eslint-plugin-standard": "^3.1.0",
+    "nodemon": "^1.17.5"
   },
   "nodemonConfig": {
     "ignore": [

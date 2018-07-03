@@ -14,8 +14,5 @@ module.exports = (sequelize, DataTypes) => {
             allowNull:false
         }
     }, {});
-    Comics.associate = function (models) {
-        // associations can be defined here
-    };
     return Comics;
 };

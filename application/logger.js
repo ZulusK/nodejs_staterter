@@ -1,5 +1,10 @@
 const { createLogger, format, transports } = require('winston');
 
+
+const customPrintf = format.printf(info => {
+        return `[${info.label}] ${info.level}: ${info.message}`;
+    });
+
 const config=require("@config");
 function getLogger(module) {
     const path = module.filename.split("/").slice(-2).join("/");
@@ -8,7 +13,7 @@ function getLogger(module) {
             format.splat(),
             format.label({ label: path }),
             format.colorize(),
-            format.printf(info => `${info.label} ${info.level}: ${info.message}`),
+            customPrintf,
         ),
         transports: [
             new transports.Console({
