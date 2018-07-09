@@ -38,6 +38,7 @@
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "sequelize": "^4.37.10",
+    "swagger-ui-express": "^3.0.10",
     "validator": "^10.4.0",
     "winston": "^3.0.0"
   },
