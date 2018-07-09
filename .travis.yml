@@ -6,7 +6,7 @@ install:
 - npm i
 - npm i -g mocha
 before_script:
-- psql -c 'create database $DB_NAME;' -U postgres
+- psql -c 'create database echo $DB_NAME' -U postgres
 script:
 - npm run test
 services:
