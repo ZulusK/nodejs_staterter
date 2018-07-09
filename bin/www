@@ -7,7 +7,7 @@ require("module-alias/register");
 require("@config");
 
 const app = require('../app');
-const log=require("../application").logger(module);
+const log=require("@utils").logger(module);
 const http = require('http');
 /**
  * Get port from environment and store in Express.
@@ -87,3 +87,6 @@ function onListening() {
     : 'port ' + addr.port;
   log.debug('Listening on ' + bind);
 }
+
+
+module.exports=app;

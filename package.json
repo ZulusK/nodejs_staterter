@@ -9,10 +9,12 @@
   "main": "./bin/www",
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www",
+    "dev": "NODE_ENV=development  nodemon $NODE_DEBUG_OPTION  ./bin/www",
     "lint": "./node_modules/eslint/bin/eslint.js ."
   },
   "dependencies": {
+    "bcrypt": "^3.0.0",
+    "cherio": "^1.0.0-rc.2",
     "compression": "^1.7.2",
     "config": "^1.30.0",
     "cors": "^2.8.4",
@@ -22,18 +24,30 @@
     "express-validator": "^5.2.0",
     "helmet": "^3.12.1",
     "http-errors": "~1.6.2",
+    "jsonwebtoken": "^8.3.0",
+    "lodash": "^4.17.10",
     "module-alias": "^2.1.0",
     "morgan": "~1.9.0",
     "mysql2": "^1.5.3",
+    "passport": "^0.4.0",
+    "passport-http": "^0.3.0",
+    "passport-jwt": "^4.0.0",
     "pg": "^7.4.3",
     "pg-hstore": "^2.3.2",
+    "request": "^2.87.0",
+    "request-promise": "^4.2.2",
     "sequelize": "^4.37.10",
+    "validator": "^10.4.0",
     "winston": "^3.0.0"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
     "eslint": "^4.19.1",
+    "eslint-plugin-jasmine": "^2.10.1",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-standard": "^3.1.0",
+    "mocha": "^5.2.0",
     "nodemon": "^1.17.5"
   },
   "nodemonConfig": {
@@ -45,7 +59,11 @@
     "delay": "1000"
   },
   "_moduleAliases": {
-    "@config": "./config/configuration",
-    "@app": "./application"
+    "@config": "./config",
+    "@lib": "./lib/",
+    "@routes": "./routes",
+    "@models": "./models",
+    "@utils": "./lib/utils",
+    "@server": "./bin/www"
   }
 }
