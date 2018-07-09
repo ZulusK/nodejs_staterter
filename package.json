@@ -15,9 +15,9 @@
     "lint": "esw *.js server config --color",
     "lint:watch": "yarn lint -- --watch",
     "precommit": "yarn lint && yarn test",
-    "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors server --recursive",
+    "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors server --recursive --exit",
     "test:watch": "yarn test -- --watch",
-    "test:coverage": "cross-env NODE_ENV=test ./node_modules/.bin/istanbul cover _mocha -- --ui bdd --reporter spec --colors server --recursive",
+    "test:coverage": "cross-env NODE_ENV=test ./node_modules/.bin/istanbul cover _mocha -- --ui bdd --reporter spec --colors server --recursive --exit",
     "test:check-coverage": "yarn test:coverage && istanbul check-coverage",
     "report-coverage": "coveralls < ./coverage/lcov.info",
     "deploy": "bash -s < ./bin/deploy.sh"
@@ -45,6 +45,8 @@
     "http-status": "^1.2.0",
     "joi": "^13.4.0",
     "jsonwebtoken": "^8.3.0",
+    "method-override": "^2.3.10",
+    "module-alias": "^2.1.0",
     "mongoose": "^5.2.2",
     "morgan": "^1.9.0",
     "passport": "^0.4.0",
@@ -75,10 +77,10 @@
   },
   "_moduleAliases": {
     "@config": "./config",
-    "@lib": "./lib/",
     "@routes": "./routes",
-    "@models": "./models",
-    "@utils": "./lib/utils",
-    "@server": "./bin/www"
+    "@server": "./server",
+    "@root": ".",
+    "@helpers": "./server/helpers",
+    "@app": "./index.js"
   }
 }

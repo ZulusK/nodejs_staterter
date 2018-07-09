@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 const util = require('util');
-
 // config should be imported before importing any other file
 const config = require('./config/config');
-const app = require('./config/express');
+const app = require('@config/express');
 
 const debug = require('debug')('express-mongoose-es6-rest-api:index');
-
+const log = require('@config/winston')(module);
 // make bluebird default Promise
 Promise = require('bluebird'); // eslint-disable-line no-global-assign
 
@@ -15,9 +14,18 @@ mongoose.Promise = Promise;
 
 // connect to mongo db
 const mongoUri = config.mongo.host;
-mongoose.connect(mongoUri, { server: { socketOptions: { keepAlive: 1 } } });
+mongoose.connect(
+  mongoUri,
+  {
+    useNewUrlParser: true,
+    keepAlive: 1
+  }
+);
 mongoose.connection.on('error', () => {
   throw new Error(`unable to connect to database: ${mongoUri}`);
+});
+mongoose.connection.on('connected', () => {
+  log.info('successfully connected to database');
 });
 
 // print mongoose logs in dev env
@@ -32,7 +40,7 @@ if (config.mongooseDebug) {
 if (!module.parent) {
   // listen on port config.port
   app.listen(config.port, () => {
-    console.info(`server started on port ${config.port} (${config.env})`); // eslint-disable-line no-console
+    log.info(`server started on port ${config.port} (${config.env})`); // eslint-disable-line no-console
   });
 }
 
