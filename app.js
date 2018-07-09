@@ -35,7 +35,7 @@ app.use(morgan('dev', {
     }, stream: process.stdout
 }));
 
-app.use(express.static(path.join(__dirname, "public"), config.get("isDev")?{}:{maxAge: "10h"}));
+app.use(express.static(path.join(__dirname, "public"), config.get("IS_DEV")?{}:{maxAge: "10h"}));
 
 // add server routes
 app.use(appRouters);
