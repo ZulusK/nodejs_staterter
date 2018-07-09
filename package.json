@@ -1,0 +1,84 @@
+{
+  "name": "rushowl-be-bl",
+  "version": "0.0.1",
+  "description": "Business Logic Back End for Rushowl React Native Application",
+  "main": "index.js",
+  "engines": {
+    "node": ">=8.10.0",
+    "npm": ">=5.6.0",
+    "yarn": ">=1.5.1"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "start:debug": "cross-env DEBUG=express-mongoose-es6-rest-api:* yarn start",
+    "lint": "esw *.js server config --color",
+    "lint:watch": "yarn lint -- --watch",
+    "precommit": "yarn lint && yarn test",
+    "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors server --recursive",
+    "test:watch": "yarn test -- --watch",
+    "test:coverage": "cross-env NODE_ENV=test ./node_modules/.bin/istanbul cover _mocha -- --ui bdd --reporter spec --colors server --recursive",
+    "test:check-coverage": "yarn test:coverage && istanbul check-coverage",
+    "report-coverage": "coveralls < ./coverage/lcov.info",
+    "deploy": "bash -s < ./bin/deploy.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:fulcrumi/rushowl-be-bl.git"
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.0",
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.3",
+    "compression": "^1.7.2",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
+    "debug": "^3.1.0",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "express-fileupload": "^0.4.0",
+    "express-jwt": "^5.3.1",
+    "express-static-gzip": "^0.3.2",
+    "express-validation": "^1.0.2",
+    "express-winston": "^2.5.1",
+    "helmet": "^3.12.1",
+    "http-status": "^1.2.0",
+    "joi": "^13.4.0",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.2.2",
+    "morgan": "^1.9.0",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "uuid": "^3.3.2",
+    "winston": "^3.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "commitizen": "^2.10.1",
+    "coveralls": "^3.0.2",
+    "cross-env": "^5.2.0",
+    "eslint": "^5.1.0",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-watch": "^4.0.1",
+    "husky": "^0.14.3",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.2.0",
+    "supertest": "^3.1.0",
+    "supertest-as-promised": "^4.0.2",
+    "validate-commit-msg": "^2.14.0"
+  },
+  "_moduleAliases": {
+    "@config": "./config",
+    "@lib": "./lib/",
+    "@routes": "./routes",
+    "@models": "./models",
+    "@utils": "./lib/utils",
+    "@server": "./bin/www"
+  }
+}
