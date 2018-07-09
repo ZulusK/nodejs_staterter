@@ -17,7 +17,9 @@ module.exports = {
         .required()
         .email(),
       username: Joi.string()
+        .alphanum()
         .required()
+        .min(3)
         .max(30),
       mobileNumber: Joi.string()
         .required()

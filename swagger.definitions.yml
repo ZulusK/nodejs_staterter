@@ -1,0 +1,8 @@
+responses:
+  Standard401ErrorResponse:
+    description: Unauthorized 
+  Standard400ErrorResponse:
+    description: Bad request 
+basePath: /api/
+schemes:
+ - https        

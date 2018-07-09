@@ -3,6 +3,7 @@ const authRoutes = require('@server/auth/auth.route');
 const cp = require('child_process');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
+const usersRoutes = require('@server/user/user.route');
 
 const router = express.Router(); // eslint-disable-line new-cap
 
@@ -17,8 +18,8 @@ router.get('/health-check', (req, res) => {
 });
 
 const swaggerDefinition = {
+  // API informations (required)
   info: {
-    // API informations (required)
     title: 'Rushowl Business Logic Back End', // Title (required)
     version: '1.0.0', // Version (required)
     description: 'API for Rushowl React Native app' // Description (optional)
@@ -28,7 +29,7 @@ const swaggerDefinition = {
 const swaggerSpec = swaggerJSDoc({
   swaggerDefinition,
   // Path to the API docs
-  apis: ['server/*/*.route.js']
+  apis: ['server/*/*.js', './swagger.definitions.yml']
 });
 
 router.use(
@@ -40,6 +41,6 @@ router.use(
 );
 
 module.exports = router;
-
+router.use('/users', usersRoutes);
 router.use('/auth', authRoutes);
 module.exports = router;
