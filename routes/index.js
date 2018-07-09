@@ -5,7 +5,7 @@ const createError =require('http-errors');
 const config=require("@config");
 
 
-utils.forEachInDirDo(__dirname, file=>{
+utils.fs.forEachInDirDo(__dirname, file=>{
     router.use("/"+file.replace(/\.js$/,""),require(`./${file}`))
 });
 
