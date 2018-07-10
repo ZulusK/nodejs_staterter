@@ -1,24 +1,7 @@
 const Joi = require('joi');
-const validator = require('validator');
+const JoiExt = require('./joi.extentions');
 
-const customJoi = Joi.extend(joi => ({
-  base: joi.string(),
-  name: 'string',
-  language: {
-    isEmail: 'email {{email}} is invalid'
-  },
-  rules: [
-    {
-      name: 'isEmail',
-      validate(params, value, state, options) {
-        if (validator.isEmail(value)) {
-          return value;
-        }
-        return this.createError('string.isEmail', { email: value }, state, options);
-      }
-    }
-  ]
-}));
+const customJoi = Joi.extend([JoiExt.EmailExtention, JoiExt.PhoneExtention]);
 
 module.exports = {
   // POST /api/auth/login
@@ -44,6 +27,7 @@ module.exports = {
         .regex(/^[a-zA-Z '.-]*$/),
       mobileNumber: customJoi
         .string()
+        .isMobileNumber()
         .required()
         .max(30),
       password: customJoi

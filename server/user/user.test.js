@@ -69,6 +69,24 @@ describe('## User APIs', () => {
         })
         .catch(done);
     });
+    it('should reject, used already existed email', (done) => {
+      // create new user
+      request(app)
+        .post('/api/users')
+        .send({ ...validUserData })
+        .then(() => {
+          request(app)
+            .post('/api/users')
+            .send({
+              ...validUserData
+            })
+            .expect(httpStatus.BAD_REQUEST)
+            .then((res) => {
+              done();
+            });
+        })
+        .catch(done);
+    });
     it('should reject, used invalid password ( < 8 symbols)', (done) => {
       request(app)
         .post('/api/users')
@@ -95,7 +113,7 @@ describe('## User APIs', () => {
         })
         .catch(done);
     });
-    it('should reject, used invalid (without uppercase symbols)', (done) => {
+    it('should reject, used invalid password (without uppercase symbols)', (done) => {
       request(app)
         .post('/api/users')
         .send({
@@ -108,7 +126,7 @@ describe('## User APIs', () => {
         })
         .catch(done);
     });
-    it('should reject, used invalid (without lowercase symbols)', (done) => {
+    it('should reject, used invalid password (without lowercase symbols)', (done) => {
       request(app)
         .post('/api/users')
         .send({
@@ -121,7 +139,7 @@ describe('## User APIs', () => {
         })
         .catch(done);
     });
-    it('should reject, used invalid (without special symbols)', (done) => {
+    it('should reject, used invalid password (without special symbols)', (done) => {
       request(app)
         .post('/api/users')
         .send({
@@ -129,6 +147,58 @@ describe('## User APIs', () => {
           password: 'ADLassd23'
         })
         .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used invalid mobileNumber (not a number)', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          mobileNumber: 'ADLassd23'
+        })
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used invalid mobileNumber (bad )', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          mobileNumber: 'ADLassd23'
+        })
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should not reject, used  mobileNumber without country code', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          mobileNumber: '0500715577'
+        })
+        .expect(httpStatus.OK)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should not reject, used  mobileNumber without country code and first zero', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          mobileNumber: '500715577'
+        })
+        .expect(httpStatus.OK)
         .then((res) => {
           done();
         })

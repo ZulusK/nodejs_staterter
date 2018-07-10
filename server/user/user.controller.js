@@ -1,5 +1,6 @@
 const User = require('./user.model');
-
+const httpStatus = require('http-status');
+const APIError = require('@helpers/APIError');
 /**
  * Load user and append to req.
  */
@@ -29,20 +30,28 @@ function get(req, res) {
  * @returns {User}
  */
 function create(req, res, next) {
-  const user = new User({
-    email: req.body.email,
-    fullname: req.body.fullname,
-    mobileNumber: req.body.mobileNumber,
-    password: req.body.password
-  });
-
-  user
-    .save()
-    .then(savedUser => res.json({
-      user: savedUser.publicInfo(),
-      tokens: savedUser.genAuthTokens()
-    }))
-    .catch(e => next(e));
+  // check is user exist
+  User.findOne({ email: req.body.email })
+    .exec()
+    .then((result) => {
+      if (result === null) {
+        const user = new User({
+          email: req.body.email,
+          fullname: req.body.fullname,
+          mobileNumber: req.body.mobileNumber,
+          password: req.body.password
+        });
+        user
+          .save()
+          .then(savedUser => res.json({
+            user: savedUser.publicInfo(),
+            tokens: savedUser.genAuthTokens()
+          }))
+          .catch(e => next(e));
+      } else {
+        next(new APIError('Email is already used', httpStatus.BAD_REQUEST));
+      }
+    });
 }
 
 /**

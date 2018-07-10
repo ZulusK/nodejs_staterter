@@ -1,0 +1,55 @@
+const validator = require('validator');
+const PNF = require('google-libphonenumber').PhoneNumberFormat;
+const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+
+const EmailExtention = joi => ({
+  base: joi.string(),
+  name: 'string',
+  language: {
+    notAnEmail: 'email {{email}} is invalid'
+  },
+  rules: [
+    {
+      name: 'isEmail',
+      validate(params, value, state, options) {
+        if (validator.isEmail(value)) {
+          return value;
+        }
+        return this.createError('string.notAnEmail', { email: value }, state, options);
+      }
+    }
+  ]
+});
+
+const PhoneExtention = joi => ({
+  base: joi.string(),
+  name: 'string',
+  language: {
+    notAPhoneNumber: 'The string {{phone}} is not a valid phone number',
+    notAPhoneNumbreForThisRegion: 'The number {{phone}} is noa a valid phone number of this region'
+  },
+  rules: [
+    {
+      name: 'isMobileNumber',
+      validate(params, value, state, options) {
+        const phone = phoneUtil.parseAndKeepRawInput(value, 'UA'); // TODO: replace UA -> SG
+        if (!phoneUtil.isPossibleNumber(phone)) {
+          return this.createError('string.notAPhoneNumber', { phone }, state, options);
+        }
+        if (phoneUtil.getRegionCodeForNumber(phone) !== 'UA') {
+          // TODO: replace UA -> SG
+          return this.createError('string.notAPhoneNumbreForThisRegion', { phone }, state, options);
+        }
+        // Format number in the national format.
+        // return phoneUtil.format(phone, PNF.NATIONAL);
+        // Format number in the international format.
+        // return phoneUtil.format(phone, PNF.INTERNATIONAL);
+        return phoneUtil.format(phone, PNF.E164);
+      }
+    }
+  ]
+});
+module.exports = {
+  EmailExtention,
+  PhoneExtention
+};
