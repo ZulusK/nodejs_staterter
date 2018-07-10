@@ -128,4 +128,92 @@ describe('## Auth APIs', () => {
         .catch(done);
     });
   });
+  describe('# Post /api/auth/check-access', () => {
+    beforeEach(function (done) {
+      request(app)
+        .post('/api/auth/login')
+        .send(validUserCredentials)
+        .then((res) => {
+          tokens = res.body.tokens;
+          done();
+        })
+        .catch(done);
+    });
+    it('should not reject, used valid token', (done) => {
+      request(app)
+        .get('/api/auth/check-access')
+        .set('Authorization', `bearer ${tokens.access.token}`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used invalid token', (done) => {
+      request(app)
+        .get('/api/auth/check-access')
+        .set('Authorization', 'bearer invalid.Token.here')
+        .expect(httpStatus.UNAUTHORIZED)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used outdated token', (done) => {
+      setTimeout(function () {
+        request(app)
+          .get('/api/auth/check-access')
+          .set('Authorization', `bearer ${tokens.access.token}`)
+          .expect(httpStatus.UNAUTHORIZED)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      }, tokens.access.expiredIn * 1000 - Date.now() + 1000);
+    });
+  });
+  describe('# Post /api/auth/check-refresh', () => {
+    beforeEach(function (done) {
+      request(app)
+        .post('/api/auth/login')
+        .send(validUserCredentials)
+        .then((res) => {
+          tokens = res.body.tokens;
+          done();
+        })
+        .catch(done);
+    });
+    it('should not reject, used valid token', (done) => {
+      request(app)
+        .get('/api/auth/check-refresh')
+        .set('Authorization', `bearer ${tokens.refresh.token}`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used invalid token', (done) => {
+      request(app)
+        .get('/api/auth/check-refresh')
+        .set('Authorization', 'bearer invalid.Token.here')
+        .expect(httpStatus.UNAUTHORIZED)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used outdated token', (done) => {
+      setTimeout(function () {
+        request(app)
+          .get('/api/auth/check-refresh')
+          .set('Authorization', `bearer ${tokens.refresh.token}`)
+          .expect(httpStatus.UNAUTHORIZED)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      }, tokens.refresh.expiredIn * 1000 - Date.now() + 1000);
+    });
+  });
 });
