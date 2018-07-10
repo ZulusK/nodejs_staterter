@@ -13,11 +13,12 @@ parameters:
       in: body
       type: string  
       required: true
-  username-b:  
+  fullname-b:  
       name: username
-      description: Name of user, displayed to others
+      description: Fullname of user, displayed to others
       in: body
-      type: string  
+      type: string
+      pattern: "^[a-zA-Z '.-]*$"
       required: true
   email-b:
       name: email
@@ -66,7 +67,7 @@ definitions:
     type: object
     properties:
       expiredIn:
-        description:  milliseconds, after that token will be outdated
+        description:  seconds, after that token will be outdated
         type: integer
         format: int32
       token:

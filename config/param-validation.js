@@ -16,9 +16,9 @@ module.exports = {
       email: Joi.string()
         .required()
         .email(),
-      username: Joi.string()
+      fullname: Joi.string()
         .required()
-        .max(30),
+        .regex(/^[a-zA-Z '.-]*$/),
       mobileNumber: Joi.string()
         .required()
         .max(30),

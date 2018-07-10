@@ -23,7 +23,7 @@ function get(req, res) {
 /**
  * Create new user
  * @property {string} req.body.email - The email of user.
- * @property {string} req.body.username - The username of user.
+ * @property {string} req.body.fullname - The username of user.
  * @property {string} req.body.mobileNumber - The mobileNumber of user.
  * @property {string} req.body.password - The password of user.
  * @returns {User}
@@ -31,15 +31,17 @@ function get(req, res) {
 function create(req, res, next) {
   const user = new User({
     email: req.body.email,
-    username: req.body.username,
-    address: req.body.address,
+    fullname: req.body.fullname,
     mobileNumber: req.body.mobileNumber,
     password: req.body.password
   });
 
   user
     .save()
-    .then(savedUser => res.json(savedUser))
+    .then(savedUser => res.json({
+      user: savedUser.publicInfo(),
+      tokens: savedUser.genAuthTokens()
+    }))
     .catch(e => next(e));
 }
 

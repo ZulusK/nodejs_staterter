@@ -17,9 +17,18 @@ const envVarsSchema = Joi.object({
     then: Joi.boolean().default(true),
     otherwise: Joi.boolean().default(false)
   }),
-  JWT_SECRET: Joi.string()
+  JWT_SECRET_ACCESS: Joi.string()
     .required()
-    .description('JWT Secret required to sign'),
+    .description('JWT access Secret required to sign'),
+  JWT_SECRET_REFRESH: Joi.string()
+    .required()
+    .description('JWT refresh Secret required to sign'),
+  JWT_REFRESH_EXP: Joi.number()
+    .default(60 * 60 * 24 * 30) //  30 days
+    .description('Lifetime of JWT refresh token'),
+  JWT_ACCESS_EXP: Joi.number()
+    .default(60 * 60) // 1 hour
+    .description('Lifetime of JWT access token'),
   MONGO_HOST: Joi.string()
     .required()
     .description('Mongo DB host url'),
@@ -42,11 +51,13 @@ const config = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
   mongooseDebug: envVars.MONGOOSE_DEBUG,
-  jwtSecret: envVars.JWT_SECRET,
+  jwtSecretAccess: envVars.JWT_SECRET_ACCESS,
+  jwtSecretRefresh: envVars.JWT_SECRET_REFRESH,
+  jwtExpAccess: envVars.JWT_ACCESS_EXP,
+  jwtExpRefresh: envVars.JWT_REFRESH_EXP,
   mongo: {
     host: envVars.MONGO_HOST
   },
   logLvl: envVars.LOG_LEVEL
 };
-
 module.exports = config;

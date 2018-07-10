@@ -4,6 +4,8 @@ const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
 const bcrypt = require('bcrypt');
 
+const config = require('@config/config');
+const jwt = require('jsonwebtoken');
 /**
  * @swagger
  *  definitions:
@@ -13,6 +15,8 @@ const bcrypt = require('bcrypt');
  *        required:
  *          - id
  *          - email
+ *          - fullname
+ *          - mobileNumber
  *        properties:
  *          id:
  *              type: string
@@ -43,7 +47,7 @@ const UserSchema = new mongoose.Schema(
       index: true,
       required: true
     },
-    fullName: {
+    fullname: {
       type: String,
       required: true
     },
@@ -71,6 +75,55 @@ UserSchema.pre('save', function preSave(next) {
       next();
     });
   }
+});
+
+/* eslint-disable func-names */
+/**
+ *  Get only public info about user
+ */
+UserSchema.method('publicInfo', function () {
+  const {
+    createdAt, updatedAt, fullname, email, mobileNumber, _id: id
+  } = this;
+  return {
+    createdAt,
+    updatedAt,
+    fullname,
+    email,
+    mobileNumber,
+    id
+  };
+});
+
+/**
+ * Generate auth JWT tokens
+ */
+UserSchema.method('genAuthTokens', function () {
+  return {
+    access: this.genJWTAccessToken(),
+    refresh: this.genJWTRefreshToken()
+  };
+});
+
+/**
+ * Generate access token
+ */
+UserSchema.method('genJWTAccessToken', function () {
+  return {
+    expiredIn: config.jwtExpAccess + Math.floor(Date.now() / 1000),
+    token: jwt.sign({ id: this.id }, config.jwtSecretAccess, {
+      expiresIn: config.jwtExpRefresh
+    })
+  };
+});
+/**
+ * Generate refresh token
+ */
+UserSchema.method('genJWTRefreshToken', function () {
+  return {
+    expiredIn: config.jwtExpRefresh + Math.floor(Date.now() / 1000),
+    token: jwt.sign({ id: this.id }, config.jwtSecretRefresh, { expiresIn: config.jwtExpRefresh })
+  };
 });
 
 // Compare password input to password saved in database

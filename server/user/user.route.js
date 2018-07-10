@@ -27,7 +27,7 @@ const router = express.Router(); // eslint-disable-line new-cap
  *      - $ref: "#/parameters/email-b"
  *      - $ref: "#/parameters/password-b"
  *      - $ref: "#/parameters/mobileNumber-b"
- *      - $ref: "#/parameters/username-b"
+ *      - $ref: "#/parameters/fullName-b"
  *      produces:
  *          - application/json
  *      responses:
@@ -47,7 +47,5 @@ router
   .route('/')
   .get(userCtrl.list)
   .post(validate(paramValidation.createUser), userCtrl.create);
-
-router.param('userId', userCtrl.load);
 
 module.exports = router;
