@@ -1,8 +1,23 @@
+tags:
+- name: Auth
+  description: Operation with authorization
+- name: User
+  description: Operations with users   
+securityDefinitions:
+  Basic:
+    type: basic
+  JWT:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header" 
+    template: "Bearer {apiKey}"
 responses:
   Standard401ErrorResponse:
     description: Unauthorized 
   Standard400ErrorResponse:
     description: Bad request 
+  Standard200ErrorResponse:
+    description: Success   
 basePath: /api/
 schemes:
  - https        

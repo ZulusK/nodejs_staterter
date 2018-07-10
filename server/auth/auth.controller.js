@@ -43,12 +43,10 @@
 // /**
 //  * This is a protected route. Will return random number only if jwt token is provided in header.
 //  */
-// function getRandomNumber(req, res) {
-//   // req.user is assigned by jwt middleware if valid token is provided
-//   return res.json({
-//     user: { ...req.user.user, password: undefined },
-//     num: Math.random() * 100
-//   });
-// }
+function check(req, res) {
+  return res.json({
+    status: true
+  });
+}
 
-// module.exports = { login, get, getRandomNumber };
+module.exports = { check };

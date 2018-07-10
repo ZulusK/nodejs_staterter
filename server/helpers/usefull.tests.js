@@ -2,6 +2,8 @@ require('module-alias/register');
 const chai = require('chai'); // eslint-disable-line import/newline-after-import
 const { expect } = chai;
 const config = require('@config/config');
+const request = require('supertest-as-promised');
+const httpStatus = require('http-status');
 
 const expectUser = (user, etaloneFields = {}) => {
   expect(user).to.be.an('object');
@@ -42,7 +44,27 @@ const expectAuthTokens = (tokens) => {
   expectRefreshJWTToken(tokens.refresh);
 };
 
+// try to connect to server using JWT token
+const expectTokenIsValid = (url, app, token, done) => {
+  request(app)
+    .get(url)
+    .set('Authorization', `bearer ${token}`)
+    .expect(httpStatus.OK)
+    .then(() => {
+      done();
+    })
+    .catch(done);
+};
+
+// check access token is not outdated
+const expectAccessTokenIsValid = (app, token, done) => expectTokenIsValid('/api/auth/check-access', app, token, done);
+// check refresh token is not outdated
+const expectRefreshTokenIsValid = (app, token, done) => expectTokenIsValid('/api/auth/check-refresh', app, token, done);
+
 module.exports = {
+  expectRefreshTokenIsValid,
+  expectAccessTokenIsValid,
+  expectTokenIsValid,
   expectAccessJWTToken,
   expectRefreshJWTToken,
   expectAuthTokens,
