@@ -8,7 +8,10 @@ const router = express.Router(); // eslint-disable-line new-cap
  * @swagger
  * /api/users:
  *  get:
- *      description: Get list of all users
+ *      description: Returns list of all users
+ *      parameters:
+ *      - $ref: "#/parameters/limit"
+ *      - $ref: "#/parameters/skip"
  *      produces:
  *          - application/json
  *      responses:
@@ -17,7 +20,28 @@ const router = express.Router(); // eslint-disable-line new-cap
  *              schema:
  *                type: array
  *                items:
- *                  $ref:"#/definitions/User"
+ *                  $ref: "#/definitions/User"
+ *  post:
+ *      description: Creates new user
+ *      parameters:
+ *      - $ref: "#/parameters/email-b"
+ *      - $ref: "#/parameters/password-b"
+ *      - $ref: "#/parameters/mobileNumber-b"
+ *      - $ref: "#/parameters/username-b"
+ *      produces:
+ *          - application/json
+ *      responses:
+ *          400:
+ *            $ref: "#/responses/Standard400ErrorResponse"
+ *          200:
+ *              description: Returns created user and auth tokens
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  user:
+ *                    $ref: "#/definitions/User"
+ *                  tokens:
+ *                    $ref: "#/definitions/AuthTokens"
  */
 router
   .route('/')

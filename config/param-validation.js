@@ -17,9 +17,7 @@ module.exports = {
         .required()
         .email(),
       username: Joi.string()
-        .alphanum()
         .required()
-        .min(3)
         .max(30),
       mobileNumber: Joi.string()
         .required()
@@ -27,6 +25,26 @@ module.exports = {
       password: Joi.string()
         .required()
         .min(6)
+    }
+  },
+  // UPDATE /api/users/:userId
+  updateUser: {
+    body: {
+      username: Joi.string(),
+      mobileNumber: Joi.string(),
+      imageUrl: Joi.string(),
+      address: Joi.object().keys({
+        name: Joi.string(),
+        coords: {
+          latitude: Joi.string(),
+          longitude: Joi.string()
+        }
+      })
+    },
+    params: {
+      userId: Joi.string()
+        .hex()
+        .required()
     }
   }
 };

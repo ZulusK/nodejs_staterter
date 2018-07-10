@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
  * @swagger
  *  definitions:
  *      User:
- *        description: provides definition of User public model
+ *        description: User public model
  *        type: object
  *        required:
  *          - id
@@ -21,14 +21,10 @@ const bcrypt = require('bcrypt');
  *          email:
  *              type: string
  *              format: email
- *          username:
+ *              example: example@mail.com
+ *          fullname:
+ *              example: John Smith
  *              type: string
- *              pattern: '\w{3,30}'
- *          role:
- *              type: string
- *              emum:
- *              - admin
- *              - user
  *          mobileNumber:
  *              type: string
  *          updatedAt:
@@ -47,19 +43,17 @@ const UserSchema = new mongoose.Schema(
       index: true,
       required: true
     },
-    role: {
-      type: String,
-      enum: ['admin', 'user'],
-      default: 'user'
-    },
-    username: {
+    fullName: {
       type: String,
       required: true
     },
+    emailVerified: {
+      type: Boolean,
+      default: false
+    },
     mobileNumber: {
       type: String,
-      required: true,
-      match: [/^[1-9][0-9]{9}$/, 'The value of path {PATH} ({VALUE}) is not a valid mobile number.']
+      required: true
     },
     password: {
       type: String,

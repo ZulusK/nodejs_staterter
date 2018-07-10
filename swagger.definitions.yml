@@ -7,13 +7,76 @@ basePath: /api/
 schemes:
  - https        
 parameters:
-  - name: email
-    in: header
-    type: string
-    format: email
-    required: true
-  - name: password  
-    in: header
-    type: string
-    min: 6
-    required: true    
+  mobileNumber-b:
+      name: mobileNumber
+      description: Phone number of user
+      in: body
+      type: string  
+      required: true
+  username-b:  
+      name: username
+      description: Name of user, displayed to others
+      in: body
+      type: string  
+      required: true
+  email-b:
+      name: email
+      in: body
+      type: string
+      format: email
+      required: true
+  email-h:
+      name: email
+      in: header
+      type: string
+      format: email
+      required: true
+  password-b:
+      name: password
+      in: body
+      type: string
+      format: password
+      min: 6
+      required: true
+  password-h:
+      name: password  
+      in: header
+      type: string
+      format: password
+      min: 6
+      required: true          
+  limit:
+      name: limit
+      in: query
+      description: Number of entities returned  
+      type: integer
+      format: int32
+      minimum: 1
+      default: 50
+  skip:  
+      name: skip
+      in: query
+      description: Offset from the beginning of the list  
+      type: integer
+      format: int32
+      minimum: 0
+      default: 0  
+definitions:
+  Token:
+    type: object
+    properties:
+      expiredIn:
+        description:  milliseconds, after that token will be outdated
+        type: integer
+        format: int32
+      token:
+        description:  string, represents JWT-token
+        type: string
+        example: "xxx.yyy.zzz"
+  AuthTokens:
+    type: object
+    properties:
+      access:
+        $ref: "#/definitions/Token"
+      refresh:
+        $ref: "#/definitions/Token"  
