@@ -12,8 +12,8 @@ chai.config.includeStack = true;
 
 describe('## User APIs', () => {
   const validUserData = {
-    email: 'test@gmail.com',
-    password: 'lordss98',
+    email: 'test.mail@gmail.com',
+    password: 'lorDss98$',
     fullname: 'John Smith',
     mobileNumber: '+380500121255'
   };
@@ -55,6 +55,84 @@ describe('## User APIs', () => {
     });
     it('should not fail, verify refresh token', (done) => {
       usefullTests.expectRefreshTokenIsValid(app, tokens.refresh.token, done);
+    });
+    it('should reject, used invalid email', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          email: 'invalid@m'
+        })
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used invalid password ( < 8 symbols)', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          password: 'a2!34'
+        })
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used invalid password ( > 20 symbols)', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          password: 'a234asakIHIBS!Ibi2i7iaih87xaixjni'
+        })
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used invalid (without uppercase symbols)', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          password: 'asfsisib2bk23k2k'
+        })
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used invalid (without lowercase symbols)', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          password: 'ADLNLWNOWN23!'
+        })
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used invalid (without special symbols)', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          password: 'ADLassd23'
+        })
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
     });
   });
 });

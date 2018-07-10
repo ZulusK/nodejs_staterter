@@ -1,48 +1,76 @@
 const Joi = require('joi');
+const validator = require('validator');
+
+const customJoi = Joi.extend(joi => ({
+  base: joi.string(),
+  name: 'string',
+  language: {
+    isEmail: 'email {{email}} is invalid'
+  },
+  rules: [
+    {
+      name: 'isEmail',
+      validate(params, value, state, options) {
+        if (validator.isEmail(value)) {
+          return value;
+        }
+        return this.createError('string.isEmail', { email: value }, state, options);
+      }
+    }
+  ]
+}));
 
 module.exports = {
   // POST /api/auth/login
   login: {
     body: {
-      email: Joi.string()
+      email: customJoi
+        .string()
         .email()
         .required(),
-      password: Joi.string().required()
+      password: customJoi.string().required()
     }
   },
   // POST /api/users
   createUser: {
     body: {
-      email: Joi.string()
-        .required()
-        .email(),
-      fullname: Joi.string()
+      email: customJoi
+        .string()
+        .isEmail()
+        .required(),
+      fullname: customJoi
+        .string()
         .required()
         .regex(/^[a-zA-Z '.-]*$/),
-      mobileNumber: Joi.string()
+      mobileNumber: customJoi
+        .string()
         .required()
         .max(30),
-      password: Joi.string()
+      password: customJoi
+        .string()
         .required()
-        .min(6)
+        .min(8)
+        .max(20)
+        .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,20}$/)
     }
   },
   // UPDATE /api/users/:userId
   updateUser: {
     body: {
-      username: Joi.string(),
-      mobileNumber: Joi.string(),
-      imageUrl: Joi.string(),
-      address: Joi.object().keys({
-        name: Joi.string(),
+      username: customJoi.string(),
+      mobileNumber: customJoi.string(),
+      imageUrl: customJoi.string(),
+      address: customJoi.object().keys({
+        name: customJoi.string(),
         coords: {
-          latitude: Joi.string(),
-          longitude: Joi.string()
+          latitude: customJoi.string(),
+          longitude: customJoi.string()
         }
       })
     },
     params: {
-      userId: Joi.string()
+      userId: customJoi
+        .string()
         .hex()
         .required()
     }
