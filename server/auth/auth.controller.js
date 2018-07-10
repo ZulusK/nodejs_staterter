@@ -5,6 +5,17 @@ const APIError = require('@helpers/APIError');
 const User = require('@server/user/user.model');
 
 /**
+ * Returns new generated access token
+ */
+function token(req, res, next) {
+  User.findById(req.user.id)
+    .exec()
+    .then(user => res.json(user.genJWTAccessToken()))
+    .catch((err) => {
+      next(err);
+    });
+}
+/**
  * Returns jwt token if valid username and password is provided
  */
 function login(req, res, next) {
@@ -38,4 +49,4 @@ function check(req, res) {
   });
 }
 
-module.exports = { check, login };
+module.exports = { check, login, token };

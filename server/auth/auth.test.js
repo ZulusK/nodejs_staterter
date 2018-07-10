@@ -101,38 +101,31 @@ describe('## Auth APIs', () => {
         .catch(done);
     });
   });
-  // describe('# GET /api/auth/random-number', () => {
-  //   it('should fail to get random number because of missing Authorization', (done) => {
-  //     request(app)
-  //       .get('/api/auth/random-number')
-  //       .expect(httpStatus.UNAUTHORIZED)
-  //       .then((res) => {
-  //         expect(res.body.message).to.equal('Unauthorized');
-  //         done();
-  //       })
-  //       .catch(done);
-  //   });
-  //   it('should fail to get random number because of wrong token', (done) => {
-  //     request(app)
-  //       .get('/api/auth/random-number')
-  //       .set('Authorization', 'Bearer inValidToken')
-  //       .expect(httpStatus.UNAUTHORIZED)
-  //       .then((res) => {
-  //         expect(res.body.message).to.equal('Unauthorized');
-  //         done();
-  //       })
-  //       .catch(done);
-  //   });
-  //   it('should get a random number', (done) => {
-  //     request(app)
-  //       .get('/api/auth/random-number')
-  //       .set('Authorization', jwtToken)
-  //       .expect(httpStatus.OK)
-  //       .then((res) => {
-  //         expect(res.body.num).to.be.a('number');
-  //         done();
-  //       })
-  //       .catch(done);
-  //   });
-  // });
+  describe('# Get /api/auth/token', () => {
+    it('should return JWT token', (done) => {
+      request(app)
+        .get('/api/auth/token')
+        .set('Authorization', `bearer ${tokens.refresh.token}`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          usefullTests.expectAccessJWTToken(res.body);
+          tokens.access = res.body;
+          done();
+        })
+        .catch(done);
+    });
+    it('should not fail, verify new access token', (done) => {
+      usefullTests.expectAccessTokenIsValid(app, tokens.access.token, done);
+    });
+    it('should reject, used invalid token', (done) => {
+      request(app)
+        .get('/api/auth/token')
+        .set('Authorization', 'bearer not-a-token-at-all')
+        .expect(httpStatus.UNAUTHORIZED)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+  });
 });
