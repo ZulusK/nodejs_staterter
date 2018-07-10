@@ -9,9 +9,14 @@ module.exports = {
     body: {
       email: customJoi
         .string()
-        .email()
+        .isEmail()
         .required(),
-      password: customJoi.string().required()
+      password: customJoi
+        .string()
+        .required()
+        .min(8)
+        .max(20)
+        .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,20}$/)
     }
   },
   // POST /api/users

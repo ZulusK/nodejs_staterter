@@ -1,64 +1,106 @@
 require('module-alias/register');
 
-// const request = require('supertest-as-promised');
-// const httpStatus = require('http-status');
-// const jwt = require('jsonwebtoken');
+const request = require('supertest-as-promised');
+const httpStatus = require('http-status');
 const chai = require('chai'); // eslint-disable-line import/newline-after-import
-// const { expect } = chai;
-// const app = require('@app');
-// const config = require('@config/config');
+const { expect } = chai;
+const app = require('@app');
+const User = require('@server/user/user.model');
+const usefullTests = require('@helpers/usefull.tests');
 
 chai.config.includeStack = true;
 
 describe('## Auth APIs', () => {
-  // const validUserCredentials = {
-  //   email: 'test@gmail.com',
-  //   password: 'lordss98'
-  // };
-  // const invalidUserCredentials = {
-  //   email: 'react@gmail.com',
-  //   password: 'IDontKnow'
-  // };
-  // let jwtToken;
-  // before(function (done) {
-  //   request(app)
-  //     .post('/api/users')
-  //     .send({
-  //       ...validUserCredentials,
-  //       username: 'test',
-  //       mobileNumber: '1234567890'
-  //     })
-  //     .then(() => done());
-  // });
-  // describe('# POST /api/auth/login', () => {
-  //   it('should return Authentication error', (done) => {
-  //     request(app)
-  //       .post('/api/auth/login')
-  //       .send(invalidUserCredentials)
-  //       .expect(httpStatus.UNAUTHORIZED)
-  //       .then((res) => {
-  //         expect(res.body.message).to.equal('Authentication error');
-  //         done();
-  //       })
-  //       .catch(done);
-  //   });
-  //   it('should get valid JWT token', (done) => {
-  //     request(app)
-  //       .post('/api/auth/login')
-  //       .send(validUserCredentials)
-  //       .expect(httpStatus.OK)
-  //       .then((res) => {
-  //         expect(res.body).to.have.property('token');
-  //         jwt.verify(res.body.token, config.jwtSecret, (err, decoded) => {
-  //           expect(err).to.not.be.ok; // eslint-disable-line no-unused-expressions
-  //           expect(decoded.username).to.equal(validUserCredentials.username);
-  //           jwtToken = `Bearer ${res.body.token}`;
-  //           done();
-  //         });
-  //       })
-  //       .catch(done);
-  //   });
-  // });
+  let tokens = null;
+  const validUserData = {
+    email: 'test.mail@gmail.com',
+    password: 'lorDss98$',
+    fullname: 'John Smith',
+    mobileNumber: '+380500121255'
+  };
+  const validUserCredentials = {
+    email: validUserData.email,
+    password: validUserData.password
+  };
+  before(function (done) {
+    request(app)
+      .post('/api/users')
+      .send(validUserData)
+      .then(() => done());
+  });
+  describe('# POST /api/auth/login', () => {
+    it('should return valid user info', (done) => {
+      request(app)
+        .post('/api/auth/login')
+        .send(validUserCredentials)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          const etaloneData = { ...validUserData };
+          delete etaloneData.password;
+          usefullTests.expectUser(res.body.user, etaloneData);
+          done();
+        })
+        .catch(done);
+    });
+    it('should return JWT tokens', (done) => {
+      request(app)
+        .post('/api/auth/login')
+        .send(validUserCredentials)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          usefullTests.expectAuthTokens(res.body.tokens);
+          tokens = res.body.tokens;
+          done();
+        })
+        .catch(done);
+    });
+    it('should not fail, verify access token', (done) => {
+      usefullTests.expectAccessTokenIsValid(app, tokens.access.token, done);
+    });
+    it('should not fail, verify refresh token', (done) => {
+      usefullTests.expectRefreshTokenIsValid(app, tokens.refresh.token, done);
+    });
+    it('should return Authentication error', (done) => {
+      request(app)
+        .post('/api/auth/login')
+        .send({
+          ...validUserCredentials,
+          password: 'aaaaWer$ty124'
+        })
+        .expect(httpStatus.UNAUTHORIZED)
+        .then((res) => {
+          expect(res.body.message).to.equal('Authentication error');
+          done();
+        })
+        .catch(done);
+    });
+    it('should return Bad Request error (invalid password)', (done) => {
+      request(app)
+        .post('/api/auth/login')
+        .send({
+          ...validUserCredentials,
+          password: 'aaaaWerty12'
+        })
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should return Bad Request error (invalid email)', (done) => {
+      request(app)
+        .post('/api/auth/login')
+        .send({
+          ...validUserCredentials,
+          email: 'not-an-email@d'
+        })
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+  });
   // describe('# GET /api/auth/random-number', () => {
   //   it('should fail to get random number because of missing Authorization', (done) => {
   //     request(app)

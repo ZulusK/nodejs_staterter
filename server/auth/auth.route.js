@@ -1,23 +1,37 @@
 require('module-alias/register');
 const config = require('@config/config');
 const express = require('express');
-// const validate = require('express-validation');
+const validate = require('express-validation');
 const expressJwt = require('express-jwt');
-// const paramValidation = require('@config/param-validation');
+const paramValidation = require('@config/param-validation');
 const authCtrl = require('./auth.controller');
 
 const router = express.Router(); // eslint-disable-line new-cap
 
 /** POST /api/auth/login - Returns token if correct username and password is provided */
-// router.route('/login').post(validate(paramValidation.login), authCtrl.login);
-
-/** GET /api/auth/ - Returns users */
-// router.route('/login').get(
-//   expressJwt({
-//     secret: config.jwtSecret
-//   }),
-//   authCtrl.get
-// );
+/**
+ * @swagger
+ * /api/auth/login:
+ *  post:
+ *      description: Login into account
+ *      security:
+ *      - Basic: []
+ *      produces:
+ *          - application/json
+ *      responses:
+ *          400:
+ *            $ref: "#/responses/Standard400ErrorResponse"
+ *          200:
+ *              description: Returns user and auth tokens
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  user:
+ *                    $ref: "#/definitions/User"
+ *                  tokens:
+ *                    $ref: "#/definitions/AuthTokens"
+ */
+router.route('/login').post(validate(paramValidation.login), authCtrl.login);
 
 /**
  * @swagger

@@ -137,6 +137,18 @@ UserSchema.methods.comparePassword = function comparePassword(pw) {
  * Statics
  */
 UserSchema.statics = {
+  /** Get user by his email and password
+   * @param {password} - password
+   * @param {email} -email
+   */
+  async getByCredentials({ email, password }) {
+    const user = await this.findOne({ email });
+    if (user && (await user.comparePassword(password))) {
+      return user;
+    }
+    const err = new APIError('No such user exists!', httpStatus.NOT_FOUND);
+    return Promise.reject(err);
+  },
   /**
    * Get user
    * @param {ObjectId} id - The objectId of user.

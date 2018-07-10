@@ -1,34 +1,23 @@
-// const jwt = require('jsonwebtoken');
-// const httpStatus = require('http-status');
-// const APIError = require('../helpers/APIError');
-// const config = require('../../config/config');
-// const User = require('../user/user.model');
+require('module-alias/register');
+const httpStatus = require('http-status');
+const APIError = require('@helpers/APIError');
+// const config = require('@config/config');
+const User = require('@server/user/user.model');
 
 /**
  * Returns jwt token if valid username and password is provided
  */
-// function login(req, res, next) {
-//   User.getByEmail(req.body.email)
-//     .then(user => user.comparePassword(req.body.password))
-//     .then((user) => {
-//       const token = jwt.sign(
-//         {
-//           user
-//         },
-//         config.jwtSecret
-//       );
-
-//       return res.json({
-//         token,
-//         user
-//       });
-//     })
-//     .catch(() => {
-//       const err = new APIError('Authentication error', httpStatus.UNAUTHORIZED, true);
-//       return next(err);
-//     });
-// }
-
+function login(req, res, next) {
+  User.getByCredentials(req.body)
+    .then(user => res.json({
+      user: user.publicInfo(),
+      tokens: user.genAuthTokens()
+    }))
+    .catch(() => {
+      const err = new APIError('Authentication error', httpStatus.UNAUTHORIZED, true);
+      return next(err);
+    });
+}
 // /**
 //  * Returns user
 //  */
@@ -49,4 +38,4 @@ function check(req, res) {
   });
 }
 
-module.exports = { check };
+module.exports = { check, login };
