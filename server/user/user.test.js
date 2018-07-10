@@ -178,7 +178,7 @@ describe('## User APIs', () => {
         })
         .catch(done);
     });
-    it('should not reject, used  mobileNumber without country code', (done) => {
+    it('should not reject, used mobileNumber without country code', (done) => {
       request(app)
         .post('/api/users')
         .send({
@@ -191,7 +191,7 @@ describe('## User APIs', () => {
         })
         .catch(done);
     });
-    it('should not reject, used  mobileNumber without country code and first zero', (done) => {
+    it('should not reject, used mobileNumber without country code and first zero', (done) => {
       request(app)
         .post('/api/users')
         .send({
@@ -199,6 +199,19 @@ describe('## User APIs', () => {
           mobileNumber: '500715577'
         })
         .expect(httpStatus.OK)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should not reject, used invalid fullname (used digits)', (done) => {
+      request(app)
+        .post('/api/users')
+        .send({
+          ...validUserData,
+          fullname: 'Joe2'
+        })
+        .expect(httpStatus.BAD_REQUEST)
         .then((res) => {
           done();
         })
