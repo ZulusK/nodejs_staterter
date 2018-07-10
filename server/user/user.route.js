@@ -14,6 +14,10 @@ const router = express.Router(); // eslint-disable-line new-cap
  *      responses:
  *          200:
  *              description: list of users
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref:"#/definitions/User"
  */
 router
   .route('/')

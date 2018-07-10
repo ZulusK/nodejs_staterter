@@ -32,6 +32,7 @@ const swaggerSpec = swaggerJSDoc({
   apis: ['server/*/*.js', './swagger.definitions.yml']
 });
 
+// TODO: disable on production, because it uses a lot of mem
 router.use(
   '/docs',
   swaggerUi.serve,
