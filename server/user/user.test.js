@@ -31,7 +31,6 @@ describe('## User APIs', () => {
         .send(validUserData)
         .expect(httpStatus.OK)
         .then((res) => {
-          expect(res.body).to.have.all.keys(['message']);
           expect(res.body.message).to.be.eq('Check your email');
           done();
         })

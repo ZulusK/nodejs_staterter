@@ -29,17 +29,6 @@ function login(req, res, next) {
       return next(err);
     });
 }
-// /**
-//  * Returns user
-//  */
-// function get(req, res) {
-//   // req.user is assigned by jwt middleware if valid token is provided
-//   return res.json({
-//     ...req.user.user,
-//     password: undefined
-//   });
-// }
-
 /**
  * This is a protected route. Will return random number only if jwt token is provided in header.
  */
@@ -54,17 +43,32 @@ function check(req, res) {
  */
 async function confirmMail(req, res, next) {
   const user = await User.findById(req.user.id).exec();
-  if (user.isEmailVerified) {
+  if (user.isEmailConfirmed) {
     return next(new APIError('This account is already actiated', httpStatus.BAD_REQUEST, true));
   }
-  user.isEmailVerified = true;
-  await user.save();
-  return res.status(httpStatus.OK).json({ message: 'activated' });
+  await user.update({ isEmailConfirmed: true });
+  return res.json({ message: 'activated' });
+}
+
+/**
+ * Deactivate account
+ */
+async function deleteAccount(req, res, next) {
+  const user = await User.findById(req.user.id).exec();
+  if (!user) {
+    return next(new APIError('This account is already deactivated', httpStatus.BAD_REQUEST, true));
+  }
+  if (user.isEmailConfirmed) {
+    return next(new APIError('This account is already actiated', httpStatus.BAD_REQUEST, true));
+  }
+  await user.remove();
+  return res.json({ message: 'deleted' });
 }
 
 module.exports = {
   check,
   login,
   token,
-  confirmMail
+  confirmMail,
+  deleteAccount
 };

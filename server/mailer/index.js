@@ -34,7 +34,7 @@ transporter.verify((error) => {
  * @property {string} token - generated token of user
  * @returns {User}
  */
-function sendEmailVerification({ email, token, fullname }) {
+function sendEmailActivation({ email, token, fullname }) {
   const renderedText = emailTemplateFunc({
     email,
     token,
@@ -52,5 +52,6 @@ function sendEmailVerification({ email, token, fullname }) {
 }
 
 module.exports = {
-  sendEmailVerification: config.env === 'production' ? sendEmailVerification : () => {} // send mails only in production
+  sendEmailActivation: config.env === 'production' ? sendEmailActivation : () => {} // send mails only in production
+  // sendEmailActivation
 };

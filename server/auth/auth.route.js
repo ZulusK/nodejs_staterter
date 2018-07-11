@@ -70,7 +70,7 @@ router.route('/login').post(validate(paramValidation.login), authCtrl.login);
  *      - Auth
  *      security:
  *      - JWT: []
- *      description: Protected route, used to access-token verification
+ *      description: Protected route, used in access-token verification
  *      responses:
  *          401:
  *              $ref: "#/responses/Standard401Response"
@@ -92,7 +92,7 @@ router.route('/check-access').get(
  *      - Auth
  *      security:
  *      - JWT: []
- *      description: Protected route, used to refresh-token verification
+ *      description: Protected route, used in refresh-token verification
  *      responses:
  *          401:
  *              $ref: "#/responses/Standard401Response"
@@ -115,7 +115,7 @@ router.route('/check-refresh').get(
  *      security:
  *      - JWT: []
  *      description:
- *        Used in account activation, after email verification.
+ *        Used in account activation, after email confirmation.
  *        Put token, which you had received in email letter, in headers
  *      responses:
  *          401:
@@ -125,9 +125,33 @@ router.route('/check-refresh').get(
  */
 router.route('/confirm').post(
   expressJwt({
-    secret: config.jwtSecretVerification
+    secret: config.jwtSecretEmailConfirmation
   }),
   authCtrl.confirmMail
+);
+
+/**
+ * @swagger
+ * /api/auth/deactivate:
+ *  post:
+ *      tags:
+ *      - Auth
+ *      security:
+ *      - JWT: []
+ *      description:
+ *        Used in account deactivation, if invalid email was used
+ *        Put token, which you had received in email letter, in headers
+ *      responses:
+ *          401:
+ *              $ref: "#/responses/Standard401Response"
+ *          200:
+ *              $ref: "#/responses/Standard200Response"
+ */
+router.route('/deactivate').post(
+  expressJwt({
+    secret: config.jwtSecretEmailConfirmation
+  }),
+  authCtrl.deleteAccount
 );
 
 module.exports = router;

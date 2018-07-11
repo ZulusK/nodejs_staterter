@@ -11,39 +11,32 @@ const usefullTests = require('@helpers/usefull.tests');
 chai.config.includeStack = true;
 
 describe('## Auth APIs', () => {
-  let tokens = null;
+  describe('@Used activated user', () => {
+    let tokens = null;
+    const validUserDataActivated = {
+      email: 'test.mail@gmail.com',
+      password: 'lorDss98$',
+      fullname: 'John Smith',
+      mobileNumber: '+380500121255'
+    };
 
-  const validUserDataActivated = {
-    email: 'test.mail@gmail.com',
-    password: 'lorDss98$',
-    fullname: 'John Smith',
-    mobileNumber: '+380500121255'
-  };
-  const validUserDataNotActivated = {
-    email: 'test.mail@mail.com',
-    password: 'lorDss98$',
-    fullname: 'John Smith',
-    mobileNumber: '+380500121255'
-  };
-  before(function (done) {
-    Promise.all([
+    before(function (done) {
       // add activated user
       request(app)
         .post('/api/users')
         .send(validUserDataActivated)
         .then(() => User.findOne({ email: validUserDataActivated.email }).exec())
-        .then(user => user.update({ isEmailConfirmed: true }).exec()), // activate account by hend
-      // add not activated user
-      request(app)
-        .post('/api/users')
-        .send(validUserDataNotActivated)
-    ])
-      .then(() => done())
-      .catch(done);
-  });
-
-  describe('# POST /api/auth/login', () => {
-    describe('user activated', () => {
+        .then(user => user.update({ isEmailConfirmed: true }).exec()) // activate account by hend
+        .then(() => done())
+        .catch(done);
+    });
+    after(function (done) {
+      User.remove({})
+        .exec()
+        .then(() => done())
+        .catch(done);
+    });
+    describe('# POST /api/auth/login', () => {
       it('should return valid user info', (done) => {
         request(app)
           .post('/api/auth/login')
@@ -116,8 +109,186 @@ describe('## Auth APIs', () => {
           .catch(done);
       });
     });
-    describe('user is not activated', () => {
-      it('should return valid user info', (done) => {
+    describe('# Get /api/auth/token', () => {
+      it('should return JWT token', (done) => {
+        request(app)
+          .get('/api/auth/token')
+          .set('Authorization', `bearer ${tokens.refresh.token}`)
+          .expect(httpStatus.OK)
+          .then((res) => {
+            usefullTests.expectAccessJWTToken(res.body);
+            tokens.access = res.body;
+            done();
+          })
+          .catch(done);
+      });
+      it('should not fail, verify new access token', (done) => {
+        usefullTests.expectAccessTokenIsValid(app, tokens.access.token, done);
+      });
+      it('should reject, used invalid token', (done) => {
+        request(app)
+          .get('/api/auth/token')
+          .set('Authorization', 'bearer not-a-token-at-all')
+          .expect(httpStatus.UNAUTHORIZED)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      });
+    });
+    describe('# Post /api/auth/check-access', () => {
+      beforeEach(function (done) {
+        request(app)
+          .post('/api/auth/login')
+          .send(validUserDataActivated)
+          .then((res) => {
+            tokens = res.body.tokens;
+            done();
+          })
+          .catch(done);
+      });
+      it('should not reject, used valid token', (done) => {
+        request(app)
+          .get('/api/auth/check-access')
+          .set('Authorization', `bearer ${tokens.access.token}`)
+          .expect(httpStatus.OK)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      });
+      it('should reject, used invalid token', (done) => {
+        request(app)
+          .get('/api/auth/check-access')
+          .set('Authorization', 'bearer invalid.Token.here')
+          .expect(httpStatus.UNAUTHORIZED)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      });
+      it('should reject, used outdated token', (done) => {
+        setTimeout(function () {
+          request(app)
+            .get('/api/auth/check-access')
+            .set('Authorization', `bearer ${tokens.access.token}`)
+            .expect(httpStatus.UNAUTHORIZED)
+            .then((res) => {
+              done();
+            })
+            .catch(done);
+        }, tokens.access.expiredIn * 1000 - Date.now() + 1000);
+      });
+    });
+    describe('# Post /api/auth/check-refresh', () => {
+      beforeEach(function (done) {
+        request(app)
+          .post('/api/auth/login')
+          .send(validUserDataActivated)
+          .then((res) => {
+            tokens = res.body.tokens;
+            done();
+          })
+          .catch(done);
+      });
+      it('should not reject, used valid token', (done) => {
+        request(app)
+          .get('/api/auth/check-refresh')
+          .set('Authorization', `bearer ${tokens.refresh.token}`)
+          .expect(httpStatus.OK)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      });
+      it('should reject, used invalid token', (done) => {
+        request(app)
+          .get('/api/auth/check-refresh')
+          .set('Authorization', 'bearer invalid.Token.here')
+          .expect(httpStatus.UNAUTHORIZED)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      });
+      it('should reject, used outdated token', (done) => {
+        setTimeout(function () {
+          request(app)
+            .get('/api/auth/check-refresh')
+            .set('Authorization', `bearer ${tokens.refresh.token}`)
+            .expect(httpStatus.UNAUTHORIZED)
+            .then((res) => {
+              done();
+            })
+            .catch(done);
+        }, tokens.refresh.expiredIn * 1000 - Date.now() + 1000);
+      });
+    });
+    describe('# POST /api/auth/deactivate', () => {
+      let activationToken = null;
+      const validUserDataActivated = {
+        email: 'test.mail@mail.com',
+        password: 'lorDss98$',
+        fullname: 'John Smith',
+        mobileNumber: '+380500121255'
+      };
+      before(function (done) {
+        // add not activated user
+        request(app)
+          .post('/api/users')
+          .send(validUserDataActivated)
+          .then((res) => {
+            activationToken = res.body.token;
+            return request(app)
+              .post('/api/auth/confirm')
+              .set('Authorization', `bearer ${activationToken}`);
+          })
+          .then(() => done())
+          .catch(done);
+      });
+      after(function (done) {
+        User.remove({})
+          .exec()
+          .then(() => done())
+          .catch(done);
+      });
+      it('should reject, user is activated', (done) => {
+        request(app)
+          .post('/api/auth/deactivate')
+          .set('Authorization', `bearer ${activationToken}`)
+          .expect(httpStatus.BAD_REQUEST)
+          .then(() => done())
+          .catch(done);
+      });
+    });
+  });
+  describe('@Used not activated user', () => {
+    let activationToken = null;
+    const validUserDataNotActivated = {
+      email: 'test.mail@mail.com',
+      password: 'lorDss98$',
+      fullname: 'John Smith',
+      mobileNumber: '+380500121255'
+    };
+    before(function (done) {
+      // add not activated user
+      request(app)
+        .post('/api/users')
+        .send(validUserDataNotActivated)
+        .then((res) => {
+          activationToken = res.body.token;
+          done();
+        })
+        .catch(done);
+    });
+    after(function (done) {
+      User.remove({})
+        .exec()
+        .then(() => done())
+        .catch(done);
+    });
+    describe('# POST /api/auth/login', () => {
+      it('should reject, until user is not activated', (done) => {
         request(app)
           .post('/api/auth/login')
           .send(validUserDataNotActivated)
@@ -168,120 +339,90 @@ describe('## Auth APIs', () => {
           .catch(done);
       });
     });
-  });
-  describe('# Get /api/auth/token', () => {
-    it('should return JWT token', (done) => {
-      request(app)
-        .get('/api/auth/token')
-        .set('Authorization', `bearer ${tokens.refresh.token}`)
-        .expect(httpStatus.OK)
-        .then((res) => {
-          usefullTests.expectAccessJWTToken(res.body);
-          tokens.access = res.body;
-          done();
-        })
-        .catch(done);
-    });
-    it('should not fail, verify new access token', (done) => {
-      usefullTests.expectAccessTokenIsValid(app, tokens.access.token, done);
-    });
-    it('should reject, used invalid token', (done) => {
-      request(app)
-        .get('/api/auth/token')
-        .set('Authorization', 'bearer not-a-token-at-all')
-        .expect(httpStatus.UNAUTHORIZED)
-        .then((res) => {
-          done();
-        })
-        .catch(done);
-    });
-  });
-  describe('# Post /api/auth/check-access', () => {
-    beforeEach(function (done) {
-      request(app)
-        .post('/api/auth/login')
-        .send(validUserDataActivated)
-        .then((res) => {
-          tokens = res.body.tokens;
-          done();
-        })
-        .catch(done);
-    });
-    it('should not reject, used valid token', (done) => {
-      request(app)
-        .get('/api/auth/check-access')
-        .set('Authorization', `bearer ${tokens.access.token}`)
-        .expect(httpStatus.OK)
-        .then((res) => {
-          done();
-        })
-        .catch(done);
-    });
-    it('should reject, used invalid token', (done) => {
-      request(app)
-        .get('/api/auth/check-access')
-        .set('Authorization', 'bearer invalid.Token.here')
-        .expect(httpStatus.UNAUTHORIZED)
-        .then((res) => {
-          done();
-        })
-        .catch(done);
-    });
-    it('should reject, used outdated token', (done) => {
-      setTimeout(function () {
+    describe('# POST /api/auth/confirm', () => {
+      it('should return 200', (done) => {
         request(app)
-          .get('/api/auth/check-access')
-          .set('Authorization', `bearer ${tokens.access.token}`)
-          .expect(httpStatus.UNAUTHORIZED)
-          .then((res) => {
+          .post('/api/auth/confirm')
+          .set('Authorization', `bearer ${activationToken}`)
+          .expect(httpStatus.OK)
+          .then(res => User.findOne({ email: validUserDataNotActivated.email }).exec())
+          .then((user) => {
+            expect(user.isEmailConfirmed).to.be.eq(true);
             done();
           })
           .catch(done);
-      }, tokens.access.expiredIn * 1000 - Date.now() + 1000);
-    });
-  });
-  describe('# Post /api/auth/check-refresh', () => {
-    beforeEach(function (done) {
-      request(app)
-        .post('/api/auth/login')
-        .send(validUserDataActivated)
-        .then((res) => {
-          tokens = res.body.tokens;
-          done();
-        })
-        .catch(done);
-    });
-    it('should not reject, used valid token', (done) => {
-      request(app)
-        .get('/api/auth/check-refresh')
-        .set('Authorization', `bearer ${tokens.refresh.token}`)
-        .expect(httpStatus.OK)
-        .then((res) => {
-          done();
-        })
-        .catch(done);
-    });
-    it('should reject, used invalid token', (done) => {
-      request(app)
-        .get('/api/auth/check-refresh')
-        .set('Authorization', 'bearer invalid.Token.here')
-        .expect(httpStatus.UNAUTHORIZED)
-        .then((res) => {
-          done();
-        })
-        .catch(done);
-    });
-    it('should reject, used outdated token', (done) => {
-      setTimeout(function () {
+      });
+      it('should reject, user is activated', (done) => {
         request(app)
-          .get('/api/auth/check-refresh')
-          .set('Authorization', `bearer ${tokens.refresh.token}`)
+          .post('/api/auth/confirm')
+          .set('Authorization', `bearer ${activationToken}`)
+          .expect(httpStatus.BAD_REQUEST)
+          .then(() => done())
+          .catch(done);
+      });
+      it('should reject, used invalid token', (done) => {
+        request(app)
+          .post('/api/auth/confirm')
+          .set('Authorization', 'bearer invalid.token.here')
           .expect(httpStatus.UNAUTHORIZED)
+          .then(() => done())
+          .catch(done);
+      });
+    });
+    describe('# POST /api/auth/deactivate', () => {
+      let activationToken = null;
+      const validUserDataNotActivated = {
+        email: 'test.mail2@mail.com',
+        password: 'lorDss98$',
+        fullname: 'John Smith',
+        mobileNumber: '+380500121255'
+      };
+      before(function (done) {
+        // add not activated user
+        request(app)
+          .post('/api/users')
+          .send(validUserDataNotActivated)
+          .expect(httpStatus.OK)
           .then((res) => {
+            activationToken = res.body.token;
             done();
           })
           .catch(done);
-      }, tokens.refresh.expiredIn * 1000 - Date.now() + 1000);
+      });
+      after(function (done) {
+        User.remove({})
+          .exec()
+          .then(() => done())
+          .catch(done);
+      });
+      it('should return 200', (done) => {
+        request(app)
+          .post('/api/auth/deactivate')
+          .set('Authorization', `bearer ${activationToken}`)
+          .expect(httpStatus.OK)
+          .then(res => User.findOne({ email: validUserDataNotActivated.email }).exec())
+          .then((user) => {
+            expect(user).to.be.eq(null);
+            done();
+          })
+          .catch(done);
+      });
+      it('should reject, user is deactivated', (done) => {
+        request(app)
+          .post('/api/auth/deactivate')
+          .set('Authorization', `bearer ${activationToken}`)
+          .expect(httpStatus.BAD_REQUEST)
+          .then(() => done())
+          .catch(done);
+      });
+      it('should reject, used invalid token', (done) => {
+        request(app)
+          .post('/api/auth/deactivate')
+          .set('Authorization', 'bearer invalid.token.here')
+          .expect(httpStatus.UNAUTHORIZED)
+          .then(() => done())
+          .catch(done);
+      });
     });
   });
 });

@@ -108,6 +108,12 @@ UserSchema.method('genAuthTokens', function () {
 });
 
 /**
+ * Generate activation token
+ */
+UserSchema.method('genActivationToken', function () {
+  return jwt.sign({ id: this.id }, config.jwtSecretEmailConfirmation);
+});
+/**
  * Generate access token
  */
 UserSchema.method('genJWTAccessToken', function () {

@@ -1,6 +1,8 @@
 const User = require('./user.model');
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
+const mailer = require('@server/mailer');
+const config = require('@config/config');
 /**
  * Load user and append to req.
  */
@@ -34,6 +36,7 @@ function create(req, res, next) {
   User.findOne({ email: req.body.email })
     .exec()
     .then((result) => {
+      // create new user and save him
       if (result === null) {
         const user = new User({
           email: req.body.email,
@@ -41,16 +44,31 @@ function create(req, res, next) {
           mobileNumber: req.body.mobileNumber,
           password: req.body.password
         });
-        user
-          .save()
-          .then(() => res.json({
-            message: 'Check your email'
-          }))
-          .catch(e => next(e));
-      } else {
-        next(new APIError('Email is already used', httpStatus.BAD_REQUEST));
+        return user.save();
       }
-    });
+      throw new APIError('Email is already used', httpStatus.BAD_REQUEST);
+    })
+    .then((user) => {
+      // send letter via mailer
+      const token = user.genActivationToken();
+      mailer.sendEmailActivation({
+        email: user.email,
+        fullname: user.fullname,
+        token
+      });
+      if (config.env !== 'production') {
+        // send message and activation token to user
+        return res.json({
+          message: 'Check your email',
+          token
+        });
+      }
+      // send only message to user
+      return res.json({
+        message: 'Check your email'
+      });
+    })
+    .catch(e => next(e));
 }
 
 /**

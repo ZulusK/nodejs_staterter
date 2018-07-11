@@ -29,9 +29,9 @@ const envVarsSchema = Joi.object({
   JWT_ACCESS_EXP: Joi.number()
     .default(60 * 60) // 1 hour
     .description('Lifetime of JWT access token'),
-  JWT_SECRET_VERIFICATION: Joi.string()
+  JWT_SECRET_ACTIVATION: Joi.string()
     .required()
-    .description('JWT access secret required in email verification'),
+    .description('JWT access secret required in email confirmation'),
   MONGO_HOST: Joi.string()
     .required()
     .description('Mongo DB host url'),
@@ -73,7 +73,7 @@ const config = {
   emailPassword: envVars.EMAIL_PASSWORD,
   publicDir: path.join(__dirname, '..', 'public'),
   host: envVars.NODE_ENV === 'production' ? '' : 'http://localhost:3000',
-  jwtSecretVerification: envVars.JWT_SECRET_VERIFICATION
+  jwtSecretEmailConfirmation: envVars.JWT_SECRET_ACTIVATION
 };
 
 module.exports = config;

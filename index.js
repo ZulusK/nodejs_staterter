@@ -25,6 +25,14 @@ mongoose.connection.on('error', () => {
 });
 mongoose.connection.on('connected', () => {
   log.info('successfully connected to database');
+  // TODO: remove this
+  if (config.env !== 'production') {
+    mongoose
+      .model('User')
+      .remove({})
+      .exec()
+      .then(() => {});
+  }
 });
 
 // print mongoose logs in dev env
