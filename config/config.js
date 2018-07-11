@@ -1,6 +1,6 @@
 // apply module name aliases
 require('module-alias/register');
-
+const path = require('path');
 const Joi = require('joi');
 
 // require and configure dotenv, will load vars in .env in PROCESS.ENV
@@ -37,7 +37,14 @@ const envVarsSchema = Joi.object({
     is: Joi.string().equal('development'),
     then: Joi.string().default('debug'),
     otherwise: Joi.string().default('info')
-  })
+  }),
+  EMAIL_ADDRESS: Joi.string()
+    .required()
+    .email()
+    .description('Email address of paid account'),
+  EMAIL_PASSWORD: Joi.string()
+    .required()
+    .description('Password of paid account')
 })
   .unknown()
   .required();
@@ -58,6 +65,11 @@ const config = {
   mongo: {
     host: envVars.MONGO_HOST
   },
-  logLvl: envVars.LOG_LEVEL
+  logLvl: envVars.LOG_LEVEL,
+  emailAddress: envVars.EMAIL_ADDRESS,
+  emailPassword: envVars.EMAIL_PASSWORD,
+  publicDir: path.join(__dirname, '..', 'public'),
+  host: envVars.NODE_ENV === 'production' ? '' : 'http://localhost:3000'
 };
+
 module.exports = config;
