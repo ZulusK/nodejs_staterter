@@ -30,7 +30,7 @@ function get(req, res) {
  * @returns {User}
  */
 function create(req, res, next) {
-  // check is user exist
+  // check is user alredy exist
   User.findOne({ email: req.body.email })
     .exec()
     .then((result) => {
@@ -43,9 +43,8 @@ function create(req, res, next) {
         });
         user
           .save()
-          .then(savedUser => res.json({
-            user: savedUser.publicInfo(),
-            tokens: savedUser.genAuthTokens()
+          .then(() => res.json({
+            message: 'Check your email'
           }))
           .catch(e => next(e));
       } else {

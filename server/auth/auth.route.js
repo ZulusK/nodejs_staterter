@@ -108,19 +108,26 @@ router.route('/check-refresh').get(
 
 /**
  * @swagger
- * /api/auth/check-refresh:
+ * /api/auth/confirm:
  *  post:
  *      tags:
  *      - Auth
- *      parameters:
- *      - $ref: "#/parameters/token-confirmation-b"
- *      description: Protected route, used to refresh-token verification
+ *      security:
+ *      - JWT: []
+ *      description:
+ *        Used in account activation, after email verification.
+ *        Put token, which you had received in email letter, in headers
  *      responses:
  *          401:
  *              $ref: "#/responses/Standard401Response"
  *          200:
  *              $ref: "#/responses/Standard200Response"
  */
-router.route('/confirm').post(authCtrl.confirmMail);
+router.route('/confirm').post(
+  expressJwt({
+    secret: config.jwtSecretVerification
+  }),
+  authCtrl.confirmMail
+);
 
 module.exports = router;

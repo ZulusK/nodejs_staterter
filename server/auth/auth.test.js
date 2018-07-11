@@ -12,93 +12,161 @@ chai.config.includeStack = true;
 
 describe('## Auth APIs', () => {
   let tokens = null;
-  const validUserData = {
+
+  const validUserDataActivated = {
     email: 'test.mail@gmail.com',
     password: 'lorDss98$',
     fullname: 'John Smith',
     mobileNumber: '+380500121255'
   };
-  const validUserCredentials = {
-    email: validUserData.email,
-    password: validUserData.password
+  const validUserDataNotActivated = {
+    email: 'test.mail@mail.com',
+    password: 'lorDss98$',
+    fullname: 'John Smith',
+    mobileNumber: '+380500121255'
   };
   before(function (done) {
-    request(app)
-      .post('/api/users')
-      .send(validUserData)
-      .then(() => done());
+    Promise.all([
+      // add activated user
+      request(app)
+        .post('/api/users')
+        .send(validUserDataActivated)
+        .then(() => User.findOne({ email: validUserDataActivated.email }).exec())
+        .then(user => user.update({ isEmailConfirmed: true }).exec()), // activate account by hend
+      // add not activated user
+      request(app)
+        .post('/api/users')
+        .send(validUserDataNotActivated)
+    ])
+      .then(() => done())
+      .catch(done);
   });
+
   describe('# POST /api/auth/login', () => {
-    it('should return valid user info', (done) => {
-      request(app)
-        .post('/api/auth/login')
-        .send(validUserCredentials)
-        .expect(httpStatus.OK)
-        .then((res) => {
-          const etaloneData = { ...validUserData };
-          delete etaloneData.password;
-          usefullTests.expectUser(res.body.user, etaloneData);
-          done();
-        })
-        .catch(done);
+    describe('user activated', () => {
+      it('should return valid user info', (done) => {
+        request(app)
+          .post('/api/auth/login')
+          .send(validUserDataActivated)
+          .expect(httpStatus.OK)
+          .then((res) => {
+            const etaloneData = { ...validUserDataActivated };
+            delete etaloneData.password;
+            usefullTests.expectUser(res.body.user, etaloneData);
+            done();
+          })
+          .catch(done);
+      });
+      it('should return JWT tokens', (done) => {
+        request(app)
+          .post('/api/auth/login')
+          .send(validUserDataActivated)
+          .expect(httpStatus.OK)
+          .then((res) => {
+            usefullTests.expectAuthTokens(res.body.tokens);
+            tokens = res.body.tokens;
+            done();
+          })
+          .catch(done);
+      });
+      it('should not fail, verify access token', (done) => {
+        usefullTests.expectAccessTokenIsValid(app, tokens.access.token, done);
+      });
+      it('should not fail, verify refresh token', (done) => {
+        usefullTests.expectRefreshTokenIsValid(app, tokens.refresh.token, done);
+      });
+      it('should return Authentication error', (done) => {
+        request(app)
+          .post('/api/auth/login')
+          .send({
+            ...validUserDataActivated,
+            password: 'aaaaWer$ty124'
+          })
+          .expect(httpStatus.UNAUTHORIZED)
+          .then((res) => {
+            expect(res.body.message).to.equal('Authentication error');
+            done();
+          })
+          .catch(done);
+      });
+      it('should return Bad Request error (invalid password)', (done) => {
+        request(app)
+          .post('/api/auth/login')
+          .send({
+            ...validUserDataActivated,
+            password: 'aaaaWerty12'
+          })
+          .expect(httpStatus.BAD_REQUEST)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      });
+      it('should return Bad Request error (invalid email)', (done) => {
+        request(app)
+          .post('/api/auth/login')
+          .send({
+            ...validUserDataActivated,
+            email: 'not-an-email@d'
+          })
+          .expect(httpStatus.BAD_REQUEST)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      });
     });
-    it('should return JWT tokens', (done) => {
-      request(app)
-        .post('/api/auth/login')
-        .send(validUserCredentials)
-        .expect(httpStatus.OK)
-        .then((res) => {
-          usefullTests.expectAuthTokens(res.body.tokens);
-          tokens = res.body.tokens;
-          done();
-        })
-        .catch(done);
-    });
-    it('should not fail, verify access token', (done) => {
-      usefullTests.expectAccessTokenIsValid(app, tokens.access.token, done);
-    });
-    it('should not fail, verify refresh token', (done) => {
-      usefullTests.expectRefreshTokenIsValid(app, tokens.refresh.token, done);
-    });
-    it('should return Authentication error', (done) => {
-      request(app)
-        .post('/api/auth/login')
-        .send({
-          ...validUserCredentials,
-          password: 'aaaaWer$ty124'
-        })
-        .expect(httpStatus.UNAUTHORIZED)
-        .then((res) => {
-          expect(res.body.message).to.equal('Authentication error');
-          done();
-        })
-        .catch(done);
-    });
-    it('should return Bad Request error (invalid password)', (done) => {
-      request(app)
-        .post('/api/auth/login')
-        .send({
-          ...validUserCredentials,
-          password: 'aaaaWerty12'
-        })
-        .expect(httpStatus.BAD_REQUEST)
-        .then((res) => {
-          done();
-        })
-        .catch(done);
-    });
-    it('should return Bad Request error (invalid email)', (done) => {
-      request(app)
-        .post('/api/auth/login')
-        .send({
-          ...validUserCredentials,
-          email: 'not-an-email@d'
-        })
-        .expect(httpStatus.BAD_REQUEST)
-        .then((res) => {
-          done();
-        })
-        .catch(done);
+    describe('user is not activated', () => {
+      it('should return valid user info', (done) => {
+        request(app)
+          .post('/api/auth/login')
+          .send(validUserDataNotActivated)
+          .expect(httpStatus.UNAUTHORIZED)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      });
+      it('should return Authentication error', (done) => {
+        request(app)
+          .post('/api/auth/login')
+          .send({
+            ...validUserDataNotActivated,
+            password: 'aaaaWer$ty124'
+          })
+          .expect(httpStatus.UNAUTHORIZED)
+          .then((res) => {
+            expect(res.body.message).to.equal('Authentication error');
+            done();
+          })
+          .catch(done);
+      });
+      it('should return Bad Request error (invalid password)', (done) => {
+        request(app)
+          .post('/api/auth/login')
+          .send({
+            ...validUserDataNotActivated,
+            password: 'aaaaWerty12'
+          })
+          .expect(httpStatus.BAD_REQUEST)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      });
+      it('should return Bad Request error (invalid email)', (done) => {
+        request(app)
+          .post('/api/auth/login')
+          .send({
+            ...validUserDataNotActivated,
+            email: 'not-an-email@d'
+          })
+          .expect(httpStatus.BAD_REQUEST)
+          .then((res) => {
+            done();
+          })
+          .catch(done);
+      });
     });
   });
   describe('# Get /api/auth/token', () => {
@@ -132,7 +200,7 @@ describe('## Auth APIs', () => {
     beforeEach(function (done) {
       request(app)
         .post('/api/auth/login')
-        .send(validUserCredentials)
+        .send(validUserDataActivated)
         .then((res) => {
           tokens = res.body.tokens;
           done();
@@ -176,7 +244,7 @@ describe('## Auth APIs', () => {
     beforeEach(function (done) {
       request(app)
         .post('/api/auth/login')
-        .send(validUserCredentials)
+        .send(validUserDataActivated)
         .then((res) => {
           tokens = res.body.tokens;
           done();

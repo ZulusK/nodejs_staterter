@@ -19,16 +19,19 @@ const envVarsSchema = Joi.object({
   }),
   JWT_SECRET_ACCESS: Joi.string()
     .required()
-    .description('JWT access Secret required to sign'),
+    .description('JWT access secret required in sign'),
   JWT_SECRET_REFRESH: Joi.string()
     .required()
-    .description('JWT refresh Secret required to sign'),
+    .description('JWT refresh secret required in sign'),
   JWT_REFRESH_EXP: Joi.number()
     .default(60 * 60 * 24 * 30) //  30 days
     .description('Lifetime of JWT refresh token'),
   JWT_ACCESS_EXP: Joi.number()
     .default(60 * 60) // 1 hour
     .description('Lifetime of JWT access token'),
+  JWT_SECRET_VERIFICATION: Joi.string()
+    .required()
+    .description('JWT access secret required in email verification'),
   MONGO_HOST: Joi.string()
     .required()
     .description('Mongo DB host url'),
@@ -69,7 +72,8 @@ const config = {
   emailAddress: envVars.EMAIL_ADDRESS,
   emailPassword: envVars.EMAIL_PASSWORD,
   publicDir: path.join(__dirname, '..', 'public'),
-  host: envVars.NODE_ENV === 'production' ? '' : 'http://localhost:3000'
+  host: envVars.NODE_ENV === 'production' ? '' : 'http://localhost:3000',
+  jwtSecretVerification: envVars.JWT_SECRET_VERIFICATION
 };
 
 module.exports = config;

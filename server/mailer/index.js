@@ -52,5 +52,5 @@ function sendEmailVerification({ email, token, fullname }) {
 }
 
 module.exports = {
-  sendEmailVerification
+  sendEmailVerification: config.env === 'production' ? sendEmailVerification : () => {} // send mails only in production
 };

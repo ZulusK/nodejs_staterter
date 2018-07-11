@@ -40,13 +40,31 @@ function login(req, res, next) {
 //   });
 // }
 
-// /**
-//  * This is a protected route. Will return random number only if jwt token is provided in header.
-//  */
+/**
+ * This is a protected route. Will return random number only if jwt token is provided in header.
+ */
 function check(req, res) {
   return res.json({
     status: true
   });
 }
 
-module.exports = { check, login, token };
+/**
+ * Activate account
+ */
+async function confirmMail(req, res, next) {
+  const user = await User.findById(req.user.id).exec();
+  if (user.isEmailVerified) {
+    return next(new APIError('This account is already actiated', httpStatus.BAD_REQUEST, true));
+  }
+  user.isEmailVerified = true;
+  await user.save();
+  return res.status(httpStatus.OK).json({ message: 'activated' });
+}
+
+module.exports = {
+  check,
+  login,
+  token,
+  confirmMail
+};

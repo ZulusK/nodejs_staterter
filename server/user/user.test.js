@@ -23,38 +23,19 @@ describe('## User APIs', () => {
       .then(() => done())
       .catch(done);
   });
-  let tokens = null;
+  const tokens = null;
   describe('# POST /api/user', () => {
-    it('should return valid user info', (done) => {
+    it('should return status 200', (done) => {
       request(app)
         .post('/api/users')
         .send(validUserData)
         .expect(httpStatus.OK)
         .then((res) => {
-          const etaloneData = { ...validUserData };
-          delete etaloneData.password;
-          usefullTests.expectUser(res.body.user, etaloneData);
+          expect(res.body).to.have.all.keys(['message']);
+          expect(res.body.message).to.be.eq('Check your email');
           done();
         })
         .catch(done);
-    });
-    it('should return JWT tokens', (done) => {
-      request(app)
-        .post('/api/users')
-        .send(validUserData)
-        .expect(httpStatus.OK)
-        .then((res) => {
-          usefullTests.expectAuthTokens(res.body.tokens);
-          tokens = res.body.tokens;
-          done();
-        })
-        .catch(done);
-    });
-    it('should not fail, verify access token', (done) => {
-      usefullTests.expectAccessTokenIsValid(app, tokens.access.token, done);
-    });
-    it('should not fail, verify refresh token', (done) => {
-      usefullTests.expectRefreshTokenIsValid(app, tokens.refresh.token, done);
     });
     it('should reject, used invalid email', (done) => {
       request(app)

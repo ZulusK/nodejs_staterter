@@ -12,22 +12,16 @@ securityDefinitions:
     in: "header" 
     template: "Bearer {apiKey}"
 responses:
-  Standard401ErrorResponse:
+  Standard401Response:
     description: Unauthorized 
-  Standard400ErrorResponse:
+  Standard400Response:
     description: Bad request 
-  Standard200ErrorResponse:
+  Standard200Response:
     description: Success   
 basePath: /api/
 schemes:
  - https        
 parameters:
-  token-confirmation-b:
-      name: confirmation-token
-      description: Server generate token, used in email verification. Just send it back
-      in: body
-      type: string
-      required: true
   mobileNumber-b:
       name: mobileNumber
       description: Phone number of user
