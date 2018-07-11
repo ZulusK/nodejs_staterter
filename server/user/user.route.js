@@ -8,6 +8,8 @@ const router = express.Router(); // eslint-disable-line new-cap
  * @swagger
  * /api/users:
  *  get:
+ *      tags:
+ *      - User
  *      description: Returns list of all users
  *      parameters:
  *      - $ref: "#/parameters/limit"
@@ -22,6 +24,8 @@ const router = express.Router(); // eslint-disable-line new-cap
  *                items:
  *                  $ref: "#/definitions/User"
  *  post:
+ *      tags:
+ *      - User
  *      description: Creates new user
  *      parameters:
  *      - $ref: "#/parameters/email-b"

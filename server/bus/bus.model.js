@@ -1,62 +1,40 @@
-// const Promise = require('bluebird');
-// const mongoose = require('mongoose');
-// const httpStatus = require('http-status');
-// const APIError = require('@helpers/APIError');
+const mongoose = require('mongoose');
+require('mongoose-geojson-schema');
+const httpStatus = require('http-status');
+const APIError = require('@helpers/APIError');
 // const config = require('@config/config');
-// {
-//     _id: 'asdkjasdhkj3hddjoid1j1',
-//     routeName: 'West Route',
-//     origin: {
-//       name: 'Tan Tye Place, Singapore',
-//       coords: {
-//         latitude: 1.2912642,
-//         longitude: 103.845232,
-//       }
-//     },
-//     destination: {
-//       name: 'Tan Tye Place, Singapore',
-//       coords: {
-//         latitude: 1.2912642,
-//         longitude: 103.845232,
-//       }
-//     },
-//     waypoints: [
-//       'NUS Engineering, Singapore',
-//       'Clementi MRT, Singapore',
-//       'Jurong East MRT, Jurong East Street 12, Singapore',
-//       'Boon Lay MRT Station, Boon Lay Way, Singapore',
-//       'Pioneer MRT Station, Jurong West Street 63, Singapore',
-//     ],
-//     strokeColor: 'red',
-//     stops: 5,
-//     distance: '44.8 km',
-//     estimatedTime: '1 hr 13 mins',
-//   },
+
 /**
  * @swagger
  *  definitions:
  *      Bus:
  *        description: Bus public model
  *        type: object
- *        required:
- *          - id
- *          - routeName
- *          - origin
- *          - destination
  *        properties:
  *          id:
  *              type: string
  *              format: byte
  *              example: 507f1f77bcf86cd799439011
- *          email:
+ *          name:
  *              type: string
- *              format: email
- *              example: example@mail.com
- *          fullname:
- *              example: John Smith
+ *          seats:
+ *              type: array
+ *              items:
+ *                  $ref: "#/definitions/Seat"
+ *          seatsCount:
+ *              type: integer
+ *              format: int32
+ *              description: Maximum count of seats in a bus
+ *          driverId:
  *              type: string
- *          mobileNumber:
+ *              format: byte
+ *              example: 507f1f77bcf86cd799439011
+ *          routeId:
  *              type: string
+ *              format: byte
+ *              example: 507f1f77bcf86cd799439011
+ *          location:
+ *              $ref: "#/definitions/Point"
  *          updatedAt:
  *              type: integer
  *              format: int64
@@ -64,3 +42,80 @@
  *              type: integer
  *              format: int64
  */
+
+const BusSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    routeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Route',
+      default: null
+    },
+    seats: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Seat'
+      }
+    ],
+    seatsCount: {
+      type: Number,
+      required: true
+    },
+    driverId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
+    },
+    location: {
+      type: mongoose.Schema.Types.Point
+    }
+  },
+  { timestamps: true }
+);
+
+BusSchema.index({ location: '2dsphere' });
+
+/**
+ * Statics
+ */
+BusSchema.statics = {
+  /**
+   * Get user
+   * @param {ObjectId} id - The objectId of bus.
+   * @returns {Promise<Bus, APIError>}
+   */
+  get(id) {
+    return this.findById(id)
+      .exec()
+      .then((user) => {
+        if (user) {
+          return user;
+        }
+        const err = new APIError('No such bus exists!', httpStatus.NOT_FOUND);
+        return Promise.reject(err);
+      });
+  },
+
+  /**
+   * List bus in descending order of 'createdAt' timestamp.
+   * @param {number} skip - Number of buses to be skipped.
+   * @param {number} limit - Limit number of buses to be returned.
+   * @returns {Promise<Bus[]>}
+   */
+  list({ skip = 0, limit = 50 } = {}) {
+    return this.find()
+      .sort({ createdAt: -1 })
+      .skip(+skip)
+      .limit(+limit)
+      .exec();
+  }
+};
+
+/**
+ * @typedef Bus
+ */
+module.exports = mongoose.model('Bus', BusSchema);

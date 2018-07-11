@@ -12,11 +12,6 @@ const jwt = require('jsonwebtoken');
  *      User:
  *        description: User public model
  *        type: object
- *        required:
- *          - id
- *          - email
- *          - fullname
- *          - mobileNumber
  *        properties:
  *          id:
  *              type: string
@@ -79,11 +74,10 @@ UserSchema.pre('save', function preSave(next) {
   }
 });
 
-/* eslint-disable func-names */
 /**
  *  Get only public info about user
  */
-UserSchema.method('publicInfo', function () {
+UserSchema.method('publicInfo', function getPublicInfo() {
   const {
     createdAt, updatedAt, fullname, email, mobileNumber, _id: id
   } = this;
@@ -100,7 +94,7 @@ UserSchema.method('publicInfo', function () {
 /**
  * Generate auth JWT tokens
  */
-UserSchema.method('genAuthTokens', function () {
+UserSchema.method('genAuthTokens', function genAuthTokens() {
   return {
     access: this.genJWTAccessToken(),
     refresh: this.genJWTRefreshToken()
@@ -110,13 +104,13 @@ UserSchema.method('genAuthTokens', function () {
 /**
  * Generate activation token
  */
-UserSchema.method('genActivationToken', function () {
+UserSchema.method('genActivationToken', function genActivationToken() {
   return jwt.sign({ id: this.id }, config.jwtSecretEmailConfirmation);
 });
 /**
  * Generate access token
  */
-UserSchema.method('genJWTAccessToken', function () {
+UserSchema.method('genJWTAccessToken', function genJWTAccessToken() {
   return {
     expiredIn: config.jwtExpAccess + Math.floor(Date.now() / 1000),
     token: jwt.sign({ id: this.id }, config.jwtSecretAccess, {
@@ -127,7 +121,7 @@ UserSchema.method('genJWTAccessToken', function () {
 /**
  * Generate refresh token
  */
-UserSchema.method('genJWTRefreshToken', function () {
+UserSchema.method('genJWTRefreshToken', function genJWTRefreshToken() {
   return {
     expiredIn: config.jwtExpRefresh + Math.floor(Date.now() / 1000),
     token: jwt.sign({ id: this.id }, config.jwtSecretRefresh, { expiresIn: config.jwtExpRefresh })

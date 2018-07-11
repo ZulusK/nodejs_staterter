@@ -1,4 +1,10 @@
 tags:
+- name: Route
+  description: Operation with routes
+- name: Bus
+  description: Operation with buses
+- name: Stop
+  description: Operation with stops
 - name: Auth
   description: Operation with authorization
 - name: User
@@ -78,8 +84,19 @@ parameters:
       minimum: 0
       default: 0  
 definitions:
+  Point:
+    description: container for GeoJSON object Point
+    type: object
+    properties:
+      latitude:
+        type: integer
+        format: float
+      longitude:
+        type: number
+        format: float
   Token:
     type: object
+    description:  container for JWT token and it's expiration time
     properties:
       expiredIn:
         description:  seconds, after that token will be outdated
