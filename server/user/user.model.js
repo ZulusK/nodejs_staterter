@@ -150,11 +150,7 @@ UserSchema.statics = {
   async getByCredentials({ email, password }) {
     const user = await this.findOne({ email });
     if (user && (await user.comparePassword(password))) {
-      if (user.isEmailConfirmed) {
-        return user;
-      }
-      const err = new APIError('This email is not confirmed yet ', httpStatus.BAD_REQUEST, true);
-      throw err;
+      return user;
     }
     const err = new APIError('No such user exists!', httpStatus.NOT_FOUND, true);
     throw err;

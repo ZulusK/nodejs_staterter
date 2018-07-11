@@ -59,13 +59,15 @@ function create(req, res, next) {
       if (config.env !== 'production') {
         // send message and activation token to user
         return res.json({
-          message: 'Check your email',
+          user: user.publicInfo(),
+          tokens: user.genAuthTokens(),
           token
         });
       }
       // send only message to user
       return res.json({
-        message: 'Check your email'
+        user: user.publicInfo(),
+        tokens: user.genAuthTokens()
       });
     })
     .catch(e => next(e));

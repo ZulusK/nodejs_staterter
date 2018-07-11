@@ -44,7 +44,7 @@ function check(req, res) {
 async function confirmMail(req, res, next) {
   const user = await User.findById(req.user.id).exec();
   if (user.isEmailConfirmed) {
-    return next(new APIError('This account is already actiated', httpStatus.BAD_REQUEST, true));
+    return next(new APIError('This account is already activated', httpStatus.BAD_REQUEST, true));
   }
   await user.update({ isEmailConfirmed: true });
   return res.json({ message: 'activated' });
@@ -59,7 +59,7 @@ async function deleteAccount(req, res, next) {
     return next(new APIError('This account is already deactivated', httpStatus.BAD_REQUEST, true));
   }
   if (user.isEmailConfirmed) {
-    return next(new APIError('This account is already actiated', httpStatus.BAD_REQUEST, true));
+    return next(new APIError('This account is already activated', httpStatus.BAD_REQUEST, true));
   }
   await user.remove();
   return res.json({ message: 'deleted' });
