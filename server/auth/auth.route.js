@@ -21,7 +21,7 @@ const router = express.Router(); // eslint-disable-line new-cap
  *          - application/json
  *      responses:
  *          401:
- *            $ref: "#/responses/Standard401ErrorResponse"
+ *            $ref: "#/responses/Standard401Response"
  *          200:
  *              description: Returns new tokens
  *              schema:
@@ -47,9 +47,9 @@ router.route('/token').get(
  *          - application/json
  *      responses:
  *          401:
- *            $ref: "#/responses/Standard401ErrorResponse"
+ *            $ref: "#/responses/Standard401Response"
  *          400:
- *            $ref: "#/responses/Standard400ErrorResponse"
+ *            $ref: "#/responses/Standard400Response"
  *          200:
  *              description: Returns user and auth tokens
  *              schema:
@@ -73,9 +73,9 @@ router.route('/login').post(validate(paramValidation.login), authCtrl.login);
  *      description: Protected route, used to access-token verification
  *      responses:
  *          401:
- *              $ref: "#/responses/Standard401ErrorResponse"
+ *              $ref: "#/responses/Standard401Response"
  *          200:
- *              $ref: "#/responses/Standard200ErrorResponse"
+ *              $ref: "#/responses/Standard200Response"
  */
 router.route('/check-access').get(
   expressJwt({
@@ -95,9 +95,9 @@ router.route('/check-access').get(
  *      description: Protected route, used to refresh-token verification
  *      responses:
  *          401:
- *              $ref: "#/responses/Standard401ErrorResponse"
+ *              $ref: "#/responses/Standard401Response"
  *          200:
- *              $ref: "#/responses/Standard200ErrorResponse"
+ *              $ref: "#/responses/Standard200Response"
  */
 router.route('/check-refresh').get(
   expressJwt({
@@ -105,5 +105,22 @@ router.route('/check-refresh').get(
   }),
   authCtrl.check
 );
+
+/**
+ * @swagger
+ * /api/auth/check-refresh:
+ *  post:
+ *      tags:
+ *      - Auth
+ *      parameters:
+ *      - $ref: "#/parameters/token-confirmation-b"
+ *      description: Protected route, used to refresh-token verification
+ *      responses:
+ *          401:
+ *              $ref: "#/responses/Standard401Response"
+ *          200:
+ *              $ref: "#/responses/Standard200Response"
+ */
+router.route('/confirm').post(authCtrl.confirmMail);
 
 module.exports = router;

@@ -32,7 +32,7 @@ const router = express.Router(); // eslint-disable-line new-cap
  *          - application/json
  *      responses:
  *          400:
- *            $ref: "#/responses/Standard400ErrorResponse"
+ *            $ref: "#/responses/Standard400Response"
  *          200:
  *              description: Returns created user and auth tokens
  *              schema:

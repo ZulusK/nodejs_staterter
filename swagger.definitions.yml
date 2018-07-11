@@ -22,6 +22,12 @@ basePath: /api/
 schemes:
  - https        
 parameters:
+  token-confirmation-b:
+      name: confirmation-token
+      description: Server generate token, used in email verification. Just send it back
+      in: body
+      type: string
+      required: true
   mobileNumber-b:
       name: mobileNumber
       description: Phone number of user
