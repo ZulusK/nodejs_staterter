@@ -35,6 +35,7 @@ const StopSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      uniq: true,
       trim: true
     },
     location: {
@@ -44,15 +45,28 @@ const StopSchema = new mongoose.Schema(
     address: {
       type: String,
       required: true
-    },
-    wayPoints: {
-      type: [mongoose.Schema.Types.ObjectId]
     }
   },
   { timestamps: true }
 );
 
 StopSchema.index({ name: 1 });
+
+StopSchema.method('publicInfo', function publicInfo() {
+  const {
+    _id: id,
+    name,
+    location: { 0: longitude, 1: latitude },
+    address
+  } = this;
+  return {
+    id,
+    name,
+    address,
+    longitude,
+    latitude
+  };
+});
 
 /**
  * Statics

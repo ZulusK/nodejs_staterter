@@ -181,7 +181,7 @@ describe('## Auth APIs', () => {
               done();
             })
             .catch(done);
-        }, tokens.access.expiredIn * 1000 - Date.now() + 1000);
+        }, tokens.access.expiredIn * 1000 - Date.now());
       });
     });
     describe('# Post /api/auth/check-refresh', () => {
@@ -225,7 +225,7 @@ describe('## Auth APIs', () => {
               done();
             })
             .catch(done);
-        }, tokens.refresh.expiredIn * 1000 - Date.now() + 1000);
+        }, tokens.refresh.expiredIn * 1000 - Date.now());
       });
     });
     describe('# POST /api/auth/confirm', () => {
@@ -423,7 +423,7 @@ describe('## Auth APIs', () => {
               done();
             })
             .catch(done);
-        }, tokens.access.expiredIn * 1000 - Date.now() + 1000);
+        }, tokens.access.expiredIn * 1000 - Date.now());
       });
     });
     describe('# Post /api/auth/check-refresh', () => {
@@ -467,7 +467,7 @@ describe('## Auth APIs', () => {
               done();
             })
             .catch(done);
-        }, tokens.refresh.expiredIn * 1000 - Date.now() + 1000);
+        }, tokens.refresh.expiredIn * 1000 - Date.now());
       });
     });
     describe('# POST /api/auth/confirm', () => {

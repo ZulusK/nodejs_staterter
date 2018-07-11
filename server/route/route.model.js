@@ -46,7 +46,8 @@ const RouteSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      unique: true
     },
     originId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -79,12 +80,34 @@ const RouteSchema = new mongoose.Schema(
 
 RouteSchema.index({ name: 1 });
 
+RouteSchema.method('publicInfo', function publicInfo() {
+  const {
+    _id: id,
+    name,
+    distance,
+    estimatedTime,
+    color,
+    destinationId,
+    originId,
+    wayPoints
+  } = this;
+  return {
+    id,
+    name,
+    distance,
+    estimatedTime,
+    color,
+    destinationId,
+    originId,
+    wayPoints
+  };
+});
 /**
  * Statics
  */
 RouteSchema.statics = {
   /**
-   * Get route
+   * Get route by it's id
    * @param {ObjectId} id - The objectId of route.
    * @returns {Promise<route, APIError>}
    */

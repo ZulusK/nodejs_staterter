@@ -12,7 +12,7 @@ function load(req, res, next, id) {
       req.user = user; // eslint-disable-line no-param-reassign
       return next();
     })
-    .catch(e => next(e));
+    .catch(next);
 }
 
 /**
@@ -33,7 +33,7 @@ function get(req, res) {
  */
 function create(req, res, next) {
   // check is user alredy exist
-  User.findOne({ email: req.body.email })
+  return User.findOne({ email: req.body.email })
     .exec()
     .then((result) => {
       // create new user and save him
@@ -70,7 +70,7 @@ function create(req, res, next) {
         tokens: user.genAuthTokens()
       });
     })
-    .catch(e => next(e));
+    .catch(next);
 }
 
 /**
@@ -89,7 +89,7 @@ function update(req, res, next) {
   user
     .update(req.body)
     .then(savedUser => res.json(savedUser))
-    .catch(e => next(e));
+    .catch(next);
 }
 
 /**
@@ -102,7 +102,7 @@ function list(req, res, next) {
   const { limit = 50, skip = 0 } = req.query;
   User.list({ limit, skip })
     .then(users => res.json(users))
-    .catch(e => next(e));
+    .catch(next);
 }
 
 /**
@@ -115,7 +115,7 @@ function remove(req, res, next) {
   user
     .remove()
     .then(deletedUser => res.json(deletedUser))
-    .catch(e => next(e));
+    .catch(next);
 }
 
 module.exports = {

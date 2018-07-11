@@ -1,7 +1,11 @@
 const Joi = require('joi');
 const JoiExt = require('./joi.extentions');
 
-const customJoi = Joi.extend([JoiExt.EmailExtention, JoiExt.PhoneExtention]);
+const customJoi = Joi.extend([
+  JoiExt.ObjectIdExtention,
+  JoiExt.EmailExtention,
+  JoiExt.PhoneExtention
+]);
 
 module.exports = {
   // POST /api/auth/login
@@ -24,14 +28,17 @@ module.exports = {
     body: {
       email: customJoi
         .string()
+        .trim()
         .isEmail()
         .required(),
       fullname: customJoi
         .string()
+        .trim()
         .required()
         .regex(/^[a-zA-Z '.-]*$/),
       mobileNumber: customJoi
         .string()
+        .trim()
         .isMobileNumber()
         .required()
         .max(30),
@@ -43,24 +50,47 @@ module.exports = {
         .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,20}$/)
     }
   },
-  // UPDATE /api/users/:userId
-  updateUser: {
+  // POST /api/stops
+  createStop: {
     body: {
-      username: customJoi.string(),
-      mobileNumber: customJoi.string(),
-      imageUrl: customJoi.string(),
-      address: customJoi.object().keys({
-        name: customJoi.string(),
-        coords: {
-          latitude: customJoi.string(),
-          longitude: customJoi.string()
-        }
-      })
-    },
+      name: customJoi
+        .string()
+        .trim()
+        .min(3)
+        .required(),
+      address: customJoi
+        .string()
+        .trim()
+        .min(5)
+        .required(),
+      latitude: customJoi.number().required(),
+      longitude: customJoi.number().required()
+    }
+  },
+
+  // POST /api/stops/:stopId
+  updateStop: {
+    body: {
+      name: customJoi
+        .string()
+        .trim()
+        .min(3)
+        .required(),
+      address: customJoi
+        .string()
+        .trim()
+        .min(5)
+        .required(),
+      latitude: customJoi.number().required(),
+      longitude: customJoi.number().required()
+    }
+  },
+  // /api/stops/:stopId
+  stopIdParam: {
     params: {
       userId: customJoi
         .string()
-        .hex()
+        .isObjectId()
         .required()
     }
   }

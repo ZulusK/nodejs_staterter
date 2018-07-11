@@ -5,6 +5,8 @@ tags:
   description: Operation with buses
 - name: Stop
   description: Operation with stops
+- name: Ticket
+  description: Operation with tickets  
 - name: Auth
   description: Operation with authorization
 - name: User
@@ -22,12 +24,48 @@ responses:
     description: Unauthorized 
   Standard400Response:
     description: Bad request 
+  Standard404Response:
+    description: Not found   
   Standard200Response:
     description: Success   
 basePath: /api/
 schemes:
  - https        
 parameters:
+  id-p:
+      name: id
+      description: id of target object
+      in: path
+      type: string
+      format: byte
+      example: 507f1f77bcf86cd799439011
+  name-b:
+      name: name
+      description: name of object
+      in: body
+      type: string
+      required: true
+  address-b:
+      name: address
+      description: address of object
+      in: body
+      type: string
+      example: "Kyiv, Sophia sq."
+      required: true  
+  longitude-b:
+      name: longitude
+      description: longitude of object
+      in: body
+      type: integer
+      format: float
+      required: true
+  latitude-b:
+      name: latitude
+      description: latitude of object
+      in: body
+      type: integer
+      format: float
+      required: true
   mobileNumber-b:
       name: mobileNumber
       description: Phone number of user

@@ -5,9 +5,12 @@ const mongoose = require('mongoose');
  * @swagger
  *  definitions:
  *      Seat:
- *        description: Bus's seat's public model
+ *        description: Bus's ticket's public model
  *        type: object
  *        properties:
+ *          cost:
+ *            type: integer
+ *            format: float
  *          id:
  *              type: string
  *              format: byte
@@ -28,7 +31,7 @@ const mongoose = require('mongoose');
  *              format: int64
  */
 
-const SeatSchema = new mongoose.Schema(
+const TicketSchema = new mongoose.Schema(
   {
     originId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -50,6 +53,6 @@ const SeatSchema = new mongoose.Schema(
 );
 
 /**
- * @typedef Seat
+ * @typedef Ticket
  */
-module.exports = mongoose.model('Seat', SeatSchema);
+module.exports = mongoose.model('Ticket', TicketSchema);

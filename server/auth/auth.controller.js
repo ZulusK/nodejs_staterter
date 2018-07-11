@@ -11,9 +11,7 @@ function token(req, res, next) {
   User.findById(req.user.id)
     .exec()
     .then(user => res.json(user.genJWTAccessToken()))
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 }
 /**
  * Returns jwt token if valid username and password is provided

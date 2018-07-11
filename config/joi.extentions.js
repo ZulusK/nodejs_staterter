@@ -1,6 +1,7 @@
 const validator = require('validator');
 const PNF = require('google-libphonenumber').PhoneNumberFormat;
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+const mongoose = require('mongoose');
 
 const EmailExtention = joi => ({
   base: joi.string(),
@@ -49,7 +50,28 @@ const PhoneExtention = joi => ({
     }
   ]
 });
+
+const ObjectIdExtention = joi => ({
+  base: joi.string(),
+  name: 'string',
+  language: {
+    thisIsNotObjectId: 'The string {{value}} is not a valid object id'
+  },
+  rules: [
+    {
+      name: 'isObjectId',
+      validate(params, value, state, options) {
+        if (mongoose.Types.ObejctId.isValid(value)) {
+          return value;
+        }
+        return this.createError('string.thisIsNotObjectId', { value }, state, options);
+      }
+    }
+  ]
+});
+
 module.exports = {
   EmailExtention,
-  PhoneExtention
+  PhoneExtention,
+  ObjectIdExtention
 };
