@@ -61,7 +61,7 @@ describe('## Route APIs', () => {
     });
   });
   describe('# Get /api/routes', () => {
-    it('should return valid routes info, wth query', (done) => {
+    it('should return valid routes info, without query', (done) => {
       request(app)
         .get('/api/routes/')
         .expect(httpStatus.OK)
@@ -125,7 +125,7 @@ describe('## Route APIs', () => {
         })
         .catch(done);
     });
-    it('should return valid routes, wth skipping&limitting, used invalid query', (done) => {
+    it('should return valid routes, without skipping&limitting, used invalid query', (done) => {
       const skip = 'invalid';
       const limit = 'aaa';
       request(app)

@@ -60,7 +60,7 @@ describe('## Stop APIs', () => {
     });
   });
   describe('# Get /api/stops', () => {
-    it('should return valid stops info, wth query', (done) => {
+    it('should return valid stops info, without query', (done) => {
       request(app)
         .get('/api/stops/')
         .expect(httpStatus.OK)
@@ -124,7 +124,7 @@ describe('## Stop APIs', () => {
         })
         .catch(done);
     });
-    it('should return valid stops, wth skipping&limitting, used invalid query', (done) => {
+    it('should return valid stops, without skipping&limitting, used invalid query', (done) => {
       const skip = 'invalid';
       const limit = 'aaa';
       request(app)

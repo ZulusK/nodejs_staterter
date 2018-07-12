@@ -251,8 +251,14 @@ async function fillBusDB() {
     [...routesData.keys()].map(async k => new Bus({
       name: `Bus #${k}`,
       seatsCount: 50 - k,
-      location: routesData[+k].origin.coordinates,
-      routeId: routes._id
+      location: {
+        type: 'Point',
+        coordinates: [
+          routesData[+k].origin.coords.longitude,
+          routesData[+k].origin.coords.latitude
+        ]
+      },
+      route: routes._id
     }).save())
   );
   log.debug(`fill bus db with ${await Bus.countDocuments({}).exec()} docs`);

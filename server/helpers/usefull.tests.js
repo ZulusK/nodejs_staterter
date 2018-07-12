@@ -88,7 +88,24 @@ const expectRoute = (route, isFull = false) => {
     route.waypoints.forEach(s => expect(s).to.be.an('string'));
   }
 };
-
+const expectBus = (bus, isFull = false) => {
+  expect(bus).to.be.an('object');
+  // console.log(bus);
+  expect(bus).to.include.keys('name', '_id', 'seatsCount');
+  expect(bus.name).to.be.a('string');
+  expect(bus._id).to.be.a('string');
+  expect(bus.seatsCount).to.be.a('number');
+  if (bus.location) {
+    expect(bus.location.coordinates)
+      .to.be.an('array')
+      .with.length(2);
+    expect(bus.location.coordinates[0]).all.be.an('number');
+    expect(bus.location.coordinates[1]).all.be.an('number');
+  }
+  if (isFull) {
+    if (bus.route) expectRoute(bus.route);
+  } else if (bus.route) expect(bus.route).to.be.a('string');
+};
 // check access token is not outdated
 const expectAccessTokenIsValid = (app, token, done) => expectTokenIsValid('/api/auth/check-access', app, token, done);
 // check refresh token is not outdated
@@ -103,5 +120,6 @@ module.exports = {
   expectAuthTokens,
   expectUser,
   expectRoute,
-  expectStop
+  expectStop,
+  expectBus
 };
