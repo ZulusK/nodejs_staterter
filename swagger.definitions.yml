@@ -105,7 +105,7 @@ parameters:
       format: password
       min: 6
       required: true          
-  limit:
+  limit-q:
       name: limit
       in: query
       description: Number of entities returned  
@@ -113,7 +113,7 @@ parameters:
       format: int32
       minimum: 1
       default: 50
-  skip:  
+  skip-q:  
       name: skip
       in: query
       description: Offset from the beginning of the list  

@@ -15,8 +15,8 @@ const router = express.Router(); // eslint-disable-line new-cap
  *      - Stop
  *      description: Returns list of all stops
  *      parameters:
- *      - $ref: "#/parameters/limit"
- *      - $ref: "#/parameters/skip"
+ *      - $ref: "#/parameters/limit-q"
+ *      - $ref: "#/parameters/skip-q"
  *      produces:
  *          - application/json
  *      responses:

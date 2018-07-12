@@ -29,7 +29,7 @@ describe('## Stop APIs', () => {
       .then(() => done())
       .catch(done);
   });
-  describe('# Get /api/stops/', () => {
+  describe('# Get /api/stops/:stopId', () => {
     it('should return valid stop info', (done) => {
       request(app)
         .get(`/api/stops/${stops[0]._id}`)
@@ -54,6 +54,85 @@ describe('## Stop APIs', () => {
         .get('/api/stops/wdnd2lkln@')
         .expect(httpStatus.BAD_REQUEST)
         .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+  });
+  describe('# Get /api/stops', () => {
+    it('should return valid stops info, wth query', (done) => {
+      request(app)
+        .get('/api/stops/')
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.length.of.at.most(stops.length);
+          res.body.forEach(s => usefullTests.expectStop(s));
+          done();
+        })
+        .catch(done);
+    });
+    it('should return valid stops info, limit=2', (done) => {
+      const limit = 2;
+      request(app)
+        .get(`/api/stops?limit=${limit}`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.length(limit);
+          res.body.forEach(s => usefullTests.expectStop(s));
+          done();
+        })
+        .catch(done);
+    });
+    it('should return valid stops info, skip=2', (done) => {
+      const skip = 2;
+      request(app)
+        .get(`/api/stops?skip=${skip}`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.length(stops.length - skip);
+          res.body.forEach(s => usefullTests.expectStop(s));
+          done();
+        })
+        .catch(done);
+    });
+    it('should return valid stops info, skip=20, limit=4', (done) => {
+      const skip = 20;
+      const limit = 4;
+      request(app)
+        .get(`/api/stops?skip=${skip}&limit=${limit}`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.length(limit);
+          res.body.forEach(s => usefullTests.expectStop(s));
+          done();
+        })
+        .catch(done);
+    });
+    it('should return empty array, skip=100', (done) => {
+      const skip = 100;
+      request(app)
+        .get(`/api/stops?skip=${skip}`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.be.empty;
+          done();
+        })
+        .catch(done);
+    });
+    it('should return valid stops, wth skipping&limitting, used invalid query', (done) => {
+      const skip = 'invalid';
+      const limit = 'aaa';
+      request(app)
+        .get(`/api/stops?skip=${skip}&limit=${limit}`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.be.not.empty;
           done();
         })
         .catch(done);

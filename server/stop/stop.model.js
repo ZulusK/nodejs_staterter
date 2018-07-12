@@ -95,7 +95,8 @@ StopSchema.statics = {
       .sort({ createdAt: -1 })
       .skip(+skip)
       .limit(+limit)
-      .exec();
+      .exec()
+      .then(docs => docs.map(d => d.publicInfo()));
   }
 };
 
