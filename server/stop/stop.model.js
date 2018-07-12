@@ -19,9 +19,6 @@ const APIError = require('@helpers/APIError');
  *              type: string
  *          location:
  *              $ref: "#/definitions/Point"
- *          address:
- *              type: string
- *              example: "Kyiv, metro station KPI"
  *          updatedAt:
  *              type: integer
  *              format: int64
@@ -35,22 +32,18 @@ const StopSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      uniq: true,
+      unique: true,
       trim: true
     },
     location: {
       type: mongoose.Schema.Types.Point,
-      required: true
-    },
-    address: {
-      type: String,
       required: true
     }
   },
   { timestamps: true }
 );
 
-StopSchema.index({ name: 1 });
+StopSchema.index({ name: 1, location: '2dsphere' });
 
 StopSchema.method('publicInfo', function publicInfo() {
   const {

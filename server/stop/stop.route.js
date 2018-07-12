@@ -108,5 +108,5 @@ router
     stopCtrl.remove
   );
 
-router.param(':stopId', validate(paramValidation.stopIdParam), stopCtrl.get);
+router.param('stopId', validate(paramValidation.stopIdParam), stopCtrl.get);
 module.exports = router;

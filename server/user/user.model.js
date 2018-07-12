@@ -52,9 +52,16 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    isMobileConfirmed: {
+      type: Boolean,
+      default: false
+    },
     mobileNumber: {
       type: String,
-      required: true
+      required: true,
+      unique: true,
+      index: true,
+      trim: true
     },
     password: {
       type: String,

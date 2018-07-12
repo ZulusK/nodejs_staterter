@@ -7,6 +7,7 @@ const log = require('@config/winston');
 const debug = require('debug')('express-mongoose-es6-rest-api:index');
 // make bluebird default Promise
 Promise = require('bluebird'); // eslint-disable-line no-global-assign
+const fillDB = require('./filldb');
 
 // plugin bluebird promise in mongoose
 mongoose.Promise = Promise;
@@ -23,15 +24,11 @@ mongoose.connect(
 mongoose.connection.on('error', () => {
   throw new Error(`unable to connect to database: ${mongoUri}`);
 });
-mongoose.connection.on('connected', () => {
+mongoose.connection.on('connected', async () => {
   log.info('successfully connected to database');
   // TODO: remove this
-  if (config.env !== 'production') {
-    mongoose
-      .model('User')
-      .remove({})
-      .exec()
-      .then(() => {});
+  if (config.env === 'development') {
+    await fillDB.exec();
   }
 });
 
