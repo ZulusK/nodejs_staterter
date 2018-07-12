@@ -88,7 +88,7 @@ module.exports = {
   // /api/stops/:stopId
   stopIdParam: {
     params: {
-      userId: customJoi
+      stopId: customJoi
         .string()
         .isObjectId()
         .required()

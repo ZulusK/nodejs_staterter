@@ -61,7 +61,7 @@ const ObjectIdExtention = joi => ({
     {
       name: 'isObjectId',
       validate(params, value, state, options) {
-        if (mongoose.Types.ObejctId.isValid(value)) {
+        if (mongoose.Types.ObjectId.isValid(value)) {
           return value;
         }
         return this.createError('string.thisIsNotObjectId', { value }, state, options);

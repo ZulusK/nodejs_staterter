@@ -7,7 +7,7 @@ const log = require('@config/winston');
 const debug = require('debug')('express-mongoose-es6-rest-api:index');
 // make bluebird default Promise
 Promise = require('bluebird'); // eslint-disable-line no-global-assign
-const fillDB = require('./filldb');
+const fillDB = require('@helpers/dbFiller');
 
 // plugin bluebird promise in mongoose
 mongoose.Promise = Promise;

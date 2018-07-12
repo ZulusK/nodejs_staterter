@@ -5,30 +5,6 @@ const Bus = require('@server/bus/bus.model');
 const log = require('@config/winston');
 const _ = require('lodash');
 
-const userData = [
-  {
-    email: 'mail1@gmail.com',
-    fullname: 'John',
-    password: '123AzsdF@',
-    mobileNumber: '+380500719866'
-  },
-  {
-    email: 'mail2@gmail.com',
-    fullname: 'Sara',
-    password: '123AzsdF@',
-    mobileNumber: '+380600719866'
-  }
-];
-async function fillUserDB() {
-  User.remove({}).exec();
-  await Promise.all(userData.map(x => new User(x).save()));
-  await Promise.all(
-    await User.find({})
-      .exec()
-      .map(x => x.update({ isEmailConfirmed: true }))
-  );
-  log.debug(`fill user db with ${await User.countDocuments({}).exec()} docs`);
-}
 const routesData = [
   {
     _id: 'asdkjasdhkj3hddjoid1j1',
@@ -179,7 +155,40 @@ const routesData = [
     estimatedTime: '1 hr 13 mins'
   }
 ];
+/**
+ * Fills User's DB and return saved  docs
+ * @returns {Promise(User[])} saved docs
+ */
+const userData = [
+  {
+    email: 'mail1@gmail.com',
+    fullname: 'John',
+    password: '123AzsdF@',
+    mobileNumber: '+380500719866'
+  },
+  {
+    email: 'mail2@gmail.com',
+    fullname: 'Sara',
+    password: '123AzsdF@',
+    mobileNumber: '+380600719866'
+  }
+];
 
+async function fillUserDB() {
+  User.remove({}).exec();
+  await Promise.all(userData.map(x => new User(x).save()));
+  await Promise.all(
+    await User.find({})
+      .exec()
+      .map(x => x.update({ isEmailConfirmed: true }))
+  );
+  log.debug(`fill user db with ${await User.countDocuments({}).exec()} docs`);
+  return User.find({}).exec();
+}
+/**
+ * Fills Stop's DB and return saved  docs
+ * @returns {Promise(Stop[])} saved docs
+ */
 async function fillStopDB() {
   Stop.remove({}).exec();
   const stops = _.uniqBy(
@@ -197,8 +206,12 @@ async function fillStopDB() {
     }).save())
   );
   log.debug(`fill stop db with ${await Stop.countDocuments({}).exec()} docs`);
+  return Stop.find({}).exec();
 }
-
+/**
+ * Fills User's DB and return saved  docs
+ * @returns {Promise(Route[])} saved docs
+ */
 async function fillRouteDB() {
   await Route.remove({}).exec();
   await Promise.all(
@@ -224,7 +237,10 @@ async function fillRouteDB() {
   );
   log.debug(`fill route db with ${await Route.countDocuments({}).exec()} docs`);
 }
-
+/**
+ * Fills Bus's DB and return saved  docs
+ * @returns {Promise(Bus[])} saved docs
+ */
 async function fillBusDB() {
   await Bus.remove({}).exec();
   const routes = await Route.find({})
@@ -246,5 +262,11 @@ function exec() {
 }
 
 module.exports = {
-  exec
+  exec,
+  fillBusDB,
+  fillRouteDB,
+  fillUserDB,
+  fillStopDB,
+  userData,
+  routesData
 };

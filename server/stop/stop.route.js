@@ -6,6 +6,7 @@ const config = require('@config/config');
 const expressJwt = require('express-jwt');
 
 const router = express.Router(); // eslint-disable-line new-cap
+
 /**
  * @swagger
  * /api/stops:
@@ -32,7 +33,6 @@ const router = express.Router(); // eslint-disable-line new-cap
  *      - JWT:[]
  *      description: Creates new stop
  *      parameters:
- *      - $ref: "#/parameters/address-b"
  *      - $ref: "#/parameters/name-b"
  *      - $ref: "#/parameters/latitude-b"
  *      - $ref: "#/parameters/longitude-b"
@@ -97,7 +97,6 @@ router
  *          404:
  *              $ref: "#/responses/Standard404Response"
  */
-
 router
   .route('/:stopId')
   .get(stopCtrl.get)
@@ -108,5 +107,5 @@ router
     stopCtrl.remove
   );
 
-router.param('stopId', validate(paramValidation.stopIdParam), stopCtrl.get);
+router.param('stopId', stopCtrl.load);
 module.exports = router;

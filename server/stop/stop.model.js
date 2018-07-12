@@ -49,15 +49,17 @@ StopSchema.method('publicInfo', function publicInfo() {
   const {
     _id: id,
     name,
-    location: { 0: longitude, 1: latitude },
-    address
+    location: {
+      coordinates: { 0: longitude, 1: latitude }
+    }
   } = this;
   return {
     id,
     name,
-    address,
-    longitude,
-    latitude
+    location: {
+      longitude,
+      latitude
+    }
   };
 });
 

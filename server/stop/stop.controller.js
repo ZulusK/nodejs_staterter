@@ -1,5 +1,6 @@
 const Stop = require('./stop.model');
-// const httpStatus = require('http-status');
+const { ObjectId } = require('mongoose').Types;
+const httpStatus = require('http-status');
 // const APIError = require('@helpers/APIError');
 // const config = require('@config/config');
 
@@ -7,12 +8,17 @@ const Stop = require('./stop.model');
  * Load stop by id and append to req.
  */
 function load(req, res, next, id) {
-  Stop.get(id)
+  if (!ObjectId.isValid(id)) {
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .json({ message: 'Parameter id is not a valid object id' });
+  }
+  return Stop.get(id)
     .then((stop) => {
       req.stop = stop; // eslint-disable-line no-param-reassign
       return next();
     })
-    .catch(e => next(e));
+    .catch(next);
 }
 
 /**
@@ -20,7 +26,7 @@ function load(req, res, next, id) {
  * @returns {Stop}
  */
 function get(req, res) {
-  return res.json(req.stop.publicInfo);
+  return res.json(req.stop.publicInfo());
 }
 
 /**

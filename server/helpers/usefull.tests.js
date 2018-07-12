@@ -7,7 +7,7 @@ const httpStatus = require('http-status');
 
 const expectUser = (user, etaloneFields = {}) => {
   expect(user).to.be.an('object');
-  expect(user).to.have.all.keys([
+  expect(user).to.include.all.keys([
     'id',
     'fullname',
     'createdAt',
@@ -18,6 +18,14 @@ const expectUser = (user, etaloneFields = {}) => {
   Object.keys(etaloneFields).forEach((key) => {
     expect(user[key]).to.be.equal(etaloneFields[key]);
   });
+};
+
+const expectStop = (stop) => {
+  expect(stop).to.include.all.keys(['name', 'location', 'id']);
+  expect(stop.name).to.be.a('string');
+  expect(stop.location).to.have.all.keys(['latitude', 'longitude']);
+  expect(stop.location.latitude).to.be.a('number');
+  expect(stop.location.longitude).to.be.a('number');
 };
 
 const expectAccessJWTToken = (token) => {
@@ -68,5 +76,6 @@ module.exports = {
   expectAccessJWTToken,
   expectRefreshJWTToken,
   expectAuthTokens,
-  expectUser
+  expectUser,
+  expectStop
 };
