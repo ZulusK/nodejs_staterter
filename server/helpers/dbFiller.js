@@ -77,22 +77,18 @@ async function fillRouteDB() {
  */
 async function fillBusDB() {
   await Bus.remove({}).exec();
-  const routes = await Route.find({})
-    .select({ _id: 1 })
-    .exec();
+  const routes = await Route.find({}).exec();
   await Promise.all(
-    [...routesData.keys()].map(async k => new Bus({
-      name: `Bus #${k}`,
-      seatsCount: 50 - k,
-      location: {
-        type: 'Point',
-        coordinates: [
-          routesData[+k].origin.coords.longitude,
-          routesData[+k].origin.coords.latitude
-        ]
-      },
-      route: routes[k]._id
-    }).save())
+    [...Array(20).keys()].map(async (k) => {
+      const route = routes[k % routes.length];
+      const stop = await Stop.findById(route.waypoints[k % route.waypoints.length]).exec();
+      return new Bus({
+        name: `Bus #${k}`,
+        seatsCount: 50 - k,
+        location: stop.location,
+        route: route._id
+      }).save();
+    })
   );
   log.debug(`fill bus db with ${await Bus.countDocuments({}).exec()} docs`);
 }

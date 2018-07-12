@@ -42,11 +42,6 @@ BusSchema.set('toJSON', { virtual: true });
  * Statics
  */
 BusSchema.statics = {
-  /**
-   * Get entity by it's id
-   * @param {ObjectId} id - The objectId of entity.
-   * @returns {Promise<Route, APIError>}
-   */
   get(id) {
     return this.findById(id)
       .populate('driver')
@@ -61,12 +56,14 @@ BusSchema.statics = {
       });
   },
 
-  /**
-   * List entities in descending order of 'createdAt' timestamp.
-   * @param {number} skip - Number of entities to be skipped.
-   * @param {number} limit - Limit number of entities to be returned.
-   * @returns {Promise<route[]>}
-   */
+  listByRoute(route, { skip = 0, limit = 50 } = {}) {
+    return this.find({ route })
+      .sort({ createdAt: -1 })
+      .skip(+skip)
+      .limit(+limit)
+      .exec();
+  },
+
   list({ skip = 0, limit = 50 } = {}) {
     return this.find()
       .sort({ createdAt: -1 })

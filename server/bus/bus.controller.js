@@ -42,8 +42,8 @@ function remove(req, res, next) {
 }
 
 function listByRoute(req, res, next) {
-  Bus.find({ route: req.$route._id })
-    .exec()
+  const { limit = 50, skip = 0 } = req.query;
+  Bus.listByRoute(req.$route._id, { limit, skip })
     .then(busesOnRoute => res.json(busesOnRoute.map(b => b.toJSON())))
     .catch(next);
 }
