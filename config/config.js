@@ -24,10 +24,22 @@ const envVarsSchema = Joi.object({
     .required()
     .description('JWT refresh secret required in sign'),
   JWT_REFRESH_EXP: Joi.number()
-    .default(60 * 60 * 24 * 30) //  30 days
+    .required()
+    .when('NODE_ENV', {
+      is: Joi.string().equal('test'),
+      then: Joi.number().default(1),
+      otherwise: Joi.number().default(process.env.JWT_REFRESH_EXP)
+    })
+    // .default(60 * 60 * 24 * 30) //  30 days
     .description('Lifetime of JWT refresh token'),
   JWT_ACCESS_EXP: Joi.number()
-    .default(60 * 60) // 1 hour
+    .required()
+    .when('NODE_ENV', {
+      is: Joi.string().equal('test'),
+      then: Joi.number().default(1),
+      otherwise: Joi.number().default(process.env.JWT_ACCESS_EXP)
+    })
+    // .default(60 * 60) // 1 hour
     .description('Lifetime of JWT access token'),
   JWT_SECRET_ACTIVATION: Joi.string()
     .required()
