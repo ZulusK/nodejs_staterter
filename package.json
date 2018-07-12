@@ -27,6 +27,7 @@
     "url": "git@github.com:fulcrumi/rushowl-be-bl.git"
   },
   "dependencies": {
+    "@google/maps": "^0.5.4",
     "bcrypt": "^3.0.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.3",

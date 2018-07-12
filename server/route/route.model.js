@@ -64,7 +64,7 @@ const RouteSchema = new mongoose.Schema(
       default: '#42a5f5'
     },
     distance: {
-      type: Number,
+      type: String,
       required: true
     },
     estimatedTime: {

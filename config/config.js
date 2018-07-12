@@ -47,7 +47,10 @@ const envVarsSchema = Joi.object({
     .description('Email address of paid account'),
   EMAIL_PASSWORD: Joi.string()
     .required()
-    .description('Password of paid account')
+    .description('Password of paid account'),
+  GOOGLE_MAPS_API_KEY: Joi.string()
+    .required()
+    .description('API key from activated Google Maps account')
 })
   .unknown()
   .required();
@@ -73,7 +76,8 @@ const config = {
   emailPassword: envVars.EMAIL_PASSWORD,
   publicDir: path.join(__dirname, '..', 'public'),
   host: envVars.NODE_ENV === 'production' ? '' : 'http://localhost:3000',
-  jwtSecretEmailConfirmation: envVars.JWT_SECRET_ACTIVATION
+  jwtSecretEmailConfirmation: envVars.JWT_SECRET_ACTIVATION,
+  gmApiKey: envVars.GOOGLE_MAPS_API_KEY
 };
 
 module.exports = config;

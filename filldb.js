@@ -208,12 +208,14 @@ async function fillRouteDB() {
       const waypoints = Promise.all(
         r.waypoints.map(async w => (await Stop.findOne({ name: w.name }).exec())._id)
       );
-      const { routeName: name, strokeColor: color } = r;
+      const {
+        routeName: name, strokeColor: color, estimatedTime, distance
+      } = r;
       return new Route({
         name,
         originId,
-        estimatedTime: '1h',
-        distance: 1.3,
+        estimatedTime,
+        distance,
         destinationId,
         waypoints,
         color
