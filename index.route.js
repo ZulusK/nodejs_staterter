@@ -5,6 +5,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const usersRoutes = require('@server/user/user.route');
 const stopsRoute = require('@server/stop/stop.route');
+const routesRoute = require('@server/route/route.route');
 
 const router = express.Router(); // eslint-disable-line new-cap
 
@@ -46,4 +47,5 @@ module.exports = router;
 router.use('/users', usersRoutes);
 router.use('/auth', authRoutes);
 router.use('/stops', stopsRoute);
+router.use('/routes', routesRoute);
 module.exports = router;

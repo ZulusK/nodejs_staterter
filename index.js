@@ -28,7 +28,7 @@ mongoose.connection.on('connected', async () => {
   log.info('successfully connected to database');
   // TODO: remove this
   if (config.env === 'development') {
-    await fillDB.exec();
+    await fillDB.fillAllDBs();
   }
 });
 

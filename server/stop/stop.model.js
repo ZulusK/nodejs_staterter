@@ -4,72 +4,28 @@ const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
 // const config = require('@config/config');
 
-/**
- * @swagger
- *  definitions:
- *      Stop:
- *        description: Bus's stop's public model
- *        type: object
- *        properties:
- *          id:
- *              type: string
- *              format: byte
- *              example: 507f1f77bcf86cd799439011
- *          name:
- *              type: string
- *          location:
- *              $ref: "#/definitions/Point"
- *          updatedAt:
- *              type: integer
- *              format: int64
- *          createdAt:
- *              type: integer
- *              format: int64
- */
-
-const StopSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true
-    },
-    location: {
-      type: mongoose.Schema.Types.Point,
-      required: true
-    }
+const StopSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
   },
-  { timestamps: true }
-);
+  location: {
+    type: mongoose.Schema.Types.Point,
+    required: true
+  }
+});
 
 StopSchema.index({ name: 1, location: '2dsphere' });
-
-StopSchema.method('publicInfo', function publicInfo() {
-  const {
-    _id: id,
-    name,
-    location: {
-      coordinates: { 0: longitude, 1: latitude }
-    }
-  } = this;
-  return {
-    id,
-    name,
-    location: {
-      longitude,
-      latitude
-    }
-  };
-});
 
 /**
  * Statics
  */
 StopSchema.statics = {
   /**
-   * Get route
-   * @param {ObjectId} id - The objectId of stop.
+   * Get entity by it's id
+   * @param {ObjectId} id - The objectId of entity.
    * @returns {Promise<Stop, APIError>}
    */
   get(id) {
@@ -85,18 +41,17 @@ StopSchema.statics = {
   },
 
   /**
-   * List stop in descending order of 'createdAt' timestamp.
-   * @param {number} skip - Number of stopes to be skipped.
-   * @param {number} limit - Limit number of stopes to be returned.
-   * @returns {Promise<Stop[]>}
+   * List entities in descending order of 'createdAt' timestamp.
+   * @param {number} skip - Number of entities to be skipped.
+   * @param {number} limit - Limit number of entities to be returned.
+   * @returns {Promise<route[]>}
    */
   list({ skip = 0, limit = 50 } = {}) {
     return this.find()
       .sort({ createdAt: -1 })
       .skip(+skip)
       .limit(+limit)
-      .exec()
-      .then(docs => docs.map(d => d.publicInfo()));
+      .exec();
   }
 };
 

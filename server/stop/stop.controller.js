@@ -1,7 +1,7 @@
 const Stop = require('./stop.model');
 const { ObjectId } = require('mongoose').Types;
 const httpStatus = require('http-status');
-// const APIError = require('@helpers/APIError');
+const APIError = require('@helpers/APIError');
 // const config = require('@config/config');
 
 /**
@@ -15,7 +15,7 @@ function load(req, res, next, id) {
   }
   return Stop.get(id)
     .then((stop) => {
-      req.stop = stop; // eslint-disable-line no-param-reassign
+      req.$stop = stop; // eslint-disable-line no-param-reassign
       return next();
     })
     .catch(next);
@@ -26,7 +26,7 @@ function load(req, res, next, id) {
  * @returns {Stop}
  */
 function get(req, res) {
-  return res.json(req.stop.publicInfo());
+  return res.json(req.$stop);
 }
 
 /**
@@ -37,17 +37,8 @@ function get(req, res) {
  * @property {string} req.body.address - The address of stop.
  * @returns {Route}
  */
-function create(req, res, next) {
-  const stop = new Stop({
-    name: req.body.name,
-    location: [req.body.longitude, req.body.latitude]
-  });
-  return stop
-    .save()
-    .then(savedStop => res.json({
-      stop: savedStop.publicInfo()
-    }))
-    .catch(next);
+function create() {
+  throw new APIError(httpStatus.NOT_IMPLEMENTED, null, true);
 }
 
 /**
@@ -64,7 +55,7 @@ function list(req, res, next) {
 }
 
 function remove(req, res, next) {
-  req.stop
+  req.$stop
     .remove()
     .then(removedStop => res.json(removedStop.publicInfo()))
     .catch(next);

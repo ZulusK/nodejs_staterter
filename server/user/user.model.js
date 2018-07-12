@@ -3,36 +3,10 @@ const mongoose = require('mongoose');
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
 const bcrypt = require('bcrypt');
-
+const privatePaths = require('mongoose-private-paths');
 const config = require('@config/config');
 const jwt = require('jsonwebtoken');
-/**
- * @swagger
- *  definitions:
- *      User:
- *        description: User public model
- *        type: object
- *        properties:
- *          id:
- *              type: string
- *              format: byte
- *              example: 507f1f77bcf86cd799439011
- *          email:
- *              type: string
- *              format: email
- *              example: example@mail.com
- *          fullname:
- *              example: John Smith
- *              type: string
- *          mobileNumber:
- *              type: string
- *          updatedAt:
- *              type: integer
- *              format: int64
- *          createdAt:
- *              type: integer
- *              format: int64
- */
+
 const UserSchema = new mongoose.Schema(
   {
     email: {
@@ -65,11 +39,13 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true
+      required: true,
+      private: true
     }
   },
   { timestamps: true }
 );
+UserSchema.plugin(privatePaths);
 
 // Hash the user's password before inserting a new user
 UserSchema.pre('save', function preSave(next) {
@@ -79,23 +55,6 @@ UserSchema.pre('save', function preSave(next) {
       next();
     });
   }
-});
-
-/**
- *  Get only public info about user
- */
-UserSchema.method('publicInfo', function getPublicInfo() {
-  const {
-    createdAt, updatedAt, fullname, email, mobileNumber, _id: id
-  } = this;
-  return {
-    createdAt,
-    updatedAt,
-    fullname,
-    email,
-    mobileNumber,
-    id
-  };
 });
 
 /**
@@ -157,12 +116,13 @@ UserSchema.statics = {
     throw err;
   },
   /**
-   * Get user
-   * @param {ObjectId} id - The objectId of user.
-   * @returns {Promise<User, APIError>}
+   * Get entity by it's id
+   * @param {ObjectId} id - The objectId of entity.
+   * @returns {Promise<Route, APIError>}
    */
   get(id) {
     return this.findById(id)
+      .deselect(['password'])
       .exec()
       .then((user) => {
         if (user) {
@@ -186,13 +146,14 @@ UserSchema.statics = {
   },
 
   /**
-   * List users in descending order of 'createdAt' timestamp.
-   * @param {number} skip - Number of users to be skipped.
-   * @param {number} limit - Limit number of users to be returned.
-   * @returns {Promise<User[]>}
+   * List entities in descending order of 'createdAt' timestamp.
+   * @param {number} skip - Number of entities to be skipped.
+   * @param {number} limit - Limit number of entities to be returned.
+   * @returns {Promise<route[]>}
    */
   list({ skip = 0, limit = 50 } = {}) {
     return this.find()
+      .deselect(['password'])
       .sort({ createdAt: -1 })
       .skip(+skip)
       .limit(+limit)

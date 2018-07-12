@@ -7,25 +7,21 @@ const httpStatus = require('http-status');
 
 const expectUser = (user, etaloneFields = {}) => {
   expect(user).to.be.an('object');
-  expect(user).to.include.all.keys([
-    'id',
-    'fullname',
-    'createdAt',
-    'updatedAt',
-    'email',
-    'mobileNumber'
-  ]);
+  expect(user).to.include.keys('_id', 'fullname', 'email', 'mobileNumber');
+  expect(user).to.not.include.keys('password');
   Object.keys(etaloneFields).forEach((key) => {
     expect(user[key]).to.be.equal(etaloneFields[key]);
   });
 };
 
 const expectStop = (stop) => {
-  expect(stop).to.include.all.keys(['name', 'location', 'id']);
+  expect(stop).to.include.keys('name', 'location', '_id');
   expect(stop.name).to.be.a('string');
-  expect(stop.location).to.have.all.keys(['latitude', 'longitude']);
-  expect(stop.location.latitude).to.be.a('number');
-  expect(stop.location.longitude).to.be.a('number');
+  expect(stop.location.coordinates)
+    .to.be.an('array')
+    .with.length(2);
+  expect(stop.location.coordinates[0]).all.be.an('number');
+  expect(stop.location.coordinates[1]).all.be.an('number');
 };
 
 const expectAccessJWTToken = (token) => {
@@ -64,6 +60,35 @@ const expectTokenIsValid = (url, app, token, done) => {
     .catch(done);
 };
 
+const expectRoute = (route, isFull = false) => {
+  expect(route).to.be.an('object');
+  expect(route).to.include.keys(
+    'name',
+    '_id',
+    'origin',
+    'destination',
+    'color',
+    'distance',
+    'estimatedTime',
+    'waypoints'
+  );
+  expect(route.name).to.be.a('string');
+  expect(route._id).to.be.a('string');
+  expect(route.color).to.be.a('string');
+  expect(route.distance).to.be.a('string');
+  expect(route.estimatedTime).to.be.a('string');
+  if (isFull) {
+    expectStop(route.origin);
+    expectStop(route.destination);
+    route.waypoints.forEach(w => expectStop(w));
+  } else {
+    expect(route.origin).to.be.a('string');
+    expect(route.waypoints).to.be.an('array');
+    expect(route.destination).to.be.a('string');
+    route.waypoints.forEach(s => expect(s).to.be.an('string'));
+  }
+};
+
 // check access token is not outdated
 const expectAccessTokenIsValid = (app, token, done) => expectTokenIsValid('/api/auth/check-access', app, token, done);
 // check refresh token is not outdated
@@ -77,5 +102,6 @@ module.exports = {
   expectRefreshJWTToken,
   expectAuthTokens,
   expectUser,
+  expectRoute,
   expectStop
 };

@@ -1,4 +1,5 @@
 const Route = require('./route.model');
+const { ObjectId } = require('mongoose').Types;
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
 // const config = require('@config/config');
@@ -7,54 +8,39 @@ const APIError = require('@helpers/APIError');
  * Load route by id and append to req.
  */
 function load(req, res, next, id) {
-  Route.get(id)
+  if (!ObjectId.isValid(id)) {
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .json({ message: 'Parameter id is not a valid object id' });
+  }
+  return Route.get(id)
     .then((route) => {
-      req.route = route; // eslint-disable-line no-param-reassign
+      req.$route = route; // eslint-disable-line no-param-reassign
       return next();
     })
-    .catch(e => next(e));
+    .catch(next);
 }
 
 /**
  * Get route
- * @returns {Route}
+ * @returns {route}
  */
 function get(req, res) {
-  return res.json(req.route.publicInfo);
+  return res.json(req.$route.toJSON());
 }
 
 /**
  * Create new route
  * @property {string} req.body.name - The name of route.
- * @property {string} req.body.color - The color of route.
- * @property {[string]} req.body.destinationId - The destination point of route.
- * @property {[string]} req.body.originId - The origin point of route.
- * @property {[string]} req.body.wayPoints - The array of all stops of route
+ * @property {string} req.body.latitude - The latitude of route.
+ * @property {string} req.body.longitude - The longitude of route.
+ * @property {string} req.body.address - The address of route.
  * @returns {Route}
  */
-function create(req, res, next) {
-  // check is route alredy exist
-  return Route.findOne({ name: req.body.name })
-    .exec()
-    .then((result) => {
-      // create new route and save him
-      if (result === null) {
-        const route = new Route({
-          name: req.body.name,
-          color: req.body.color,
-          destinationId: req.body.destinationId,
-          originId: req.body.originId,
-          wayPoints: req.body.wayPoints
-        });
-        return route.save();
-      }
-      throw new APIError('Route with the same name is already exist', httpStatus.BAD_REQUEST);
-    })
-    .then(savedRoute => res.json({
-      route: savedRoute.publicInfo()
-    }))
-    .catch(e => next(e));
+function create() {
+  throw new APIError(httpStatus.NOT_IMPLEMENTED, null, true);
 }
+
 /**
  * Get docs list.
  * @property {number} req.query.skip - Number of docs to be skipped.
@@ -64,13 +50,20 @@ function create(req, res, next) {
 function list(req, res, next) {
   const { limit = 50, skip = 0 } = req.query;
   Route.list({ limit, skip })
-    .then(users => res.json(users))
-    .catch(e => next(e));
+    .then(docs => res.json(docs.map(d => d.toJSON())))
+    .catch(next);
 }
 
+function remove(req, res, next) {
+  req.$route
+    .remove()
+    .then(removedRoute => res.json(removedRoute.toJSON()))
+    .catch(next);
+}
 module.exports = {
   load,
   get,
   create,
+  remove,
   list
 };

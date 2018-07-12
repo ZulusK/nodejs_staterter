@@ -214,11 +214,12 @@ async function fillStopDB() {
  */
 async function fillRouteDB() {
   await Route.remove({}).exec();
+
   await Promise.all(
     routesData.map(async (r) => {
-      const originId = (await Stop.findOne({ name: r.origin.name }).exec())._id;
-      const destinationId = (await Stop.findOne({ name: r.destination.name }).exec())._id;
-      const waypoints = Promise.all(
+      const origin = (await Stop.findOne({ name: r.origin.name }).exec())._id;
+      const destination = (await Stop.findOne({ name: r.destination.name }).exec())._id;
+      const waypoints = await Promise.all(
         r.waypoints.map(async w => (await Stop.findOne({ name: w.name }).exec())._id)
       );
       const {
@@ -226,10 +227,10 @@ async function fillRouteDB() {
       } = r;
       return new Route({
         name,
-        originId,
+        origin,
         estimatedTime,
         distance,
-        destinationId,
+        destination,
         waypoints,
         color
       }).save();
@@ -257,12 +258,20 @@ async function fillBusDB() {
   log.debug(`fill bus db with ${await Bus.countDocuments({}).exec()} docs`);
 }
 
-function exec() {
+function fillAllDBs() {
   return Promise.all([fillUserDB(), fillStopDB(), fillRouteDB(), fillBusDB()]);
 }
-
+function clear() {
+  return Promise.all([
+    User.remove({}).exec(),
+    Bus.remove({}).exec(),
+    Route.remove({}).exec(),
+    Stop.remove({}).exec()
+  ]);
+}
 module.exports = {
-  exec,
+  clear,
+  fillAllDBs,
   fillBusDB,
   fillRouteDB,
   fillUserDB,
