@@ -2,6 +2,7 @@ const express = require('express');
 // const validate = require('express-validation');
 // const paramValidation = require('@config/param-validation');
 const busCtrl = require('./bus.controller');
+const routeCtrl = require('@server/route/route.controller');
 const config = require('@config/config');
 const expressJwt = require('express-jwt');
 
@@ -29,4 +30,5 @@ router
   );
 
 router.param('busId', busCtrl.load);
+router.param('routeId', routeCtrl.load);
 module.exports = router;

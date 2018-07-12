@@ -139,4 +139,34 @@ describe('## Route APIs', () => {
         .catch(done);
     });
   });
+  describe('# Get /api/routes/:routeId/buses', () => {
+    it('should return valid route info', (done) => {
+      request(app)
+        .get(`/api/routes/${routes[0]._id}/buses`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          res.body.forEach(b => usefullTests.expectBus(b));
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used not-existing id', (done) => {
+      request(app)
+        .get(`/api/routes/${ObjectId()}/buses`)
+        .expect(httpStatus.NOT_FOUND)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+    it('should reject, used invalid id', (done) => {
+      request(app)
+        .get('/api/routes/wdnd2lkln@/buses')
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          done();
+        })
+        .catch(done);
+    });
+  });
 });

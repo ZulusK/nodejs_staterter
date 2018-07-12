@@ -50,4 +50,5 @@ router.use('/auth', authRoutes);
 router.use('/stops', stopsRoute);
 router.use('/routes', routesRoute);
 router.use('/buses', busesRoute);
+
 module.exports = router;

@@ -4,6 +4,7 @@ const paramValidation = require('@config/param-validation');
 const routeCtrl = require('./route.controller');
 const config = require('@config/config');
 const expressJwt = require('express-jwt');
+const busCtrl = require('@server/bus/bus.controller');
 
 const router = express.Router(); // eslint-disable-line new-cap
 
@@ -37,6 +38,8 @@ router
     validate(paramValidation.createStop),
     routeCtrl.create
   );
+
+router.route('/:routeId/buses').get(busCtrl.listByRoute);
 
 /**
  * @swagger

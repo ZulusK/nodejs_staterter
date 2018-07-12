@@ -30,7 +30,7 @@ describe('## Bus APIs', () => {
       .then(() => done())
       .catch(done);
   });
-  describe('# Get /api/buses/:routeId', () => {
+  describe('# Get /api/buses/:busId', () => {
     it('should return valid route info', (done) => {
       request(app)
         .get(`/api/buses/${buses[0]._id}`)

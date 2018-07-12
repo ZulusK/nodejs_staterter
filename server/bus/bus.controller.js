@@ -2,11 +2,9 @@ const Bus = require('./bus.model');
 const { ObjectId } = require('mongoose').Types;
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
+
 // const config = require('@config/config');
 
-/**
- * Load route by id and append to req.
- */
 function load(req, res, next, id) {
   if (!ObjectId.isValid(id)) {
     return res
@@ -21,10 +19,6 @@ function load(req, res, next, id) {
     .catch(next);
 }
 
-/**
- * Get entity
- * @returns {bus}
- */
 function get(req, res) {
   return res.json(req.$bus.toJSON());
 }
@@ -33,12 +27,6 @@ function create() {
   throw new APIError(httpStatus.NOT_IMPLEMENTED, null, true);
 }
 
-/**
- * Get docs list.
- * @property {number} req.query.skip - Number of docs to be skipped.
- * @property {number} req.query.limit - Limit number of docs to be returned.
- * @returns {User[]}
- */
 function list(req, res, next) {
   const { limit = 50, skip = 0 } = req.query;
   Bus.list({ limit, skip })
@@ -52,10 +40,19 @@ function remove(req, res, next) {
     .then(removedBus => res.json(removedBus.toJSON()))
     .catch(next);
 }
+
+function listByRoute(req, res, next) {
+  Bus.find({ route: req.$route._id })
+    .exec()
+    .then(busesOnRoute => res.json(busesOnRoute.map(b => b.toJSON())))
+    .catch(next);
+}
+
 module.exports = {
   load,
   get,
   create,
   remove,
-  list
+  list,
+  listByRoute
 };

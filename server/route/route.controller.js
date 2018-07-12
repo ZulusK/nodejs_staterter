@@ -60,6 +60,7 @@ function remove(req, res, next) {
     .then(removedRoute => res.json(removedRoute.toJSON()))
     .catch(next);
 }
+
 module.exports = {
   load,
   get,
