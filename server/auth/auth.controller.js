@@ -33,7 +33,7 @@ function signup(req, res, next) {
     // create or return existing user
     .then(pendingUser => pendingUser.sendOtpViaSMS())
     .then((otp) => {
-      if (config.env === 'development') {
+      if (config.env !== 'production') {
         return res.json({ otp });
       }
       return res.status(httpStatus.OK).send();

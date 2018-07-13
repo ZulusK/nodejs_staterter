@@ -6,6 +6,7 @@ const config = require('@config/config');
 const jwt = require('jsonwebtoken');
 const Messanger = require('@server/messanger');
 const _ = require('lodash');
+const privatePaths = require('mongoose-private-paths');
 
 const PendingUserSchema = new mongoose.Schema({
   mobileNumber: {
@@ -18,13 +19,15 @@ const PendingUserSchema = new mongoose.Schema({
   },
   otp: {
     trim: true,
-    type: String
+    type: String,
+    private: true
   },
   timeOfMessageSending: {
     type: [Number],
     default: []
   }
 });
+PendingUserSchema.plugin(privatePaths);
 
 PendingUserSchema.methods.genOtpSMS = function genOtpSMS() {
   const body = `Here is your activation code\n${this.otp}\nYours Rush-Owl `;
@@ -108,7 +111,9 @@ PendingUserSchema.methods.canReceiveSMS = function canReceiveSMS() {
  * Generate activation token
  */
 PendingUserSchema.methods.genActivationToken = function genActivationToken() {
-  return jwt.sign({ id: this.id }, config.jwtSecretPhoneConfirmation);
+  return jwt.sign({ id: this.id }, config.jwtSecretPhoneConfirmation, {
+    expiresIn: config.jwtExpPhoneConfrimation
+  });
 };
 
 /**
@@ -128,7 +133,6 @@ PendingUserSchema.statics = {
   },
   get(id) {
     return this.findById(id)
-      .deselect(['password'])
       .exec()
       .then((user) => {
         if (user) {

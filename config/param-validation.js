@@ -61,12 +61,8 @@ module.exports = {
         .string()
         .trim()
         .required()
-        .regex(/^[a-zA-Z '.-]*$/),
-      mobileNumber: customJoi
-        .string()
-        .trim()
-        .isLocalMobileNumber()
-        .required(),
+        .regex(/^[a-zA-Z '.-]*$/)
+        .max(20),
       password: customJoi
         .string()
         .required()

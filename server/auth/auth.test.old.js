@@ -6,7 +6,7 @@
 // const { expect } = chai;
 // const app = require('@app');
 // const User = require('@server/user/user.model');
-// const usefullTests = require('@helpers/usefull.tests');
+// const usefullTests = require('@tests/usefull.tests');
 
 // chai.config.includeStack = true;
 

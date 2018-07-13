@@ -151,25 +151,12 @@ UserSchema.statics = {
    */
   get(id) {
     return this.findById(id)
-      .deselect(['password'])
       .exec()
       .then((user) => {
         if (user) {
           return user;
         }
-        const err = new APIError('No such user exists!', httpStatus.NOT_FOUND);
-        return Promise.reject(err);
-      });
-  },
-
-  getByEmail(email) {
-    return this.findOne({ email })
-      .exec()
-      .then((user) => {
-        if (user) {
-          return user;
-        }
-        const err = new APIError('No such user exists!', httpStatus.NOT_FOUND);
+        const err = new APIError('No such user exists', httpStatus.NOT_FOUND, true);
         return Promise.reject(err);
       });
   },
@@ -182,7 +169,6 @@ UserSchema.statics = {
    */
   list({ skip = 0, limit = 50 } = {}) {
     return this.find()
-      .deselect(['password'])
       .sort({ createdAt: -1 })
       .skip(+skip)
       .limit(+limit)

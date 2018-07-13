@@ -93,6 +93,7 @@
     "@server": "./server",
     "@root": ".",
     "@helpers": "./server/helpers",
+    "@tests": "./server/tests",
     "@app": "./index.js"
   }
 }

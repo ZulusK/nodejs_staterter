@@ -8,7 +8,8 @@ const { expect } = chai;
 const app = require('@app');
 const User = require('@server/user/user.model');
 const PendingUser = require('@server/pendingUser/pendingUser.model');
-const usefullTests = require('@helpers/usefull.tests');
+const usefullReqs = require('@tests/tests.reqs');
+const usefullTests = require('@tests/tests.tests');
 const config = require('@config/config');
 
 chai.config.includeStack = true;
@@ -22,16 +23,7 @@ describe('## Auth APIs', () => {
   describe('# POST /api/auth/signup', testSignup);
   describe('# POST /api/auth/confirm-phone', testConfirmPhone);
 });
-function makeSignupReq(data) {
-  return request(app)
-    .post('/api/auth/signup')
-    .send(data);
-}
-function makePhoneConfirmReq(data) {
-  return request(app)
-    .post('/api/auth/confirm-phone')
-    .send(data);
-}
+
 const userData = {
   mobileNumber: '+380500112836'
 };
@@ -41,7 +33,8 @@ function testSignup() {
   after(clean);
 
   it('should return 200, use new user', (done) => {
-    makeSignupReq(userData)
+    usefullReqs
+      .makeSignupReq(userData)
       .expect(httpStatus.OK)
       .then(res => PendingUser.findOne(userData))
       .then((createdPendingUser) => {
@@ -55,7 +48,8 @@ function testSignup() {
   });
   it('should return 200, use existing, not activated user', (done) => {
     setTimeout(function () {
-      makeSignupReq(userData)
+      usefullReqs
+        .makeSignupReq(userData)
         .expect(httpStatus.OK)
         .then(res => PendingUser.findOne(userData))
         .then((existingPendingUser) => {
@@ -69,7 +63,8 @@ function testSignup() {
     }, config.smsTimeout);
   });
   it('should return 400, do not wait', (done) => {
-    makeSignupReq(userData)
+    usefullReqs
+      .makeSignupReq(userData)
       .expect(httpStatus.BAD_REQUEST)
       .then(res => PendingUser.findOne(userData))
       .then((existingPendingUser) => {
@@ -82,7 +77,8 @@ function testSignup() {
   });
   it('should return 400, use all OTP generation per one hour', (done) => {
     setTimeout(function () {
-      makeSignupReq(userData)
+      usefullReqs
+        .makeSignupReq(userData)
         .expect(httpStatus.BAD_REQUEST)
         .then(() => PendingUser.findOne(userData))
         .then((existingPendingUser) => {
@@ -96,7 +92,8 @@ function testSignup() {
   });
   it('should return 400, use empty post body', (done) => {
     setTimeout(function () {
-      makeSignupReq({})
+      usefullReqs
+        .makeSignupReq({})
         .expect(httpStatus.BAD_REQUEST)
         .then(() => done())
         .catch(done);
@@ -104,7 +101,8 @@ function testSignup() {
   });
   it('should return 400, use invalid mobileNumber (not a number)', (done) => {
     setTimeout(function () {
-      makeSignupReq({ mobileNumber: '+38012845s' })
+      usefullReqs
+        .makeSignupReq({ mobileNumber: '+38012845s' })
         .expect(httpStatus.BAD_REQUEST)
         .then(() => done())
         .catch(done);
@@ -112,7 +110,8 @@ function testSignup() {
   });
   it('should return 400, use invalid mobileNumber (invalid country code)', (done) => {
     setTimeout(function () {
-      makeSignupReq({ mobileNumber: '+1 606-268-8220' })
+      usefullReqs
+        .makeSignupReq({ mobileNumber: '+1 606-268-8220' })
         .expect(httpStatus.BAD_REQUEST)
         .then(() => done())
         .catch(done);
@@ -120,7 +119,8 @@ function testSignup() {
   });
   it('should return 400, use mobileNumber "+yy xxx xxx xxxx"', (done) => {
     setTimeout(function () {
-      makeSignupReq({ mobileNumber: '+38 606 268 8220' })
+      usefullReqs
+        .makeSignupReq({ mobileNumber: '+38 606 268 8220' })
         .expect(httpStatus.BAD_REQUEST)
         .then(() => done())
         .catch(done);
@@ -128,7 +128,8 @@ function testSignup() {
   });
   it('should return 200, use mobileNumber "xxx-xxx-xxxx"', (done) => {
     setTimeout(function () {
-      makeSignupReq({ mobileNumber: '050-268-8220' })
+      usefullReqs
+        .makeSignupReq({ mobileNumber: '050-268-8220' })
         .expect(httpStatus.OK)
         .then(() => done())
         .catch(done);
@@ -136,7 +137,8 @@ function testSignup() {
   });
   it('should return 200, use mobileNumber "xxxxxxxxxx"', (done) => {
     setTimeout(function () {
-      makeSignupReq({ mobileNumber: '0500719832' })
+      usefullReqs
+        .makeSignupReq({ mobileNumber: '0500719832' })
         .expect(httpStatus.OK)
         .then(() => done())
         .catch(done);
@@ -146,7 +148,8 @@ function testSignup() {
 function testConfirmPhone() {
   let otp = null;
   beforeEach((done) => {
-    clean(() => makeSignupReq(userData)
+    clean(() => usefullReqs
+      .makeSignupReq(userData)
       .then(() => PendingUser.findOne(userData))
       .then((createdUser) => {
         otp = createdUser.otp;
@@ -157,7 +160,8 @@ function testConfirmPhone() {
 
   after(clean);
   it('should return 200, use valid otp', (done) => {
-    makePhoneConfirmReq({ ...userData, otp })
+    usefullReqs
+      .makePhoneConfirmReq({ ...userData, otp })
       .expect(httpStatus.OK)
       .then((res) => {
         expect(res.body.token).to.be.a('string');
@@ -166,7 +170,8 @@ function testConfirmPhone() {
       .catch(done);
   });
   it('should return 400, use invalid otp', (done) => {
-    makePhoneConfirmReq({ ...userData, otp: '12345' })
+    usefullReqs
+      .makePhoneConfirmReq({ ...userData, otp: '12345' })
       .expect(httpStatus.BAD_REQUEST)
       .then((res) => {
         expect(res.body).to.not.have.key('token');
@@ -176,7 +181,8 @@ function testConfirmPhone() {
   });
   it('should return 400, use otp after timeout', (done) => {
     setTimeout(function () {
-      makePhoneConfirmReq({ ...userData, otp })
+      usefullReqs
+        .makePhoneConfirmReq({ ...userData, otp })
         .expect(httpStatus.BAD_REQUEST)
         .then((res) => {
           expect(res.body).to.not.have.key('token');
@@ -186,8 +192,9 @@ function testConfirmPhone() {
     }, config.smsTimeout * 2);
   });
   it('should return 200, use used otp', (done) => {
-    makePhoneConfirmReq({ ...userData, otp })
-      .then(() => makePhoneConfirmReq({ ...userData, otp }))
+    usefullReqs
+      .makePhoneConfirmReq({ ...userData, otp })
+      .then(() => usefullReqs.makePhoneConfirmReq({ ...userData, otp }))
       .then((res) => {
         expect(res.status).to.be.eq(httpStatus.OK);
         expect(res.body.token).to.be.a('string');

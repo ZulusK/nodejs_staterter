@@ -6,7 +6,8 @@ const chai = require('chai'); // eslint-disable-line import/newline-after-import
 const { expect } = chai;
 const app = require('@app');
 const Stop = require('@server/stop/stop.model');
-const usefullTests = require('@helpers/usefull.tests');
+const usefullReqs = require('@tests/tests.reqs');
+const usefullTests = require('@tests/tests.tests');
 const filler = require('@helpers/dbFiller');
 const { ObjectId } = require('mongoose').Types;
 

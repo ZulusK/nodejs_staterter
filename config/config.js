@@ -104,7 +104,16 @@ const envVarsSchema = customJoi
       then: customJoi.number().default(100),
       otherwise: customJoi.number().default(1000 * 30) // production, 30 seconds
     }),
-    OTP_LENGTH: customJoi.number().default(4)
+    OTP_LENGTH: customJoi.number().default(4),
+    JWT_PHONE_CONFIRMATION_EXP: customJoi
+      .number()
+      .required()
+      .when('NODE_ENV', {
+        is: customJoi.string().equal('test'),
+        then: customJoi.number().default(1),
+        otherwise: customJoi.number().default(process.env.JWT_PHONE_CONFIRMATION_EXP)
+      })
+      .description('Lifetime of JWT token, used after phone verification')
   })
   .unknown()
   .required();
@@ -138,6 +147,7 @@ const config = {
   twilioToken: envVars.TWILIO_TOKEN,
   smsTimeout: envVars.SMS_TIMEOUT,
   smsLimitPerHour: envVars.SMS_LIMIT_PER_HOUR,
-  otpLen: envVars.OTP_LENGTH
+  otpLen: envVars.OTP_LENGTH,
+  jwtExpPhoneConfrimation: envVars.JWT_PHONE_CONFIRMATION_EXP
 };
 module.exports = config;

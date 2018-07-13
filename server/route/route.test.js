@@ -7,7 +7,8 @@ const { expect } = chai;
 const app = require('@app');
 const Route = require('@server/route/route.model');
 const Bus = require('@server/bus/bus.model');
-const usefullTests = require('@helpers/usefull.tests');
+const usefullReqs = require('@tests/tests.reqs');
+const usefullTests = require('@tests/tests.tests');
 const filler = require('@helpers/dbFiller');
 const { ObjectId } = require('mongoose').Types;
 
