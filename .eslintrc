@@ -1,5 +1,6 @@
 {
   "rules": {
+    "no-restricted-properties":0,
     "import/no-unresolved":false,
     "indent": [
       2,

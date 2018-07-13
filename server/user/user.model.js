@@ -7,6 +7,39 @@ const privatePaths = require('mongoose-private-paths');
 const config = require('@config/config');
 const jwt = require('jsonwebtoken');
 
+/**
+ * @swagger
+ * definitions:
+ *  User:
+ *    type: object
+ *    properties:
+ *      email:
+ *        description: email of a user
+ *        type: string
+ *        format: email
+ *      _id:
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439011
+ *      fullname:
+ *        type: string
+ *        example: "John Smith"
+ *      isEmailConfirmed:
+ *        type: boolean
+ *        description: flag telling whether the user had already activated the e-mail
+ *      mobileNumber:
+ *        type: string
+ *        description: Phone number of user
+ *        example: "+65 XXXX XXXX"
+ *      createdAt:
+ *        type: string
+ *        example: 'Fri Jul 13 2018 02:23:45'
+ *        description: Date of user's account creation
+ *      updatedAt:
+ *        type: string
+ *        example: 'Fri Jul 13 2018 02:23:45'
+ *        description: Date of last user's account updates
+ */
 const UserSchema = new mongoose.Schema(
   {
     email: {
@@ -23,10 +56,6 @@ const UserSchema = new mongoose.Schema(
       required: true
     },
     isEmailConfirmed: {
-      type: Boolean,
-      default: false
-    },
-    isMobileConfirmed: {
       type: Boolean,
       default: false
     },

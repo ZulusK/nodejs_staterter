@@ -10,15 +10,17 @@ const router = express.Router(); // eslint-disable-line new-cap
  *  get:
  *      tags:
  *      - User
- *      description: Returns list of all users
+ *      description: Returns list of entities
  *      parameters:
  *      - $ref: "#/parameters/limit"
  *      - $ref: "#/parameters/skip"
  *      produces:
  *          - application/json
  *      responses:
+ *          400:
+ *            $ref: "#/responses/Standard400Response"
  *          200:
- *              description: list of users
+ *              description: list of entities
  *              schema:
  *                type: array
  *                items:
@@ -26,12 +28,16 @@ const router = express.Router(); // eslint-disable-line new-cap
  *  post:
  *      tags:
  *      - User
- *      description: Creates new user
+ *      - Auth
+ *      security:
+ *      - JWT: []
+ *      description:
+ *        Creates new user, you need to send back token,
+ *        that had received after phone verification
  *      parameters:
  *      - $ref: "#/parameters/email-b"
  *      - $ref: "#/parameters/password-b"
- *      - $ref: "#/parameters/mobileNumber-b"
- *      - $ref: "#/parameters/fullName-b"
+ *      - $ref: "#/parameters/fullname-b"
  *      produces:
  *          - application/json
  *      responses:

@@ -8,6 +8,8 @@ const authCtrl = require('./auth.controller');
 
 const router = express.Router(); // eslint-disable-line new-cap
 
+router.route('/signup').post(validate(paramValidation.signup), authCtrl.signup);
+
 /**
  * @swagger
  * /api/auth/token:

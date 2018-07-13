@@ -27,7 +27,7 @@ const PhoneExtention = joi => ({
   name: 'string',
   language: {
     notAPhoneNumber: 'The string {{phone}} is not a valid phone number',
-    notAPhoneNumbreForThisRegion: 'The number {{phone}} is noa a valid phone number of this region'
+    notALocalPhoneNumber: 'The number {{phone}} is noa a valid phone number of this region'
   },
   rules: [
     {
@@ -37,9 +37,19 @@ const PhoneExtention = joi => ({
         if (!phoneUtil.isPossibleNumber(phone)) {
           return this.createError('string.notAPhoneNumber', { phone }, state, options);
         }
+        return phoneUtil.format(phone, PNF.E164);
+      }
+    },
+    {
+      name: 'isLocalMobileNumber',
+      validate(params, value, state, options) {
+        const phone = phoneUtil.parseAndKeepRawInput(value, 'UA'); // TODO: replace UA -> SG
+        if (!phoneUtil.isPossibleNumber(phone)) {
+          return this.createError('string.notAPhoneNumber', { phone }, state, options);
+        }
         if (phoneUtil.getRegionCodeForNumber(phone) !== 'UA') {
           // TODO: replace UA -> SG
-          return this.createError('string.notAPhoneNumbreForThisRegion', { phone }, state, options);
+          return this.createError('string.notALocalPhoneNumber', { phone }, state, options);
         }
         // Format number in the national format.
         // return phoneUtil.format(phone, PNF.NATIONAL);

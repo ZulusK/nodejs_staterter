@@ -3,6 +3,35 @@ const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
 // const config = require('@config/config');
 const User = require('@server/user/user.model');
+const PendingUser = require('@server/pendingUser/pendingUser.model');
+
+function signup(req, res, next) {
+  // check is user alredy registered in User DB
+  User.findOne({ mobileNumber: req.body.mobileNumber })
+    .exec()
+    .then((user) => {
+      if (user) {
+        throw new APIError(
+          httpStatus.FORBIDDEN,
+          'User with this mobile number already exist',
+          true
+        );
+      } else {
+        return PendingUser.findOrCreate({ mobileNumber: req.body.mobileNumber });
+      }
+    })
+    // create or return existing user
+    .then(
+      pendingUser => pendingUser.sendOtpViaSMS()
+      // throw new APIError(
+      // httpStatus.BAD_REQUEST,
+      // 'You sent the maximum number of SMS to this number.',
+      // true
+      // );
+    )
+    .then(() => res.status(httpStatus.OK).send())
+    .catch(next);
+}
 
 /**
  * Returns new generated access token
@@ -64,6 +93,7 @@ async function deleteAccount(req, res, next) {
 }
 
 module.exports = {
+  signup,
   check,
   login,
   token,

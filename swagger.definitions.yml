@@ -73,7 +73,7 @@ parameters:
       type: string  
       required: true
   fullname-b:  
-      name: username
+      name: fullname
       description: Fullname of user, displayed to others
       in: body
       type: string

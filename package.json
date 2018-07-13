@@ -60,6 +60,7 @@
     "pug": "^2.0.3",
     "swagger-jsdoc": "^1.9.7",
     "swagger-ui-express": "^3.0.10",
+    "twilio": "^3.17.6",
     "uuid": "^3.3.2",
     "validator": "^10.4.0",
     "winston": "2.4.3"

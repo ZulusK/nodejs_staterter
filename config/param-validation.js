@@ -8,6 +8,16 @@ const customJoi = Joi.extend([
 ]);
 
 module.exports = {
+  // POST /api/auth/signup
+  signup: {
+    body: {
+      mobileNumber: customJoi
+        .string()
+        .trim()
+        .isLocalMobileNumber()
+        .required()
+    }
+  },
   // POST /api/auth/login
   login: {
     body: {
@@ -39,9 +49,8 @@ module.exports = {
       mobileNumber: customJoi
         .string()
         .trim()
-        .isMobileNumber()
-        .required()
-        .max(30),
+        .isLocalMobileNumber()
+        .required(),
       password: customJoi
         .string()
         .required()

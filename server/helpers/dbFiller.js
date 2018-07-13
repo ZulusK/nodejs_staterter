@@ -2,6 +2,7 @@ const User = require('@server/user/user.model');
 const Stop = require('@server/stop/stop.model');
 const Route = require('@server/route/route.model');
 const Bus = require('@server/bus/bus.model');
+const PendingUser = require('@server/pendingUser/pendingUser.model');
 const log = require('@config/winston');
 const _ = require('lodash');
 const routesData = require('./routesData');
@@ -102,6 +103,7 @@ function fillAllDBs() {
 }
 function clear() {
   return Promise.all([
+    PendingUser.remove().exec(),
     User.remove({}).exec(),
     Bus.remove({}).exec(),
     Route.remove({}).exec(),
