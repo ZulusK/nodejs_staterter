@@ -4,11 +4,11 @@ const client = require('twilio')(config.twilioSid, config.twilioToken);
 
 function sendSMS({ to, body }) {
   if (config.env !== 'production') {
-    log.debug('SENT');
+    log.debug(`Sent sms to ${to} (dev)`);
     return null;
   }
   return client.messages.create({ to, body, from: config.twilioPhone }).then((message) => {
-    log.debug('SENT');
+    log.debug(`Sent sms to ${to} (prod)`);
     log.debug(message.sid, message);
   });
 }

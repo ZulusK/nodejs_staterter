@@ -48,6 +48,7 @@ function sendEmailActivation({ email, token, fullname }) {
     subject: 'Confirm your email',
     html: renderedText
   };
+  log.info(`Sent mail to ${email}`);
   transporter.sendMail(mail);
 }
 
