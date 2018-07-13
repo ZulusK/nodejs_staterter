@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const JoiExt = require('./joi.extentions');
+const config = require('./config');
 
 const customJoi = Joi.extend([
   JoiExt.ObjectIdExtention,
@@ -8,6 +9,20 @@ const customJoi = Joi.extend([
 ]);
 
 module.exports = {
+  confirmPhone: {
+    body: {
+      otp: customJoi
+        .string()
+        .required()
+        .trim()
+        .length(config.otpLen),
+      mobileNumber: customJoi
+        .string()
+        .trim()
+        .isLocalMobileNumber()
+        .required()
+    }
+  },
   // POST /api/auth/signup
   signup: {
     body: {

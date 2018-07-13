@@ -8,6 +8,8 @@ const authCtrl = require('./auth.controller');
 
 const router = express.Router(); // eslint-disable-line new-cap
 
+router.route('/confirm-phone').post(validate(paramValidation.confirmPhone), authCtrl.confirmPhone);
+
 router.route('/signup').post(validate(paramValidation.signup), authCtrl.signup);
 
 /**

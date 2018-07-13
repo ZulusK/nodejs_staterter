@@ -31,21 +31,40 @@ PendingUserSchema.methods.genOtpSMS = function genOtpSMS() {
   return body;
 };
 
-function genOpt() {
+function genOtp() {
   return (
     Math.floor(Math.random() * (Math.pow(10, config.otpLen - 1) * 9))
     + Math.pow(10, config.otpLen - 1)
   );
 }
+PendingUserSchema.methods.checkOtp = function checkOtp(otp) {
+  const lastSMSTime = _.max(this.timeOfMessageSending);
+  const now = Date.now();
+  const pendingTime = now - lastSMSTime;
 
+  if (otp !== this.otp) {
+    throw new APIError('Your otp is invalid', httpStatus.BAD_REQUEST, true);
+  }
+  console.log(pendingTime);
+  if (pendingTime > config.smsTimeout * 2) {
+    throw new APIError(
+      'Your one time password is outdated, please generate new one',
+      httpStatus.BAD_REQUEST,
+      true
+    );
+  }
+  return true;
+};
 PendingUserSchema.methods.sendOtpViaSMS = function sendOtpViaSMS() {
   if (this.canReceiveSMS()) {
-    this.otp = genOpt();
+    this.otp = genOtp();
     this.timeOfMessageSending.push(Date.now());
-    return this.save().then(() => Messanger.sendSMS({
-      to: this.mobileNumber,
-      body: this.genOtpSMS()
-    }));
+    return this.save()
+      .then(() => Messanger.sendSMS({
+        to: this.mobileNumber,
+        body: this.genOtpSMS()
+      }))
+      .then(() => this.otp);
   }
   return null;
 };

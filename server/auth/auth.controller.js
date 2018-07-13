@@ -1,10 +1,20 @@
 require('module-alias/register');
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
-// const config = require('@config/config');
+const config = require('@config/config');
 const User = require('@server/user/user.model');
 const PendingUser = require('@server/pendingUser/pendingUser.model');
 
+function confirmPhone(req, res, next) {
+  PendingUser.getByMobileNumber(req.body.mobileNumber)
+    .then((user) => {
+      if (user.checkOtp(req.body.otp)) {
+        return res.json({ token: user.genActivationToken() });
+      }
+      throw APIError('Invalid one time password', httpStatus.BAD_REQUEST, true);
+    })
+    .catch(next);
+}
 function signup(req, res, next) {
   // check is user alredy registered in User DB
   User.findOne({ mobileNumber: req.body.mobileNumber })
@@ -22,7 +32,12 @@ function signup(req, res, next) {
     })
     // create or return existing user
     .then(pendingUser => pendingUser.sendOtpViaSMS())
-    .then(() => res.status(httpStatus.OK).send())
+    .then((otp) => {
+      if (config.env !== 'production') {
+        return res.json({ otp });
+      }
+      return res.status(httpStatus.OK).send();
+    })
     .catch(next);
 }
 
@@ -86,6 +101,7 @@ async function deleteAccount(req, res, next) {
 }
 
 module.exports = {
+  confirmPhone,
   signup,
   check,
   login,
