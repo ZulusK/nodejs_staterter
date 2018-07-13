@@ -34,7 +34,7 @@ const PhoneExtention = joi => ({
       name: 'isMobileNumber',
       validate(params, value, state, options) {
         const phone = phoneUtil.parseAndKeepRawInput(value, 'UA'); // TODO: replace UA -> SG
-        if (!phoneUtil.isPossibleNumber(phone)) {
+        if (!phoneUtil.isValidNumber(phone) && phoneUtil.isPossibleNumber(phone)) {
           return this.createError('string.notAPhoneNumber', { phone }, state, options);
         }
         return phoneUtil.format(phone, PNF.E164);
@@ -44,7 +44,7 @@ const PhoneExtention = joi => ({
       name: 'isLocalMobileNumber',
       validate(params, value, state, options) {
         const phone = phoneUtil.parseAndKeepRawInput(value, 'UA'); // TODO: replace UA -> SG
-        if (!phoneUtil.isPossibleNumber(phone)) {
+        if (!phoneUtil.isValidNumber(phone) && phoneUtil.isPossibleNumber(phone)) {
           return this.createError('string.notAPhoneNumber', { phone }, state, options);
         }
         if (phoneUtil.getRegionCodeForNumber(phone) !== 'UA') {

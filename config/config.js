@@ -101,7 +101,7 @@ const envVarsSchema = customJoi
     }),
     SMS_TIMEOUT: customJoi.number().when('NODE_ENV', {
       is: customJoi.string().equal('test'),
-      then: customJoi.number().default(300),
+      then: customJoi.number().default(100),
       otherwise: customJoi.number().default(1000 * 30) // production, 30 seconds
     }),
     OTP_LENGTH: customJoi.number().default(4)

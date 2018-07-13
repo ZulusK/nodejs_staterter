@@ -15,6 +15,7 @@ module.exports = {
         .string()
         .required()
         .trim()
+        .regex(/^[0-9]*$/)
         .length(config.otpLen),
       mobileNumber: customJoi
         .string()

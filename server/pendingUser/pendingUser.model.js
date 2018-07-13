@@ -45,7 +45,6 @@ PendingUserSchema.methods.checkOtp = function checkOtp(otp) {
   if (otp !== this.otp) {
     throw new APIError('Your otp is invalid', httpStatus.BAD_REQUEST, true);
   }
-  console.log(pendingTime);
   if (pendingTime > config.smsTimeout * 2) {
     throw new APIError(
       'Your one time password is outdated, please generate new one',
