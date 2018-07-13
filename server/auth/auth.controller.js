@@ -53,16 +53,11 @@ function token(req, res, next) {
 /**
  * Returns jwt token if valid username and password is provided
  */
-function login(req, res, next) {
-  User.getByCredentials(req.body)
-    .then(user => res.json({
-      user: user.publicInfo(),
-      tokens: user.genAuthTokens()
-    }))
-    .catch(() => {
-      const err = new APIError('Authentication error', httpStatus.UNAUTHORIZED, true);
-      return next(err);
-    });
+function login(req, res) {
+  return res.json({
+    user: req.user.toJSON(),
+    tokens: req.user.genAuthTokens()
+  });
 }
 /**
  * This is a protected route. Will return random number only if jwt token is provided in header.

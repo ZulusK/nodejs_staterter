@@ -5,6 +5,7 @@ const validate = require('express-validation');
 const expressJwt = require('express-jwt');
 const paramValidation = require('@config/param-validation');
 const authCtrl = require('./auth.controller');
+const basicAuth = require('@config/basicAuth');
 
 const router = express.Router(); // eslint-disable-line new-cap
 
@@ -43,6 +44,8 @@ router.route('/token').get(
  *  post:
  *      tags:
  *      - Auth
+ *      security:
+ *      - Basic
  *      description: Login into account
  *      parameters:
  *      - $ref: "#/parameters/email-b"
@@ -64,7 +67,7 @@ router.route('/token').get(
  *                  tokens:
  *                    $ref: "#/definitions/AuthTokens"
  */
-router.route('/login').post(validate(paramValidation.login), authCtrl.login);
+router.route('/login').post(basicAuth, authCtrl.login);
 
 /**
  * @swagger
@@ -112,7 +115,7 @@ router.route('/check-refresh').get(
 
 /**
  * @swagger
- * /api/auth/confirm:
+ * /api/auth/confirm-email:
  *  post:
  *      tags:
  *      - Auth
@@ -127,7 +130,7 @@ router.route('/check-refresh').get(
  *          200:
  *              $ref: "#/responses/Standard200Response"
  */
-router.route('/confirm').post(
+router.route('/confirm-email').post(
   expressJwt({
     secret: config.jwtSecretEmailConfirmation
   }),
@@ -151,7 +154,7 @@ router.route('/confirm').post(
  *          200:
  *              $ref: "#/responses/Standard200Response"
  */
-router.route('/deactivate').post(
+router.route('/deactivate-email').post(
   expressJwt({
     secret: config.jwtSecretEmailConfirmation
   }),

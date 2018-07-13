@@ -28,9 +28,47 @@ function makeUserCreateReq({ userData, phoneActivationToken }) {
     .set('Authorization', `bearer ${phoneActivationToken}`)
     .send(userData);
 }
+
+function createUser(userData) {
+  return createPendingUser(userData).then(phoneActivationToken => makeUserCreateReq({ userData, phoneActivationToken })); // eslint-disable-line max-len
+}
+
+function makeLoginReq(userData) {
+  return request(app)
+    .post('/api/auth/login')
+    .auth(userData.email, userData.password);
+}
+function createAndLoginUser(userData) {
+  return createPendingUser(userData)
+    .then(phoneActivationToken => makeUserCreateReq({ userData, phoneActivationToken }))
+    .then(res => res.body);
+}
+function makeUpdateAccessTokenReq(refreshToken) {
+  return request(app)
+    .get('/api/auth/token')
+    .set('Authorization', `bearer ${refreshToken}`);
+}
+
+function activateUserEmail(activationEmailToken) {
+  return request(app)
+    .post('/api/auth/confirm-email')
+    .set('Authorization', `bearer ${activationEmailToken}`);
+}
+
+function deactivateUserEmail(deactivationEmailToken) {
+  return request(app)
+    .post('/api/auth/deactivate-email')
+    .set('Authorization', `bearer ${deactivationEmailToken}`);
+}
 module.exports = {
+  createAndLoginUser,
+  deactivateUserEmail,
+  activateUserEmail,
+  makeUpdateAccessTokenReq,
+  makeLoginReq,
   makeUserCreateReq,
   makePhoneConfirmReq,
   makeSignupReq,
-  createPendingUser
+  createPendingUser,
+  createUser
 };

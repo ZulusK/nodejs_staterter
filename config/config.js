@@ -32,21 +32,19 @@ const envVarsSchema = customJoi
       .description('JWT refresh secret required in sign'),
     JWT_REFRESH_EXP: customJoi
       .number()
-      .required()
       .when('NODE_ENV', {
         is: customJoi.string().equal('test'),
         then: customJoi.number().default(1),
-        otherwise: customJoi.number().default(process.env.JWT_REFRESH_EXP)
+        otherwise: customJoi.number().default(60 * 60 * 24 * 30)
       })
       // .default(60 * 60 * 24 * 30) //  30 days
       .description('Lifetime of JWT refresh token'),
     JWT_ACCESS_EXP: customJoi
       .number()
-      .required()
       .when('NODE_ENV', {
         is: customJoi.string().equal('test'),
         then: customJoi.number().default(1),
-        otherwise: customJoi.number().default(process.env.JWT_ACCESS_EXP)
+        otherwise: customJoi.number().default(60 * 60)
       })
       // .default(60 * 60) // 1 hour
       .description('Lifetime of JWT access token'),
@@ -107,11 +105,10 @@ const envVarsSchema = customJoi
     OTP_LENGTH: customJoi.number().default(4),
     JWT_PHONE_CONFIRMATION_EXP: customJoi
       .number()
-      .required()
       .when('NODE_ENV', {
         is: customJoi.string().equal('test'),
         then: customJoi.number().default(1),
-        otherwise: customJoi.number().default(process.env.JWT_PHONE_CONFIRMATION_EXP)
+        otherwise: customJoi.number().default(60)
       })
       .description('Lifetime of JWT token, used after phone verification')
   })

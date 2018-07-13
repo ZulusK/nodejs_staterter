@@ -32,6 +32,7 @@ const userData = {
 };
 
 function testUserCreation() {
+  after(clean);
   let phoneActivationToken = null;
   let tokens = null;
   beforeEach((done) => {
@@ -71,7 +72,7 @@ function testUserCreation() {
   it('should not fail, verify refresh token', (done) => {
     usefullTests.expectRefreshTokenIsValid(app, tokens.refresh.token, done);
   });
-  it('should reject, used invalid email', (done) => {
+  it('should reject, use invalid email', (done) => {
     usefullReqs
       .makeUserCreateReq({
         userData: {
@@ -86,7 +87,30 @@ function testUserCreation() {
       })
       .catch(done);
   });
-  it('should reject, used already existed email', (done) => {
+  it('should reject, use invalid phone activation token', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData,
+        phoneActivationToken: '123456'
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.UNAUTHORIZED);
+        done();
+      })
+      .catch(done);
+  });
+  it('should reject, use empty phone activation token', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.UNAUTHORIZED);
+        done();
+      })
+      .catch(done);
+  });
+  it('should reject, use already existed email', (done) => {
     usefullReqs
       .makeUserCreateReq({
         userData,
@@ -102,7 +126,7 @@ function testUserCreation() {
       })
       .catch(done);
   });
-  it('should reject, used invalid password ( < 8 symbols)', (done) => {
+  it('should reject, use invalid password ( < 8 symbols)', (done) => {
     usefullReqs
       .makeUserCreateReq({
         userData: {
@@ -116,7 +140,7 @@ function testUserCreation() {
         done();
       });
   });
-  it('should reject, used invalid password ( > 20 symbols)', (done) => {
+  it('should reject, use invalid password ( > 20 symbols)', (done) => {
     usefullReqs
       .makeUserCreateReq({
         userData: {
@@ -130,7 +154,7 @@ function testUserCreation() {
         done();
       });
   });
-  it('should reject, used invalid password (without uppercase symbols)', (done) => {
+  it('should reject, use invalid password (without uppercase symbols)', (done) => {
     usefullReqs
       .makeUserCreateReq({
         userData: {
@@ -144,7 +168,7 @@ function testUserCreation() {
         done();
       });
   });
-  it('should reject, used invalid password (without lowercase symbols)', (done) => {
+  it('should reject, use invalid password (without lowercase symbols)', (done) => {
     usefullReqs
       .makeUserCreateReq({
         userData: {
@@ -158,7 +182,7 @@ function testUserCreation() {
         done();
       });
   });
-  it('should reject, used invalid password (without special symbols)', (done) => {
+  it('should reject, use invalid password (without special symbols)', (done) => {
     usefullReqs
       .makeUserCreateReq({
         userData: {
@@ -172,8 +196,7 @@ function testUserCreation() {
         done();
       });
   });
-
-  it('should not reject, used invalid fullname (used digits)', (done) => {
+  it('should not reject, use invalid fullname (use digits)', (done) => {
     usefullReqs
       .makeUserCreateReq({
         userData: {
