@@ -96,13 +96,13 @@ const envVarsSchema = customJoi
       .description('Twilio phone number for messaging'),
     SMS_LIMIT_PER_HOUR: customJoi.number().when('NODE_ENV', {
       is: customJoi.string().equal('test'),
-      then: customJoi.number().default(1000),
-      otherwise: customJoi.number().default(5)
+      then: customJoi.number().default(2),
+      otherwise: customJoi.number().default(5) // production
     }),
     SMS_TIMEOUT: customJoi.number().when('NODE_ENV', {
       is: customJoi.string().equal('test'),
-      then: customJoi.number().default(0),
-      otherwise: customJoi.number().default(30)
+      then: customJoi.number().default(300),
+      otherwise: customJoi.number().default(1000 * 30) // production, 30 seconds
     }),
     OTP_LENGTH: customJoi.number().default(4)
   })
@@ -136,9 +136,8 @@ const config = {
   twilioSid: envVars.TWILIO_SID,
   twilioPhone: envVars.TWILIO_PHONE_NUMBER,
   twilioToken: envVars.TWILIO_TOKEN,
-  smsTimeout: envVars.SMS_TIMIOUT,
+  smsTimeout: envVars.SMS_TIMEOUT,
   smsLimitPerHour: envVars.SMS_LIMIT_PER_HOUR,
   otpLen: envVars.OTP_LENGTH
 };
-
 module.exports = config;

@@ -3,7 +3,7 @@ const log = require('@config/winston');
 const client = require('twilio')(config.twilioSid, config.twilioToken);
 
 function sendSMS({ to, body }) {
-  if (config.env === 'test') {
+  if (config.env !== 'production') {
     log.debug('SENT');
     return null;
   }

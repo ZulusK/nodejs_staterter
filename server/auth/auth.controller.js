@@ -21,14 +21,7 @@ function signup(req, res, next) {
       }
     })
     // create or return existing user
-    .then(
-      pendingUser => pendingUser.sendOtpViaSMS()
-      // throw new APIError(
-      // httpStatus.BAD_REQUEST,
-      // 'You sent the maximum number of SMS to this number.',
-      // true
-      // );
-    )
+    .then(pendingUser => pendingUser.sendOtpViaSMS())
     .then(() => res.status(httpStatus.OK).send())
     .catch(next);
 }

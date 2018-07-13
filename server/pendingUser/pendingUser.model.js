@@ -5,6 +5,7 @@ const APIError = require('@helpers/APIError');
 const config = require('@config/config');
 const jwt = require('jsonwebtoken');
 const Messanger = require('@server/messanger');
+const _ = require('lodash');
 
 const PendingUserSchema = new mongoose.Schema({
   mobileNumber: {
@@ -20,42 +21,77 @@ const PendingUserSchema = new mongoose.Schema({
     type: String
   },
   timeOfMessageSending: {
-    type: [Date],
+    type: [Number],
     default: []
   }
 });
 
-PendingUserSchema.method('genOtpSMS', function genOtpSMS() {
+PendingUserSchema.methods.genOtpSMS = function genOtpSMS() {
   const body = `Here is your activation code\n${this.otp}\nYours Rush-Owl `;
   return body;
-});
+};
 
-PendingUserSchema.method('sendOtpViaSMS', function sendOtpViaSMS() {
-  this.otp = Math.floor(Math.random() * (Math.pow(10, config.otpLen - 1) * 9))
-    + Math.pow(10, config.otpLen - 1);
-  return this.save().then(() => Messanger.sendSMS({
-    to: this.mobileNumber,
-    body: this.genOtpSMS()
-  }));
-});
+function genOpt() {
+  return (
+    Math.floor(Math.random() * (Math.pow(10, config.otpLen - 1) * 9))
+    + Math.pow(10, config.otpLen - 1)
+  );
+}
+
+PendingUserSchema.methods.sendOtpViaSMS = function sendOtpViaSMS() {
+  if (this.canReceiveSMS()) {
+    this.otp = genOpt();
+    this.timeOfMessageSending.push(Date.now());
+    return this.save().then(() => Messanger.sendSMS({
+      to: this.mobileNumber,
+      body: this.genOtpSMS()
+    }));
+  }
+  return null;
+};
 /**
  * Updates times of received sms by user
  */
-PendingUserSchema.method('updateSMSTimings', function updateSMSTimings() {});
+PendingUserSchema.methods.updateSMSTimings = function updateSMSTimings() {
+  const now = Date.now();
+  this.timeOfMessageSending = _.filter(
+    this.timeOfMessageSending,
+    d => now - d <= 1000 * 3600 // one hour
+  );
+};
 /**
  * Check, can user receive sms
  */
-PendingUserSchema.method('canReceiveSMS', function canReceiveSMS() {
-  //   this.updateSMSTimings().then();
-  //   if (this.sms.timeOfMessageSending.length < config.smsLimitPerHour) {
-  //   }
-});
+PendingUserSchema.methods.canReceiveSMS = function canReceiveSMS() {
+  this.updateSMSTimings();
+  if (this.timeOfMessageSending.length === 0) {
+    return true;
+  }
+  const lastSMSTime = _.max(this.timeOfMessageSending);
+  const now = Date.now();
+  const pendingTime = now - lastSMSTime;
+  if (this.timeOfMessageSending.length < config.smsLimitPerHour) {
+    if (pendingTime > config.smsTimeout) {
+      return true;
+    }
+    throw new APIError(
+      `Please, wait ${Math.floor((config.smsTimeout - pendingTime) / 1000)} seconds`,
+      httpStatus.BAD_REQUEST,
+      true
+    );
+  }
+  throw new APIError(
+    'You sent the maximum number of SMS to this number. Please, wait',
+    httpStatus.BAD_REQUEST,
+    true
+  );
+};
 /**
  * Generate activation token
  */
-PendingUserSchema.method('genActivationToken', function genActivationToken() {
+PendingUserSchema.methods.genActivationToken = function genActivationToken() {
   return jwt.sign({ id: this.id }, config.jwtSecretPhoneConfirmation);
-});
+};
 
 /**
  * Statics

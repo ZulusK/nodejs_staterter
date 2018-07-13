@@ -1,6 +1,7 @@
 {
   "rules": {
     "no-restricted-properties":0,
+    "updateSMSTimings":0,
     "import/no-unresolved":false,
     "indent": [
       2,
