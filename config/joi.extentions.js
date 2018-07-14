@@ -47,10 +47,10 @@ const PhoneExtention = joi => ({
         if (!phoneUtil.isValidNumber(phone) && phoneUtil.isPossibleNumber(phone)) {
           return this.createError('string.notAPhoneNumber', { phone }, state, options);
         }
-        if (phoneUtil.getRegionCodeForNumber(phone) !== 'UA') {
-          // TODO: replace UA -> SG
-          return this.createError('string.notALocalPhoneNumber', { phone }, state, options);
-        }
+        // if (phoneUtil.getRegionCodeForNumber(phone) !== 'UA') {
+        //   // TODO: replace UA -> SG
+        //   return this.createError('string.notALocalPhoneNumber', { phone }, state, options);
+        // }
         // Format number in the national format.
         // return phoneUtil.format(phone, PNF.NATIONAL);
         // Format number in the international format.
