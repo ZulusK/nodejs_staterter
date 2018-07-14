@@ -95,7 +95,7 @@ const envVarsSchema = customJoi
     SMS_LIMIT_PER_HOUR: customJoi.number().when('NODE_ENV', {
       is: customJoi.string().equal('test'),
       then: customJoi.number().default(2),
-      otherwise: customJoi.number().default(5) // production
+      otherwise: customJoi.number().default(100) // production
     }),
     SMS_TIMEOUT: customJoi.number().when('NODE_ENV', {
       is: customJoi.string().equal('test'),
