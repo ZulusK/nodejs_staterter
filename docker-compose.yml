@@ -16,16 +16,14 @@ services:
 
     # Expose ports [HOST:CONTAINER}
     ports:
-      - "5050:4040"
+      - "3000:4040"
 
     # Set environment variables from this file
     env_file:
       - .env
 
     # Overwrite any env var defined in .env file (if required)
-    environment:
-      - MONGO_HOST=mongodb://mongo/outfit-checker-development
-      - DEBUG=app:*
+    # environment:
 
     # Link to containers in another service.
     # Links also express dependency between services in the same way as depends_on,
