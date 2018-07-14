@@ -70,7 +70,8 @@ async function create(req, res, next) {
       // send only to user info back to user
       return res.json({
         user: user.toJSON(),
-        tokens: user.genAuthTokens()
+        tokens: user.genAuthTokens(),
+        emailActivationToken // TODO: remove this
       });
     })
     .catch(next);
