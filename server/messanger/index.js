@@ -8,8 +8,8 @@ function sendSMS({ to, body }) {
     return null;
   }
   return client.messages.create({ to, body, from: config.twilioPhone }).then((message) => {
-    log.debug(`Sent sms to ${to} (prod)`);
-    log.debug(message.sid, message);
+    log.info(`Sent sms to ${to} (prod)`);
+    log.info(message.sid, message);
   });
 }
 

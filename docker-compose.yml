@@ -20,12 +20,10 @@ services:
 
     # Set environment variables from this file
     env_file:
-      - .env
+      - .env.docker
 
     # Overwrite any env var defined in .env file (if required)
-    environment:
-      - MONGO_HOST=mongodb://localhost:27017/rushowl-bl
-      - DEBUG=app:*
+    # environment:
 
     # Link to containers in another service.
     # Links also express dependency between services in the same way as depends_on,

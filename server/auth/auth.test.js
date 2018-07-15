@@ -114,15 +114,15 @@ function testSignup() {
         .catch(done);
     }, config.smsTimeout);
   });
-  it('should return 400, use invalid mobileNumber (invalid country code)', (done) => {
-    setTimeout(function () {
-      usefullReqs
-        .makeSignupReq({ mobileNumber: '+1 606-268-8220' })
-        .expect(httpStatus.BAD_REQUEST)
-        .then(() => done())
-        .catch(done);
-    }, config.smsTimeout);
-  });
+  // it('should return 400, use invalid mobileNumber (invalid country code)', (done) => {
+  //   setTimeout(function () {
+  //     usefullReqs
+  //       .makeSignupReq({ mobileNumber: '+1 606-268-8220' })
+  //       .expect(httpStatus.BAD_REQUEST)
+  //       .then(() => done())
+  //       .catch(done);
+  //   }, config.smsTimeout);
+  // });
   it('should return 400, use mobileNumber "+yy xxx xxx xxxx"', (done) => {
     setTimeout(function () {
       usefullReqs

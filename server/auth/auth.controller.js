@@ -1,7 +1,7 @@
 require('module-alias/register');
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
-const config = require('@config/config');
+// const config = require('@config/config');
 const User = require('@server/user/user.model');
 const PendingUser = require('@server/pendingUser/pendingUser.model');
 
@@ -32,12 +32,11 @@ function signup(req, res, next) {
     })
     // create or return existing user
     .then(pendingUser => pendingUser.sendOtpViaSMS())
-    .then((otp) => {
-      if (config.env !== 'production') {
-        return res.json({ otp });
-      }
-      return res.status(httpStatus.OK).send();
-    })
+    .then(
+      otp => res.json({ otp }) // TODO remove this
+      // }
+      // return res.status(httpStatus.OK).send();
+    )
     .catch(next);
 }
 
