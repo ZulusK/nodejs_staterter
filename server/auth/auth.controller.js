@@ -122,7 +122,11 @@ function loadUserFromConfirmationToken(req, res, next, JWTtoken) {
     return next(new APIError('Invalid token', httpStatus.BAD_REQUEST, true));
   }
 }
+function me(req, res) {
+  return res.json(req.user.toJSON);
+}
 module.exports = {
+  me,
   deactivateMailUsingGETReq,
   loadUserFromConfirmationToken,
   confirmMailUsingGETReq,

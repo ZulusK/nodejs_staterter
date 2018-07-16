@@ -67,7 +67,15 @@ router.route('/token').get(
  *                  tokens:
  *                    $ref: "#/definitions/AuthTokens"
  */
-router.route('/login').post(basicAuth, authCtrl.login);
+router
+  .route('/login')
+  .post(basicAuth, authCtrl.login)
+  .get(
+    expressJwt({
+      secret: config.jwtSecretAccess
+    }),
+    authCtrl.me
+  );
 
 /**
  * @swagger
@@ -163,5 +171,6 @@ router.route('/deactivate-email').post(
   }),
   authCtrl.deleteAccount
 );
+
 router.param('emailConfirmationToken', authCtrl.loadUserFromConfirmationToken);
 module.exports = router;

@@ -94,6 +94,12 @@ const UserSchema = new mongoose.Schema(
 );
 UserSchema.plugin(privatePaths);
 
+UserSchema.set('toJSON', { virtuals: true });
+UserSchema.set('toObject', { virtuals: true });
+
+UserSchema.virtual('securedCreditCardNumber').get(function getSecuredCreditCard() {
+  return `*${this.creditCard.number.slice(-4)}`;
+});
 // Hash the user's password before inserting a new user
 UserSchema.pre('save', function preSave(next) {
   if (this.isModified('password') || this.isNew) {
