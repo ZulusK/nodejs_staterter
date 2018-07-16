@@ -3,9 +3,11 @@ const Stop = require('@server/stop/stop.model');
 const Route = require('@server/route/route.model');
 const Bus = require('@server/bus/bus.model');
 const PendingUser = require('@server/pendingUser/pendingUser.model');
+const Event = require('@server/event/event.model');
 const log = require('@config/winston');
 const _ = require('lodash');
 const routesData = require('./routesData');
+const eventsData = require('./eventsData');
 /**
  * Fills User's DB and return saved  docs
  */
@@ -93,25 +95,40 @@ async function fillBusDB() {
   log.debug(`fill bus db with ${await Bus.countDocuments({}).exec()} docs`);
 }
 
+async function fillEventDB() {
+  const existingRoutes = await Route.find().exec();
+  return Promise.all(
+    eventsData.map((e, i) => new Event({
+      ...e,
+      routes: [existingRoutes[i % existingRoutes.length]._id],
+      startsAt: new Date(),
+      endsAt: new Date(Date.now() + 4e8 * i)
+    }).save())
+  );
+}
+
 function fillAllDBs() {
   return clear()
     .then(() => fillUserDB())
     .then(() => fillStopDB())
     .then(() => fillRouteDB())
-    .then(() => fillBusDB());
+    .then(() => fillBusDB())
+    .then(() => fillEventDB());
 }
 function clear() {
   return Promise.all([
+    Event.remove().exec(),
     PendingUser.remove().exec(),
-    User.remove({}).exec(),
-    Bus.remove({}).exec(),
-    Route.remove({}).exec(),
-    Stop.remove({}).exec()
+    User.remove().exec(),
+    Bus.remove().exec(),
+    Route.remove().exec(),
+    Stop.remove().exec()
   ]);
 }
 module.exports = {
   clear,
   fillAllDBs,
+  fillEventDB,
   fillBusDB,
   fillRouteDB,
   fillUserDB,

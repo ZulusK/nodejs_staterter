@@ -5,6 +5,29 @@ const { expect } = chai;
 const request = require('supertest-as-promised');
 const httpStatus = require('http-status');
 
+const expectEvent = (event) => {
+  expect(event).to.be.an('object');
+  expect(event).to.include.keys(
+    '_id',
+    'title',
+    'address',
+    'imageUrl',
+    'location',
+    'startsAt',
+    'routes',
+    'text'
+  );
+  expect(event.text).to.be.an('string');
+  expect(event.title).to.be.an('string');
+  expect(event.imageUrl).to.be.an('string');
+  expect(event.routes).to.be.an('array');
+  expect(event.location.coordinates)
+    .to.be.an('array')
+    .with.length(2);
+  expect(event.location.coordinates[0]).all.be.an('number');
+  expect(event.location.coordinates[1]).all.be.an('number');
+};
+
 const expectUser = (user, etaloneFields = {}) => {
   expect(user).to.be.an('object');
   expect(user).to.include.keys('_id', 'fullname', 'email', 'mobileNumber');
@@ -117,6 +140,7 @@ const expectAccessTokenIsValid = (app, token, done) => expectTokenIsValid('/api/
 const expectRefreshTokenIsValid = (app, token, done) => expectTokenIsValid('/api/auth/check-refresh', app, token, done);
 
 module.exports = {
+  expectEvent,
   expectRefreshTokenIsValid,
   expectAccessTokenIsValid,
   expectTokenIsValid,

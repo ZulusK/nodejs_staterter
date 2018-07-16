@@ -1,4 +1,4 @@
-const Stop = require('./stop.model');
+const Event = require('./event.model');
 const { ObjectId } = require('mongoose').Types;
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
@@ -10,16 +10,16 @@ function load(req, res, next, id) {
       .status(httpStatus.BAD_REQUEST)
       .json({ message: 'Parameter id is not a valid object id' });
   }
-  return Stop.get(id)
-    .then((stop) => {
-      req.$stop = stop; // eslint-disable-line no-param-reassign
+  return Event.get(id)
+    .then((event) => {
+      req.$event = event; // eslint-disable-line no-param-reassign
       return next();
     })
     .catch(next);
 }
 
 function get(req, res) {
-  return res.json(req.$stop.toJSON());
+  return res.json(req.$event.toJSON());
 }
 
 function create() {
@@ -28,15 +28,15 @@ function create() {
 
 function list(req, res, next) {
   const { limit = 50, skip = 0 } = req.query;
-  Stop.list({ limit, skip })
-    .then(events => res.json(events.map(e => e.toJSON())))
+  Event.list({ limit, skip })
+    .then(events => res.json(events))
     .catch(next);
 }
 
 function remove(req, res, next) {
-  req.$stop
+  req.$event
     .remove()
-    .then(removedStop => res.json(removedStop.toJSON()))
+    .then(removedEvent => res.json(removedEvent.publicInfo()))
     .catch(next);
 }
 module.exports = {

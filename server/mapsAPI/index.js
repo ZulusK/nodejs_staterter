@@ -3,4 +3,13 @@
 //   key: config.gmApiKey
 // });
 
-// module.exports = {};
+/**
+ * Returns decoded address into GeoJSON object
+ */
+function decodeAddress(/* address */) {
+  return {
+    type: 'Point',
+    coordinates: [1, 2]
+  };
+}
+module.exports = { decodeAddress };

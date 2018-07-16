@@ -53,6 +53,7 @@ function sendEmailActivation({ email, token, fullname }) {
 }
 
 module.exports = {
-  sendEmailActivation: config.env === 'production' ? sendEmailActivation : () => {} // send mails only in production
-  // sendEmailActivation
+  // sendEmailActivation: config.env === 'production'
+  // ? sendEmailActivation : () => {} // send mails only in production
+  sendEmailActivation
 };
