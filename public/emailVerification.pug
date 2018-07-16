@@ -114,7 +114,7 @@ body(style='width:100% !important;-webkit-text-size-adjust:100%;-ms-text-size-ad
                                 tr
                                     td(align='left', style='padding: 0 56px;', valign='top')
                                         div
-                                            a(style="background-color:#E15718;border-radius:50px;color:#ffffff;display:inline-block;font-family: 'lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:18px;line-height:44px;text-align:center;text-decoration:none;width:250px;-webkit-text-size-adjust:none;", href=host+'/api/auth/confirm/'+token) Confirm
+                                            a(style="background-color:#E15718;border-radius:50px;color:#ffffff;display:inline-block;font-family: 'lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:18px;line-height:44px;text-align:center;text-decoration:none;width:250px;-webkit-text-size-adjust:none;", href=host+'/api/auth/confirm--email/'+token) Confirm
                                 tr
                                     td(align='left', style='padding: 28px 56px 28px 56px;', valign='top')
                 table(align='center', border='0', cellpadding='0', cellspacing='0', width='100%')
@@ -122,7 +122,7 @@ body(style='width:100% !important;-webkit-text-size-adjust:100%;-ms-text-size-ad
                         td(align='center', style='padding: 30px 56px 28px 56px;', valign='middle')
                             span(style='font-family: "lato", "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 28px;font-size: 16px; color: #A7ADB5; vertical-align: middle;')
                                 | If this email doesn't make any sense, please 
-                                a(href=host+'/api/auth/deactivate/'+token) let us know
+                                a(href=host+'/api/auth/deactivate-email/'+token) let us know
                                 | !
                     tr
     td(width='10', valign='top')  

@@ -241,7 +241,10 @@ function testLogin() {
     mobileNumber: '+380500112836',
     email: 'sample.mail@mail.com',
     fullname: 'John Stark',
-    password: '123Asd@dmvc7'
+    password: '123Asd@dmvc7',
+    creditCardNumber: '4111111111111111',
+    creditCardCVV: '456',
+    creditCardExpDate: '11/19'
   };
   before((done) => {
     clean(() => usefullReqs.createUser(userData).then((res) => {
@@ -258,6 +261,9 @@ function testLogin() {
         expect(res.status).to.be.eq(httpStatus.OK);
         const etaloneData = { ...userData };
         delete etaloneData.password;
+        delete etaloneData.creditCardNumber;
+        delete etaloneData.creditCardCVV;
+        delete etaloneData.creditCardExpDate;
         usefullTests.expectUser(res.body.user, etaloneData);
         done();
       })
@@ -300,7 +306,10 @@ function testUpdateAccessToken() {
     mobileNumber: '+380500112836',
     email: 'sample.mail@mail.com',
     fullname: 'John Stark',
-    password: '123Asd@dmvc7'
+    password: '123Asd@dmvc7',
+    creditCardNumber: '4111111111111111',
+    creditCardCVV: '456',
+    creditCardExpDate: '11/19'
   };
   let tokens = null;
   before((done) => {
@@ -343,7 +352,10 @@ function testCheckAccessToken() {
     mobileNumber: '+380500112836',
     email: 'sample.mail@mail.com',
     fullname: 'John Stark',
-    password: '123Asd@dmvc7'
+    password: '123Asd@dmvc7',
+    creditCardNumber: '4111111111111111',
+    creditCardCVV: '456',
+    creditCardExpDate: '11/19'
   };
   let tokens = null;
   before((done) => {
@@ -401,7 +413,10 @@ function testCheckRefreshToken() {
     mobileNumber: '+380500112836',
     email: 'sample.mail@mail.com',
     fullname: 'John Stark',
-    password: '123Asd@dmvc7'
+    password: '123Asd@dmvc7',
+    creditCardNumber: '4111111111111111',
+    creditCardCVV: '456',
+    creditCardExpDate: '11/19'
   };
   let tokens = null;
   before((done) => {
@@ -459,7 +474,10 @@ function testConfirmEmail() {
     mobileNumber: '+380500112836',
     email: 'sample.mail@mail.com',
     fullname: 'John Stark',
-    password: '123Asd@dmvc7'
+    password: '123Asd@dmvc7',
+    creditCardNumber: '4111111111111111',
+    creditCardCVV: '456',
+    creditCardExpDate: '11/19'
   };
   let activationEmailToken = null;
   before((done) => {
@@ -500,7 +518,10 @@ function testEmailDeactivate() {
     mobileNumber: '+380500112836',
     email: 'sample.mail@mail.com',
     fullname: 'John Stark',
-    password: '123Asd@dmvc7'
+    password: '123Asd@dmvc7',
+    creditCardNumber: '4111111111111111',
+    creditCardCVV: '456',
+    creditCardExpDate: '11/19'
   };
   let activationEmailToken = null;
   before((done) => {

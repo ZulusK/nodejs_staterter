@@ -10,24 +10,6 @@ const router = express.Router(); // eslint-disable-line new-cap
 /**
  * @swagger
  * /api/users:
- *  get:
- *      tags:
- *      - User
- *      description: Returns list of entities
- *      parameters:
- *      - $ref: "#/parameters/limit"
- *      - $ref: "#/parameters/skip"
- *      produces:
- *          - application/json
- *      responses:
- *          400:
- *            $ref: "#/responses/Standard400Response"
- *          200:
- *              description: list of entities
- *              schema:
- *                type: array
- *                items:
- *                  $ref: "#/definitions/User"
  *  post:
  *      tags:
  *      - User
@@ -58,7 +40,6 @@ const router = express.Router(); // eslint-disable-line new-cap
  */
 router
   .route('/')
-  .get(userCtrl.list)
   .post(
     expressJwt({
       secret: config.jwtSecretPhoneConfirmation

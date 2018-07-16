@@ -137,6 +137,9 @@ router.route('/confirm-email').post(
   authCtrl.confirmMail
 );
 
+router.get('/confirm-email/:emailConfirmationToken', authCtrl.confirmMailUsingGETReq);
+router.get('/deactivate-email/:emailConfirmationToken', authCtrl.deactivateMailUsingGETReq);
+
 /**
  * @swagger
  * /api/auth/deactivate:
@@ -160,5 +163,5 @@ router.route('/deactivate-email').post(
   }),
   authCtrl.deleteAccount
 );
-
+router.param('emailConfirmationToken', authCtrl.loadUserFromConfirmationToken);
 module.exports = router;

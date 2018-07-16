@@ -1,9 +1,10 @@
 require('module-alias/register');
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
-// const config = require('@config/config');
+const config = require('@config/config');
 const User = require('@server/user/user.model');
 const PendingUser = require('@server/pendingUser/pendingUser.model');
+const jwt = require('jsonwebtoken');
 
 function confirmPhone(req, res, next) {
   PendingUser.getByMobileNumber(req.body.mobileNumber)
@@ -22,8 +23,8 @@ function signup(req, res, next) {
     .then((user) => {
       if (user) {
         throw new APIError(
-          httpStatus.FORBIDDEN,
           'User with this mobile number already exist',
+          httpStatus.FORBIDDEN,
           true
         );
       } else {
@@ -73,10 +74,10 @@ function check(req, res) {
 async function confirmMail(req, res, next) {
   const user = await User.findById(req.user.id).exec();
   if (user.isEmailConfirmed) {
-    return next(new APIError('This account is already activated', httpStatus.BAD_REQUEST, true));
+    return next(new APIError('This email is already activated', httpStatus.BAD_REQUEST, true));
   }
   await user.update({ isEmailConfirmed: true });
-  return res.json({ message: 'activated' });
+  return res.json({ message: 'email activated' });
 }
 
 /**
@@ -94,7 +95,37 @@ async function deleteAccount(req, res, next) {
   return res.json({ message: 'deleted' });
 }
 
+async function confirmMailUsingGETReq(req, res, next) {
+  if (req.$user.isEmailConfirmed) {
+    return next(new APIError('This email is already activated', httpStatus.BAD_REQUEST, true));
+  }
+  await req.$user.update({ isEmailConfirmed: true });
+  return res.json({ message: 'email activated' });
+}
+async function deactivateMailUsingGETReq(req, res, next) {
+  if (req.$user.isEmailConfirmed) {
+    return next(new APIError('This account is already activated', httpStatus.BAD_REQUEST, true));
+  }
+  await req.$user.remove();
+  return res.json({ message: 'deleted' });
+}
+function loadUserFromConfirmationToken(req, res, next, JWTtoken) {
+  try {
+    const decoded = jwt.verify(JWTtoken, config.jwtSecretEmailConfirmation);
+    return User.get(decoded.id)
+      .then((user) => {
+        req.$user = user;
+        return next();
+      })
+      .catch(next);
+  } catch (err) {
+    return next(new APIError('Invalid token', httpStatus.BAD_REQUEST, true));
+  }
+}
 module.exports = {
+  deactivateMailUsingGETReq,
+  loadUserFromConfirmationToken,
+  confirmMailUsingGETReq,
   confirmPhone,
   signup,
   check,

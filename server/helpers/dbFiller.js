@@ -49,7 +49,6 @@ async function fillStopDB() {
  */
 async function fillRouteDB() {
   await Route.remove({}).exec();
-
   await Promise.all(
     routesData.map(async (r) => {
       const origin = (await Stop.findOne({ name: r.origin.name }).exec())._id;

@@ -2,6 +2,7 @@ const validator = require('validator');
 const PNF = require('google-libphonenumber').PhoneNumberFormat;
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 const mongoose = require('mongoose');
+const creditCardValidator = require('card-validator');
 
 const EmailExtention = joi => ({
   base: joi.string(),
@@ -17,6 +18,50 @@ const EmailExtention = joi => ({
           return value;
         }
         return this.createError('string.notAnEmail', { email: value }, state, options);
+      }
+    }
+  ]
+});
+
+const CreditCardExtention = joi => ({
+  base: joi.string(),
+  name: 'string',
+  language: {
+    notACreditCard: 'This string is not a valid credit card number',
+    notACVV: 'This string is not a valid CVV for a credit card',
+    notAnExpirationDate: 'This string is not a valid expiration date of a credit card'
+  },
+  rules: [
+    {
+      name: 'isCreditCardNumber',
+      validate(params, value, state, options) {
+        const numberValidation = creditCardValidator.number(value);
+        if (!numberValidation.isValid) {
+          return this.createError('string.notACreditCard', { value }, state, options);
+        }
+        return value;
+      }
+    },
+    {
+      name: 'isCreditCardCVV',
+      validate(params, value, state, options) {
+        if (!creditCardValidator.cvv(value).isValid) {
+          return this.createError('string.notACVV', { value }, state, options);
+        }
+        return value;
+      }
+    },
+    {
+      name: 'isCreditCardExpirationDate',
+      validate(params, value, state, options) {
+        const parsedExpDate = creditCardValidator.expirationDate(value);
+        if (!parsedExpDate.isValid) {
+          return this.createError('string.notAnExpirationDate', { value }, state, options);
+        }
+        return {
+          month: parsedExpDate.month,
+          year: parsedExpDate.year
+        };
       }
     }
   ]
@@ -82,6 +127,7 @@ const ObjectIdExtention = joi => ({
 
 module.exports = {
   EmailExtention,
+  CreditCardExtention,
   PhoneExtention,
   ObjectIdExtention
 };

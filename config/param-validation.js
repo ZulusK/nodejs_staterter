@@ -5,7 +5,8 @@ const config = require('./config');
 const customJoi = Joi.extend([
   JoiExt.ObjectIdExtention,
   JoiExt.EmailExtention,
-  JoiExt.PhoneExtention
+  JoiExt.PhoneExtention,
+  JoiExt.CreditCardExtention
 ]);
 
 module.exports = {
@@ -52,6 +53,21 @@ module.exports = {
   // POST /api/users
   createUser: {
     body: {
+      creditCardNumber: customJoi
+        .string()
+        .trim()
+        .required()
+        .isCreditCardNumber(),
+      creditCardCVV: customJoi
+        .string()
+        .trim()
+        .required()
+        .isCreditCardCVV(),
+      creditCardExpDate: customJoi
+        .string()
+        .trim()
+        .required()
+        .isCreditCardExpirationDate(),
       email: customJoi
         .string()
         .trim()

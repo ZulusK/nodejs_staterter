@@ -28,7 +28,10 @@ const userData = {
   email: 'test.mail@gmail.com',
   password: 'lorDss98$',
   fullname: 'John Smith',
-  mobileNumber: '+380500121255'
+  mobileNumber: '+380500121255',
+  creditCardNumber: '4111111111111111',
+  creditCardCVV: '456',
+  creditCardExpDate: '11/19'
 };
 
 function testUserCreation() {
@@ -50,6 +53,9 @@ function testUserCreation() {
         expect(res.status).to.be.eq(httpStatus.OK);
         const etaloneData = { ...userData };
         delete etaloneData.password;
+        delete etaloneData.creditCardNumber;
+        delete etaloneData.creditCardCVV;
+        delete etaloneData.creditCardExpDate;
         usefullTests.expectUser(res.body.user, etaloneData);
         done();
       })
@@ -202,6 +208,132 @@ function testUserCreation() {
         userData: {
           ...userData,
           fullname: 'Joe2'
+        },
+        phoneActivationToken
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.BAD_REQUEST);
+        done();
+      });
+  });
+  it('should reject, use invalid creditCardNumber (<15 symbols)', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData: {
+          ...userData,
+          creditCardNumber: '411111111111'
+        },
+        phoneActivationToken
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.BAD_REQUEST);
+        done();
+      });
+  });
+  it('should reject, use invalid creditCardNumber (>15 symbols)', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData: {
+          ...userData,
+          creditCardNumber: '41111111111112341234'
+        },
+        phoneActivationToken
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.BAD_REQUEST);
+        done();
+      });
+  });
+  it('should reject, use invalid creditCardNumber (invalid symbols)', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData: {
+          ...userData,
+          creditCardNumber: '41111111111111A1'
+        },
+        phoneActivationToken
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.BAD_REQUEST);
+        done();
+      });
+  });
+  it('should reject, use invalid creditCardCVV (<3 symbols)', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData: {
+          ...userData,
+          creditCardCVV: '12'
+        },
+        phoneActivationToken
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.BAD_REQUEST);
+        done();
+      });
+  });
+  it('should reject, use invalid creditCardCVV (>3 symbols)', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData: {
+          ...userData,
+          creditCardCVV: '4555'
+        },
+        phoneActivationToken
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.BAD_REQUEST);
+        done();
+      });
+  });
+  it('should reject, use invalid creditCardCVV (invalid symbols)', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData: {
+          ...userData,
+          creditCardCVV: '45a'
+        },
+        phoneActivationToken
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.BAD_REQUEST);
+        done();
+      });
+  });
+  it('should reject, use invalid creditCardExpDate (invalid symbols)', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData: {
+          ...userData,
+          creditCardExpDate: '45a'
+        },
+        phoneActivationToken
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.BAD_REQUEST);
+        done();
+      });
+  });
+  it('should reject, use invalid creditCardExpDate (too match symbols)', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData: {
+          ...userData,
+          creditCardExpDate: '1230303'
+        },
+        phoneActivationToken
+      })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.BAD_REQUEST);
+        done();
+      });
+  });
+  it('should reject, use invalid creditCardExpDate (too less symbols)', (done) => {
+    usefullReqs
+      .makeUserCreateReq({
+        userData: {
+          ...userData,
+          creditCardExpDate: '12'
         },
         phoneActivationToken
       })

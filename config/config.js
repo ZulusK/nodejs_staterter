@@ -135,7 +135,7 @@ const config = {
   emailAddress: envVars.EMAIL_ADDRESS,
   emailPassword: envVars.EMAIL_PASSWORD,
   publicDir: path.join(__dirname, '..', 'public'),
-  host: envVars.NODE_ENV === 'production' ? '' : 'http://localhost:3000',
+  host: envVars.NODE_ENV === 'production' ? 'http://178.128.7.224:3000' : 'http://localhost:3000',
   jwtSecretEmailConfirmation: envVars.JWT_SECRET_EMAIL_CONFIRMATION,
   jwtSecretPhoneConfirmation: envVars.JWT_SECRET_PHONE_CONFIRMATION,
   gmApiKey: envVars.GOOGLE_MAPS_API_KEY,

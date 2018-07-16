@@ -43,7 +43,12 @@ function createNewUser({ req, pendingUser }) {
     email: req.body.email,
     fullname: req.body.fullname,
     mobileNumber: pendingUser.mobileNumber,
-    password: req.body.password
+    password: req.body.password,
+    creditCard: {
+      number: req.body.creditCardNumber,
+      cvv: req.body.creditCardCVV,
+      expirationDate: req.body.creditCardExpDate
+    }
   }).save();
 }
 

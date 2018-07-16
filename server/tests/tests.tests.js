@@ -8,7 +8,14 @@ const httpStatus = require('http-status');
 const expectUser = (user, etaloneFields = {}) => {
   expect(user).to.be.an('object');
   expect(user).to.include.keys('_id', 'fullname', 'email', 'mobileNumber');
-  expect(user).to.not.include.keys('password');
+  expect(user).to.not.include.keys(
+    'password',
+    'creditCard',
+    'creditCardExpDate',
+    'creditCardCVV',
+    'creditCardNumber'
+  );
+
   Object.keys(etaloneFields).forEach((key) => {
     expect(user[key]).to.be.equal(etaloneFields[key]);
   });

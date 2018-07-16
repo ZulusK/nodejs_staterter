@@ -6,7 +6,6 @@ const bcrypt = require('bcrypt');
 const privatePaths = require('mongoose-private-paths');
 const config = require('@config/config');
 const jwt = require('jsonwebtoken');
-
 /**
  * @swagger
  * definitions:
@@ -70,6 +69,25 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
       private: true
+    },
+    creditCard: {
+      private: true,
+      required: true,
+      type: {
+        number: {
+          type: String,
+          required: true
+        },
+        cvv: {
+          type: String,
+          required: true
+        },
+        expirationDate: {
+          required: true,
+          month: String,
+          year: String
+        }
+      }
     }
   },
   { timestamps: true }
