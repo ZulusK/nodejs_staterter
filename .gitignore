@@ -65,3 +65,5 @@ data/
 
 # yarn 
 yarn.lock
+
+.env.docker
