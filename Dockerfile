@@ -17,8 +17,8 @@ RUN yarn --pure-lockfile
 # copy all file from current dir to /app in container
 COPY . /app/
 
-# expose port 4040
-# EXPOSE 4040
+# expose port 3000
+EXPOSE 3000
 
 
 # cmd to start service

@@ -16,11 +16,11 @@ services:
 
     # Expose ports [HOST:CONTAINER}
     ports:
-      - "3000:4040"
+      - "3000:3000"
 
     # Set environment variables from this file
     env_file:
-      - .env
+      - .env.docker
 
     # Overwrite any env var defined in .env file (if required)
     # environment:
