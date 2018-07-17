@@ -35,6 +35,8 @@
     "method-override": "^3.0.0",
     "module-alias": "^2.1.0",
     "morgan": "^1.9.0",
+    "swagger-jsdoc": "^1.9.7",
+    "swagger-ui-express": "^3.0.10",
     "validator": "^10.4.0",
     "winston": "^3.0.0"
   },

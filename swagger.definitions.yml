@@ -1,0 +1,8 @@
+definitions:
+  User:
+    name: User
+    type: Obejct
+    properties:
+      email:
+        type: string
+        format: email
