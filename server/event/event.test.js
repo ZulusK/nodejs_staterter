@@ -18,9 +18,8 @@ describe('## Events APIs', () => {
   before((done) => {
     filler
       .clear()
-      .then(() => filler.fillStopDB())
-      .then(() => filler.fillRouteDB())
-      .then(() => filler.fillEventDB())
+      .then(() => filler.fillAllDBs())
+      .then(() => Event.find().exec())
       .then((savedEvents) => {
         events = savedEvents;
         done();

@@ -23,6 +23,10 @@ const EventSchema = new mongoose.Schema({
   location: {
     type: mongoose.Schema.Types.Point
   },
+  formattedAddress: {
+    type: String,
+    trim: true
+  },
   address: {
     type: String,
     trim: true,
@@ -42,13 +46,20 @@ const EventSchema = new mongoose.Schema({
   }
 });
 
-EventSchema.index({ location: '2dsphere' });
+// EventSchema.index({ location: '2dsphere' });
 
 EventSchema.pre('save', function preSave(next) {
   if (this.isNew || this.isModified('address')) {
-    this.location = gmAPI.decodeAddress(this.address);
+    return gmAPI.decodeAddress(this.address).then((result) => {
+      this.formattedAddress = result.formatted_address;
+      this.location = {
+        type: 'Point',
+        coordinates: [result.geometry.location.lng, result.geometry.location.lat]
+      };
+      next();
+    });
   }
-  next();
+  return next();
 });
 
 /**

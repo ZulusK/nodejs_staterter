@@ -97,7 +97,7 @@ async function fillBusDB() {
 
 async function fillEventDB() {
   const existingRoutes = await Route.find().exec();
-  return Promise.all(
+  await Promise.all(
     eventsData.map((e, i) => new Event({
       ...e,
       routes: [existingRoutes[i % existingRoutes.length]._id],
@@ -105,6 +105,7 @@ async function fillEventDB() {
       endsAt: new Date(Date.now() + 4e8 * i)
     }).save())
   );
+  log.debug(`fill event db with ${await Event.countDocuments({}).exec()} docs`);
 }
 
 function fillAllDBs() {
