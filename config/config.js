@@ -108,7 +108,7 @@ const envVarsSchema = customJoi
       .when('NODE_ENV', {
         is: customJoi.string().equal('test'),
         then: customJoi.number().default(1),
-        otherwise: customJoi.number().default(60)
+        otherwise: customJoi.number().default(60 * 60)
       })
       .description('Lifetime of JWT token, used after phone verification')
   })
