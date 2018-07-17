@@ -2,6 +2,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const router = require('express').Router();
 const fs = require('fs');
+const YAML = require('json2yaml');
 
 const swaggerDefinition = {
   // API informations (required)
@@ -28,7 +29,7 @@ if (module.parent) {
   );
   module.exports = router;
 } else {
-  const outFileName = process.argv.length > 2 ? process.argv[2] : 'api.spec.json';
-  fs.writeFileSync(outFileName, JSON.stringify(swaggerSpec));
+  const outFileName = process.argv.length > 2 ? process.argv[2] : 'api.spec.yaml';
+  fs.writeFileSync(outFileName, YAML.stringify(swaggerSpec));
 }
 // // TODO: disable on production, because it uses a lot of memory
