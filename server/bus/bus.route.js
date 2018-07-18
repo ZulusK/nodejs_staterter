@@ -7,18 +7,67 @@ const config = require('@config/config');
 const expressJwt = require('express-jwt');
 
 const router = express.Router(); // eslint-disable-line new-cap
+/**
+ * @swagger
+ * /api/buses:
+ *  get:
+ *      tags:
+ *      - Bus
+ *      summary: Returns list of all buses
+ *      parameters:
+ *      - $ref: "#/parameters/limit-q"
+ *      - $ref: "#/parameters/skip-q"
+ *      produces:
+ *          - application/json
+ *      responses:
+ *          200:
+ *              description: list of buses
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: "#/definitions/Bus"
+ */
+router.route('/').get(busCtrl.list);
 
-router
-  .route('/')
-  .get(busCtrl.list)
-  .post(
-    expressJwt({
-      secret: config.jwtSecretRefresh
-    }),
-    // validate(paramValidation.createBus),
-    busCtrl.create
-  );
-
+/**
+ * @swagger
+ * /api/buses/{id}:
+ *  delete:
+ *      security:
+ *      - JWT:[]
+ *      tags:
+ *      - Bus
+ *      summary: Delete bus by it's id
+ *      description: send JWT access token in header
+ *      parameters:
+ *      - $ref: "#/parameters/id-p"
+ *      produces:
+ *          - application/json
+ *      responses:
+ *          401:
+ *              $ref: "#/responses/401Response"
+ *          404:
+ *              $ref: "#/responses/404Response"
+ *          200:
+ *              description: Returns deleted bus
+ *              schema:
+ *                  $ref: "#/definitions/Bus"
+ *  get:
+ *      tags:
+ *      - Bus
+ *      summary: Get bus by id
+ *      parameters:
+ *      - $ref: "#/parameters/id-p"
+ *      produces:
+ *          - application/json
+ *      responses:
+ *          200:
+ *              description: Target bus
+ *              schema:
+ *                  $ref: "#/definitions/Bus-full"
+ *          404:
+ *              $ref: "#/responses/404Response"
+ */
 router
   .route('/:busId')
   .get(busCtrl.get)

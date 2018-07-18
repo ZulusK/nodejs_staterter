@@ -4,6 +4,23 @@ const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
 // const config = require('@config/config');
 
+/**
+ * @swagger
+ * definitions:
+ *  Stop:
+ *    summary: Defines public stop model
+ *    type: object
+ *    properties:
+ *      name:
+ *        type: string
+ *        example: "Tan Tye Place"
+ *      _id:
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439443
+ *      location:
+ *        $ref: "#/definitions/Point"
+ */
 const StopSchema = new mongoose.Schema({
   name: {
     type: String,

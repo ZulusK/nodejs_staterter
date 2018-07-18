@@ -1,0 +1,12 @@
+---
+  info: 
+    title: "Comics-space"
+    version: "1.0.0"
+    description: "API for Comics-space app"
+  swagger: "2.0"
+  paths: {}
+  definitions: {}
+  responses: {}
+  parameters: {}
+  securityDefinitions: {}
+  tags: []

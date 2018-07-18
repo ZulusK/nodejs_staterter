@@ -1,0 +1,147 @@
+tags:
+- name: Route
+  description: Operation with routes
+- name: Bus
+  description: Operation with buses
+- name: Stop
+  description: Operation with stops
+- name: Event
+  description: Operation with events  
+- name: Auth
+  description: Operation with authorization
+- name: User
+  description: Operations with users   
+securityDefinitions:
+  Basic:
+    type: basic
+  JWT:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header" 
+    template: "Bearer {apiKey}"
+responses:
+  200Response:
+    description: Success   
+  400Response:
+    description: Bad request
+  401Response:
+    description: Unauthorized
+  404Response:
+    description: Not found     
+  500Response:
+    description: Internal server error   
+basePath: /api/
+schemes:
+ - http        
+parameters:
+  otp-b:
+      name: otp
+      description: OTP, received on mobile phone
+      in: body
+      type: integer
+      format: int32
+      maximum: 9999
+      minimum: 0000
+      example: 1234
+  mobileNumber-b:
+      name: mobileNumber
+      description: Phone number of user
+      in: body
+      type: string  
+      required: true
+      example: "+380651232344"   
+  creditCardNumber-b:
+    name: creditCardNumber
+    description: number of credit card      
+    in: body
+    type: string
+    required: true
+    example: "41111111111111111"
+  creditCardCVV-b:
+    name: creditCardCVV
+    description: CVV of credit card      
+    in: body
+    type: string
+    required: true
+    example: "123"  
+  creditCardExpDate-b:
+    name: creditCardExpDate
+    description: Expiration date of credit card      
+    in: body
+    type: string
+    required: true
+    example: "12/19" 
+  fullname-b:  
+      name: fullname
+      description: Fullname of user, displayed to others
+      in: body
+      type: string
+      pattern: "^[a-zA-Z '.-]*$"
+      required: true
+  email-b:
+      name: email
+      in: body
+      type: string
+      format: email
+      required: true
+      example: "some.mail@mail.com"
+  password-b:
+      name: password
+      in: body
+      type: string
+      format: password
+      required: true
+      pattern: "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,20}$"
+  limit-q:
+      name: limit
+      in: query
+      description: Number of entities returned  
+      type: integer
+      format: int32
+      minimum: 1
+      default: 50
+  skip-q:  
+      name: skip
+      in: query
+      description: Offset from the beginning of the list  
+      type: integer
+      format: int32
+      minimum: 0
+      default: 0   
+  id-p:
+      name: id
+      description: id of target object
+      in: path
+      type: string
+      format: byte
+      example: 507f1f77bcf86cd799439011               
+definitions:
+  Point:
+    description: container for GeoJSON object Point
+    type: object
+    properties:
+      coordinates: 
+        type: array
+        items:
+          type: integer
+          format: float
+  Token:
+    type: object
+    description:  container for JWT token and it's expiration time
+    properties:
+      expiredIn:
+        description:  seconds, after that token will be outdated
+        type: integer
+        format: int32
+      token:
+        description:  string, represents JWT-token
+        type: string
+        example: "xxx.yyy.zzz"
+  AuthTokens:
+    type: object
+    properties:
+      access:
+        $ref: "#/definitions/Token"
+      refresh:
+        $ref: "#/definitions/Token"    
+            

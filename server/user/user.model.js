@@ -6,30 +6,33 @@ const bcrypt = require('bcrypt');
 const privatePaths = require('mongoose-private-paths');
 const config = require('@config/config');
 const jwt = require('jsonwebtoken');
+
 /**
  * @swagger
  * definitions:
  *  User:
+ *    summary: Defines public user model
  *    type: object
  *    properties:
  *      email:
- *        description: email of a user
  *        type: string
  *        format: email
+ *        example: "some.mail@mail.com"
+ *      fullname:
+ *        type: string
+ *        expamle: "Johnny Stark"
  *      _id:
  *        type: string
  *        format: byte
  *        example: 507f1f77bcf86cd799439011
- *      fullname:
- *        type: string
- *        example: "John Smith"
  *      isEmailConfirmed:
  *        type: boolean
- *        description: flag telling whether the user had already activated the e-mail
  *      mobileNumber:
  *        type: string
- *        description: Phone number of user
  *        example: "+65 XXXX XXXX"
+ *      securedCreditCardNumber:
+ *        type: string
+ *        example: "*1234"
  *      createdAt:
  *        type: string
  *        example: 'Fri Jul 13 2018 02:23:45'

@@ -147,4 +147,5 @@ const config = {
   otpLen: envVars.OTP_LENGTH,
   jwtExpPhoneConfrimation: envVars.JWT_PHONE_CONFIRMATION_EXP
 };
+
 module.exports = config;

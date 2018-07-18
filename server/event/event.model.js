@@ -5,6 +5,86 @@ const APIError = require('@helpers/APIError');
 // const config = require('@config/config');
 const gmAPI = require('@server/mapsAPI');
 
+/**
+ * @swagger
+ * definitions:
+ *  Event:
+ *    summary: Defines short public event model
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439011
+ *      name:
+ *        type: string
+ *        example: "New year"
+ *      text:
+ *        type: string
+ *        example: "Lorem ipsum..."
+ *      address:
+ *        type: string
+ *        example: "River Valley"
+ *      createdAt:
+ *        type: string
+ *        example: 'Fri Jul 13 2018 02:23:45'
+ *        description: Date of event's starts
+ *      imageUrl:
+ *        type: string
+ *        example: 'http://some.utl.com/image.jpeg'
+ *      endsAt:
+ *        type: string
+ *        example: 'Fri Jul 13 2018 02:23:45'
+ *        description: Date of event's ends
+ *      formattedAddress:
+ *        type: string
+ *        example: "3 River Valley Rd, Sg 179024"
+ *      location:
+ *        $ref: "#/definitions/Point"
+ *      routes:
+ *        type: array
+ *        items:
+ *          type: string
+ *          format: byte
+ *          example: 507f1f77bcf86cd799439011
+ *  Event-full:
+ *    summary: Defines full public event model
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439011
+ *      name:
+ *        type: string
+ *        example: "New year"
+ *      text:
+ *        type: string
+ *        example: "Lorem ipsum..."
+ *      address:
+ *        type: string
+ *        example: "River Valley"
+ *      createdAt:
+ *        type: string
+ *        example: 'Fri Jul 13 2018 02:23:45'
+ *        description: Date of event's starts
+ *      imageUrl:
+ *        type: string
+ *        example: 'http://some.utl.com/image.jpeg'
+ *      endsAt:
+ *        type: string
+ *        example: 'Fri Jul 13 2018 02:23:45'
+ *        description: Date of event's ends
+ *      formattedAddress:
+ *        type: string
+ *        example: "3 River Valley Rd, Sg 179024"
+ *      location:
+ *        $ref: "#/definitions/Point"
+ *      routes:
+ *        type: array
+ *        items:
+ *          $ref: "#/definitions/Route"
+ */
 const EventSchema = new mongoose.Schema({
   title: {
     type: String,

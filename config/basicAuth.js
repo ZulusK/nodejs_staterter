@@ -3,7 +3,15 @@ const User = require('@server/user/user.model');
 const APIError = require('@helpers/APIError');
 const httpStatus = require('http-status');
 
-module.exports = (req, res, next) => {
+/**
+ * Authentificate user in request, usign basic auth
+ * @module config
+ * @function
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+function basicAuth(req, res, next) {
   try {
     const { name: email, pass: password } = auth(req);
     return User.getByCredentials({ email, password })
@@ -15,4 +23,5 @@ module.exports = (req, res, next) => {
   } catch (err) {
     return next(new APIError('Authentication error', httpStatus.UNAUTHORIZED, true));
   }
-};
+}
+module.exports = basicAuth;

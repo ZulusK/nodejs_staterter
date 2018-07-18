@@ -67,3 +67,5 @@ data/
 yarn.lock
 
 .env.docker
+
+docs/
