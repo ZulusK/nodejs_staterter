@@ -2,6 +2,7 @@
 ## Documentation
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/3031705/RWM9wqyS)
 
+View all [API docs](https://fulcrumi.github.io/rushowl-be-bl/)
 You are also can view swagger docs on `/api/docs` if starts server in development mode
 ## Requirments:
 * MongoDB > 3.6
