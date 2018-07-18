@@ -1,5 +1,5 @@
 // const config = require('@config/config');
-const log = require('@config/winston');
+const log = require('@config/winston')(module);
 // const client = require('twilio')(config.twilioSid, config.twilioToken);
 
 function sendSMS({ to }) {

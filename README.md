@@ -2,7 +2,7 @@
 ## Documentation
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/3031705/RWM9wqyS)
 
-You are also can view swagger docs on `HOST/api/docs`
+You are also can view swagger docs on ``
 ## Requirments:
 * MongoDB > 3.6
 * Node > 8

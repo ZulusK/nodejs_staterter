@@ -2,7 +2,7 @@ const pug = require('pug');
 
 const nodemailer = require('nodemailer');
 const config = require('@config/config');
-const log = require('@config/winston');
+const log = require('@config/winston')(module);
 const path = require('path');
 
 const emailTemplateFunc = pug.compileFile(path.join(config.publicDir, 'emailVerification.pug'));

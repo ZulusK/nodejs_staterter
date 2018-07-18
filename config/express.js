@@ -9,7 +9,7 @@ const httpStatus = require('http-status');
 const expressWinston = require('express-winston');
 const expressValidation = require('express-validation');
 const helmet = require('helmet');
-const winstonInstance = require('./winston');
+const winston = require('winston');
 const routes = require('@root/index.route');
 const config = require('./config');
 const APIError = require('@helpers/APIError');
@@ -18,7 +18,15 @@ const expressStaticGzip = require('express-static-gzip');
 const fileUpload = require('express-fileupload');
 
 const app = express();
-
+const winstonInstance = winston.createLogger({
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.json({
+        space: 2
+      })
+    })
+  ]
+});
 if (config.env === 'development') {
   app.use(logger('dev'));
 }
@@ -44,10 +52,7 @@ if (config.env === 'development') {
   expressWinston.responseWhitelist.push('body');
   app.use(
     expressWinston.logger({
-      winstonInstance,
-      meta: true, // optional: log meta data about request (defaults to true)
-      msg: 'HTTP {{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms',
-      colorStatus: true // Color the status code (default green, 3XX cyan, 4XX yellow, 5XX red).
+      winstonInstance
     })
   );
 }
@@ -79,15 +84,6 @@ app.use((req, res, next) => {
   return next(err);
 });
 
-// log error in winston transports except when executing test suite
-if (config.env !== 'test') {
-  app.use(
-    expressWinston.errorLogger({
-      winstonInstance
-    })
-  );
-}
-
 // error handler, send stacktrace only during development
 app.use((
   err,
@@ -97,7 +93,7 @@ app.use((
 ) => {
   res.status(err.status).json({
     message: err.isPublic ? err.message : httpStatus[err.status],
-    stack: config.env === 'development' ? err.stack : {}
+    stack: config.env === 'development' ? err.stack : undefined
   });
 });
 

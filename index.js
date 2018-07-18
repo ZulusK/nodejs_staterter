@@ -1,9 +1,11 @@
+// apply module name aliases
+require('module-alias/register');
 const mongoose = require('mongoose');
 const util = require('util');
 // config should be imported before importing any other file
 const config = require('./config/config');
 const app = require('@config/express');
-const log = require('@config/winston');
+const log = require('@config/winston')(module);
 const debug = require('debug')('express-mongoose-es6-rest-api:index');
 // make bluebird default Promise
 Promise = require('bluebird'); // eslint-disable-line no-global-assign
