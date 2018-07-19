@@ -126,6 +126,40 @@ describe('## Bus APIs', () => {
         })
         .catch(done);
     });
+    it('should return valid buses full info, skip=1, limit=4, populate=true', (done) => {
+      const skip = 1;
+      const limit = 4;
+      request(app)
+        .get(`/api/buses?skip=${skip}&limit=${limit}&populate=true`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body.docs).to.be.an('array');
+          expect(res.body.docs).to.have.length(limit);
+          expect(res.body.total).to.be.eq(buses.length);
+          expect(res.body.limit).to.be.eq(limit);
+          expect(res.body.offset).to.of.eq(skip);
+          res.body.docs.forEach(s => tests.expectBus(s, true));
+          done();
+        })
+        .catch(done);
+    });
+    it('should return valid buses full info, skip=1, limit=4, populate=invalid', (done) => {
+      const skip = 1;
+      const limit = 4;
+      request(app)
+        .get(`/api/buses?skip=${skip}&limit=${limit}&populate=invalid`)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body.docs).to.be.an('array');
+          expect(res.body.docs).to.have.length(limit);
+          expect(res.body.total).to.be.eq(buses.length);
+          expect(res.body.limit).to.be.eq(limit);
+          expect(res.body.offset).to.of.eq(skip);
+          res.body.docs.forEach(s => tests.expectBus(s, true));
+          done();
+        })
+        .catch(done);
+    });
     it('should return empty array, skip=100', (done) => {
       const skip = 100;
       request(app)

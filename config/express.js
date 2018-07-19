@@ -17,6 +17,7 @@ const path = require('path');
 const expressStaticGzip = require('express-static-gzip');
 const fileUpload = require('express-fileupload');
 const auth = require('./passport');
+const boolParser = require('express-query-boolean');
 
 const app = express();
 const winstonInstance = winston.createLogger({
@@ -35,6 +36,7 @@ if (config.env === 'development') {
 // parse body params and attache them to req.body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(boolParser());
 app.use(fileUpload());
 
 // add auth
