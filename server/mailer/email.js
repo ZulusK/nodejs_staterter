@@ -21,7 +21,9 @@ const transporter = nodemailer.createTransport({
 
 transporter.verify((error) => {
   if (error) {
+    log.error('Server cannot send messages');
     log.error(error);
+    throw error;
   } else {
     log.info('Server is ready to send messages');
   }
@@ -52,7 +54,6 @@ function sendEmailActivation({ email, token, fullname }) {
 }
 
 module.exports = {
-  // sendEmailActivation: config.env === 'production'
-  // ? sendEmailActivation : () => {} // send mails only in production
-  sendEmailActivation
+  sendEmailActivation: config.env === 'production' ? sendEmailActivation : () => {} // send mails only in production
+  // sendEmailActivation
 };

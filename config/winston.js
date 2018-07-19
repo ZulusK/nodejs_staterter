@@ -19,7 +19,7 @@ function getLogger(module) {
     transports: [
       new transports.Console({
         colorize: true,
-        level: config.LOG_LEVEL,
+        level: config.logLvl,
         silent: config.env === 'test'
       })
     ]
