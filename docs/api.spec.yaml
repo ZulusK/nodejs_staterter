@@ -1,0 +1,732 @@
+---
+  info: 
+    title: "RushOwl"
+    version: "1.0.0"
+    description: "API for RushOwl Backend Business logic"
+  swagger: "2.0"
+  paths: 
+    /api/auth/login: 
+      post: 
+        summary: "login in application,"
+        description: "get profile & tokens, send email and password in header"
+        tags: 
+          - "Auth"
+        security: 
+          - 
+            Basic: []
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "Returns new user's profile and tokens"
+            schema: null
+            type: "object"
+            properties: 
+              - 
+                $ref: "#/definitions/AuthTOkens"
+              - 
+                $ref: "#/definitions/User"
+          400: 
+            $ref: "#/responses/400Response"
+          401: 
+            $ref: "#/responses/401Response"
+      get: 
+        summary: "Get user profile"
+        description: "send JWT access token in header"
+        tags: 
+          - "Auth"
+        security: 
+          - 
+            JWT: []
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "Returns new user's profile and tokens"
+            schema: 
+              $ref: "#/definitions/User"
+          400: 
+            $ref: "#/responses/400Response"
+          401: 
+            $ref: "#/responses/401Response"
+    /api/auth/confirm-phone: 
+      post: 
+        200: 
+          description: "Returns new token"
+          schema: 
+            $ref: "#/definitions/Token"
+        401: 
+          $ref: "#/responses/401Response"
+        summary: "confirm phone number"
+        description: "send OTP in body, received on mobile phone"
+        tags: 
+          - "Auth"
+        security: 
+          - 
+            JWT: []
+        produces: 
+          - "application/json"
+        parameters: 
+          - 
+            $ref: "#/parameters/otp-b"
+        responses: null
+    /api/auth/signup: 
+      post: 
+        summary: "send OTP on mobile number"
+        description: "you can use this route no more than one time each 30 s"
+        tags: 
+          - "Auth"
+        produces: 
+          - "application/json"
+        parameters: 
+          - 
+            $ref: "#/parameters/mobileNumber-b"
+        responses: 
+          200: 
+            description: "Empty response, check your mobile phone. You will receive OTP via SMS"
+          400: 
+            $ref: "#/responses/400Response"
+          401: 
+            $ref: "#/responses/401Response"
+    /api/auth/token: 
+      get: 
+        summary: "get new JWT access token"
+        description: "send JWT refresh token"
+        security: 
+          - "JWT:[]"
+        tags: 
+          - "Auth"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "Returns new access token"
+          400: 
+            $ref: "#/responses/400Response"
+          401: 
+            $ref: "#/responses/401Response"
+    /api/auth/check-access: 
+      post: 
+        summary: "check access-token"
+        description: "send JWT access token in header"
+        tags: 
+          - "Auth"
+        security: 
+          - 
+            JWT: []
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            $ref: "#/responses/200Response"
+          401: 
+            $ref: "#/responses/401Response"
+    /api/auth/check-refresh: 
+      post: 
+        summary: "check refresh-token"
+        description: "send JWT refresh token in header"
+        tags: 
+          - "Auth"
+        security: 
+          - 
+            JWT: []
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            $ref: "#/responses/200Response"
+          401: 
+            $ref: "#/responses/401Response"
+    /api/auth/confirm-email: 
+      post: 
+        summary: "activate email"
+        description: "send token, received on email"
+        tags: 
+          - "Auth"
+        security: 
+          - 
+            JWT: []
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            $ref: "#/responses/200Response"
+          401: 
+            $ref: "#/responses/401Response"
+    /api/auth/deactivate-email: 
+      post: 
+        summary: "deactivate emai"
+        description: "send token, received on email. After this action, account will be removed"
+        tags: 
+          - "Auth"
+        security: 
+          - 
+            JWT: []
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            $ref: "#/responses/200Response"
+          401: 
+            $ref: "#/responses/401Response"
+    /api/buses: 
+      get: 
+        tags: 
+          - "Bus"
+        summary: "Returns list of all buses"
+        parameters: 
+          - 
+            $ref: "#/parameters/limit-q"
+          - 
+            $ref: "#/parameters/skip-q"
+          - 
+            $ref: "#/parameters/populate-q"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "list of buses"
+            schema: 
+              type: "object"
+              properties: 
+                total: 
+                  type: "integer"
+                skip: 
+                  type: "integer"
+                limit: 
+                  type: "integer"
+                docs: 
+                  type: "array"
+                  items: 
+                    $ref: "#/definitions/Bus"
+    /api/buses/{id}: 
+      delete: 
+        security: 
+          - "JWT:[]"
+        tags: 
+          - "Bus"
+        summary: "Delete bus by it's id"
+        description: "send JWT access token in header"
+        parameters: 
+          - 
+            $ref: "#/parameters/id-p"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "Returns deleted bus"
+            schema: 
+              $ref: "#/definitions/Bus"
+          401: 
+            $ref: "#/responses/401Response"
+          404: 
+            $ref: "#/responses/404Response"
+      get: 
+        tags: 
+          - "Bus"
+        summary: "Get bus by id"
+        parameters: 
+          - 
+            $ref: "#/parameters/id-p"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "Target bus"
+            schema: 
+              $ref: "#/definitions/Bus-full"
+          404: 
+            $ref: "#/responses/404Response"
+    /api/events: 
+      get: 
+        tags: 
+          - "Event"
+        summary: "Returns list of all events"
+        parameters: 
+          - 
+            $ref: "#/parameters/limit-q"
+          - 
+            $ref: "#/parameters/skip-q"
+          - 
+            $ref: "#/parameters/populate-q"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "list of events"
+            schema: 
+              type: "object"
+              properties: 
+                total: 
+                  type: "integer"
+                skip: 
+                  type: "integer"
+                limit: 
+                  type: "integer"
+                docs: 
+                  type: "array"
+                  items: 
+                    $ref: "#/definitions/Event"
+    /api/events/{id}: 
+      delete: 
+        security: 
+          - "JWT:[]"
+        tags: 
+          - "Event"
+        summary: "Delete event by it's id"
+        description: "send JWT access token in header"
+        parameters: 
+          - 
+            $ref: "#/parameters/id-p"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "Returns deleted event"
+            schema: 
+              $ref: "#/definitions/Event"
+          401: 
+            $ref: "#/responses/401Response"
+          404: 
+            $ref: "#/responses/404Response"
+      get: 
+        tags: 
+          - "Event"
+        summary: "Get event by id"
+        parameters: 
+          - 
+            $ref: "#/parameters/id-p"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "Target event"
+            schema: 
+              $ref: "#/definitions/Event-full"
+          404: 
+            $ref: "#/responses/404Response"
+    /api/routes: 
+      get: 
+        tags: 
+          - "Route"
+        summary: "Returns list of all routes"
+        parameters: 
+          - 
+            $ref: "#/parameters/limit-q"
+          - 
+            $ref: "#/parameters/skip-q"
+          - 
+            $ref: "#/parameters/populate-q"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "list of routes"
+            schema: 
+              type: "object"
+              properties: 
+                total: 
+                  type: "integer"
+                skip: 
+                  type: "integer"
+                limit: 
+                  type: "integer"
+                docs: 
+                  type: "array"
+                  items: 
+                    $ref: "#/definitions/Route"
+    /api/routes/{id}/buses: 
+      get: 
+        tags: 
+          - "Route"
+          - "Bus"
+        summary: "Returns list of all buses, on the route"
+        parameters: 
+          - 
+            $ref: "#/parameters/limit-q"
+          - 
+            $ref: "#/parameters/skip-q"
+          - 
+            $ref: "#/parameters/id-p"
+          - 
+            $ref: "#/parameters/populate-p"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "list of buses"
+            schema: 
+              type: "object"
+              properties: 
+                total: 
+                  type: "integer"
+                skip: 
+                  type: "integer"
+                limit: 
+                  type: "integer"
+                docs: 
+                  type: "array"
+                  items: 
+                    $ref: "#/definitions/Bus"
+          400: 
+            $ref: "#/responses/400Response"
+    /api/stops: 
+      get: 
+        tags: 
+          - "Stop"
+        summary: "Returns list of all stops"
+        parameters: 
+          - 
+            $ref: "#/parameters/limit-q"
+          - 
+            $ref: "#/parameters/skip-q"
+          - 
+            $ref: "#/parameters/populate-q"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "list of stops"
+            schema: 
+              properties: 
+                total: 
+                  type: "integer"
+                skip: 
+                  type: "integer"
+                limit: 
+                  type: "integer"
+                docs: 
+                  type: "array"
+                  items: 
+                    $ref: "#/definitions/Stop"
+    /api/stops/{id}: 
+      delete: 
+        security: 
+          - "JWT:[]"
+        tags: 
+          - "Stop"
+        summary: "Delete stop by it's id"
+        description: "send JWT access token in header"
+        parameters: 
+          - 
+            $ref: "#/parameters/id-p"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "Returns deleted stop"
+            schema: 
+              $ref: "#/definitions/Stop"
+          401: 
+            $ref: "#/responses/401Response"
+          404: 
+            $ref: "#/responses/404Response"
+      get: 
+        tags: 
+          - "Stop"
+        summary: "Get stop by id"
+        parameters: 
+          - 
+            $ref: "#/parameters/id-p"
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "Target stop"
+            schema: 
+              $ref: "#/definitions/Stop"
+          404: 
+            $ref: "#/responses/404Response"
+    /api/users: 
+      post: 
+        summary: "create new user"
+        description: "send token, received after phone verification"
+        tags: 
+          - "User"
+        security: 
+          - 
+            JWT: []
+        produces: 
+          - "application/json"
+        parameters: 
+          - 
+            $ref: "#/parameters/email-b"
+          - 
+            $ref: "#/parameters/fullname-b"
+          - 
+            $ref: "#/parameters/password-b"
+          - 
+            $ref: "#/parameters/creditCardNumber-b"
+          - 
+            $ref: "#/parameters/creditCardCVV-b"
+          - 
+            $ref: "#/parameters/creditCardExpDate-b"
+        responses: 
+          200: 
+            description: "Returns new token"
+            schema: 
+              type: "object"
+              properties: 
+                user: 
+                  $ref: "#/definitions/User"
+                tokens: 
+                  $ref: "#/definitions/AuthTokens"
+          400: 
+            $ref: "#/responses/400Response"
+          401: 
+            $ref: "#/responses/401Response"
+      delete: 
+        summary: "delete user"
+        description: "send email & password in header"
+        tags: 
+          - "User"
+        security: 
+          - 
+            Basic: []
+        produces: 
+          - "application/json"
+        responses: 
+          200: 
+            description: "Returns new token"
+            schema: 
+              $ref: "#/definitions/User"
+          400: 
+            $ref: "#/responses/400Response"
+          401: 
+            $ref: "#/responses/401Response"
+  definitions: 
+    Bus: 
+      type: "object"
+      properties: 
+        name: 
+          type: "string"
+          example: "Bus#1"
+        _id: 
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439443"
+        number: 
+          type: "string"
+          example: "AH 2567 EA"
+        location: 
+          $ref: "#/definitions/Point"
+        driver: 
+          description: "Id of current driver"
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439011"
+        route: 
+          description: "Id of current route"
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439011"
+    Bus-full: 
+      type: "object"
+      properties: 
+        name: 
+          type: "string"
+          example: "Bus#1"
+        number: 
+          type: "string"
+          example: "AH 2567 EA"
+        _id: 
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439443"
+        location: 
+          $ref: "#/definitions/Point"
+        driver: 
+          $ref: "#/definitions/Driver"
+        route: 
+          $ref: "#/definitions/Route"
+    Event: 
+      summary: "Defines short public event model"
+      type: "object"
+      properties: 
+        _id: 
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439011"
+        name: 
+          type: "string"
+          example: "New year"
+        text: 
+          type: "string"
+          example: "Lorem ipsum..."
+        address: 
+          type: "string"
+          example: "River Valley"
+        createdAt: 
+          type: "string"
+          example: "Fri Jul 13 2018 02:23:45"
+          description: "Date of event's starts"
+        imageUrl: 
+          type: "string"
+          example: "http://some.utl.com/image.jpeg"
+        endsAt: 
+          type: "string"
+          example: "Fri Jul 13 2018 02:23:45"
+          description: "Date of event's ends"
+        formattedAddress: 
+          type: "string"
+          example: "3 River Valley Rd, Sg 179024"
+        location: 
+          $ref: "#/definitions/Point"
+        routes: 
+          type: "array"
+          items: 
+            type: "string"
+            format: "byte"
+            example: "507f1f77bcf86cd799439011"
+    Event-full: 
+      summary: "Defines full public event model"
+      type: "object"
+      properties: 
+        _id: 
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439011"
+        name: 
+          type: "string"
+          example: "New year"
+        text: 
+          type: "string"
+          example: "Lorem ipsum..."
+        address: 
+          type: "string"
+          example: "River Valley"
+        createdAt: 
+          type: "string"
+          example: "Fri Jul 13 2018 02:23:45"
+          description: "Date of event's starts"
+        imageUrl: 
+          type: "string"
+          example: "http://some.utl.com/image.jpeg"
+        endsAt: 
+          type: "string"
+          example: "Fri Jul 13 2018 02:23:45"
+          description: "Date of event's ends"
+        formattedAddress: 
+          type: "string"
+          example: "3 River Valley Rd, Sg 179024"
+        location: 
+          $ref: "#/definitions/Point"
+        routes: 
+          type: "array"
+          items: 
+            $ref: "#/definitions/Route"
+    Route: 
+      summary: "Defines short public route model"
+      type: "object"
+      properties: 
+        _id: 
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439011"
+        name: 
+          type: "string"
+          example: "West Route"
+        origin: 
+          description: "Id of Stop, used as origin of route"
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439011"
+        destination: 
+          description: "Id of Stop, used as destination of route"
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439011"
+        color: 
+          type: "string"
+          example: "#ff12ad"
+        distance: 
+          type: "string"
+          example: "12 km"
+        estimatedTime: 
+          type: "string"
+          example: "1h 30m"
+        waypoints: 
+          type: "array"
+          items: 
+            type: "string"
+            format: "byte"
+            example: "507f1f77bcf86cd799439011"
+    Route-full: 
+      summary: "Defines full public route model"
+      type: "object"
+      properties: 
+        _id: 
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439011"
+        name: 
+          type: "string"
+          example: "West Route"
+        origin: 
+          $ref: "#/definitions/Stop"
+        destination: 
+          $ref: "#/definitions/Stop"
+        color: 
+          type: "string"
+          example: "#ff12ad"
+        distance: 
+          type: "string"
+          example: "12 km"
+        estimatedTime: 
+          type: "string"
+          example: "1h 30m"
+        waypoints: 
+          type: "array"
+          items: 
+            $ref: "#/definitions/Stop"
+    Stop: 
+      summary: "Defines public stop model"
+      type: "object"
+      properties: 
+        name: 
+          type: "string"
+          example: "Tan Tye Place"
+        _id: 
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439443"
+        location: 
+          $ref: "#/definitions/Point"
+        address: 
+          type: "string"
+          example: "MRT"
+    User: 
+      summary: "Defines public user model"
+      type: "object"
+      properties: 
+        email: 
+          type: "string"
+          format: "email"
+          example: "some.mail@mail.com"
+        fullname: 
+          type: "string"
+          example: "Johnny Stark"
+        _id: 
+          type: "string"
+          format: "byte"
+          example: "507f1f77bcf86cd799439011"
+        isEmailConfirmed: 
+          type: "boolean"
+        mobileNumber: 
+          type: "string"
+          example: "+65 XXXX XXXX"
+        securedCreditCardNumber: 
+          type: "string"
+          example: "*1234"
+        createdAt: 
+          type: "string"
+          example: "Fri Jul 13 2018 02:23:45"
+          description: "Date of user's account creation"
+        updatedAt: 
+          type: "string"
+          example: "Fri Jul 13 2018 02:23:45"
+          description: "Date of last user's account updates"
+  responses: {}
+  parameters: {}
+  securityDefinitions: {}
+  tags: []

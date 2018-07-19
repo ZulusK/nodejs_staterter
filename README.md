@@ -3,8 +3,10 @@
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/3031705/RWM9wqyS)
 
 View all [API docs](https://fulcrumi.github.io/rushowl-be-bl/)
+
 View project structure in [docs folder](docs/index.md)
-You are also can view swagger docs on `/api/docs` if starts server in development mode
+
+You are also can view swagger docs on `/api/docs` if starts server in development mode or on [swagger](https://app.swaggerhub.com/apis/ReservoirCode/rush-owl/1.0.0)
 ## Requirments:
 * MongoDB > 3.6
 * Node > 8
