@@ -28,11 +28,6 @@ StopSchema.index({ name: 1, location: '2dsphere' });
  * Statics
  */
 StopSchema.statics = {
-  /**
-   * Get entity by it's id
-   * @param {ObjectId} id - The objectId of entity.
-   * @returns {Promise<Stop, APIError>}
-   */
   get(id) {
     return this.findById(id)
       .exec()
@@ -45,12 +40,6 @@ StopSchema.statics = {
       });
   },
 
-  /**
-   * List entities in descending order of 'createdAt' timestamp.
-   * @param {number} skip - Number of entities to be skipped.
-   * @param {number} limit - Limit number of entities to be returned.
-   * @returns {Promise<Stop[]>}
-   */
   list({ skip = 0, limit = 50 } = {}) {
     return this.paginate(
       {},

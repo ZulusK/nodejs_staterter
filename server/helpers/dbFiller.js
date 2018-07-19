@@ -1,15 +1,38 @@
 const User = require('@/user/user.model');
 const Stop = require('@/stop/stop.model');
 const Route = require('@/route/route.model');
-// const Bus = require('@/bus/bus.model');
+const Bus = require('@/bus/bus.model');
 const PendingUser = require('@/pendingUser/pendingUser.model');
 // const Event = require('@/event/event.model');
 const log = require('@config/winston')(module);
 const _ = require('lodash');
 const routesData = require('./routesData');
 const usersData = require('./usersData');
-// const eventsData = require('./eventsData');
 
+const utils = require('@/utils');
+
+// const eventsData = require('./eventsData');
+/**
+ * Fills Bus's DB and return saved  docs
+ */
+async function fillBusDB() {
+  await Bus.remove({}).exec();
+  const routes = await Route.find({}).exec();
+  await Promise.all(
+    [...Array(20).keys()].map(async (k) => {
+      const route = routes[k % routes.length];
+      const stop = await Stop.findById(route.waypoints[k % route.waypoints.length]).exec();
+      return new Bus({
+        name: `Bus #${k}`,
+        seatsCount: 50 - k,
+        number: utils.genOtp(6),
+        location: stop.location,
+        route: route._id
+      }).save();
+    })
+  );
+  log.debug(`fill bus db with ${await Bus.countDocuments({}).exec()} docs`);
+}
 /**
  * Fills User's DB and return saved  docs
  */
@@ -74,8 +97,8 @@ function fillAllDBs() {
   return clear()
     .then(() => fillUserDB())
     .then(() => fillStopDB())
-    .then(() => fillRouteDB());
-  // .then(() => fillBusDB())
+    .then(() => fillRouteDB())
+    .then(() => fillBusDB());
   // .then(() => fillEventDB());
 }
 function clear() {
@@ -84,10 +107,10 @@ function clear() {
     // Event.remove().exec(),
     PendingUser.remove().exec(),
     User.remove().exec(),
-    Stop.remove().exec()
-    // Bus.remove().exec(),
-    // Route.remove().exec(),
-    // Stop.remove().exec()
+    Stop.remove().exec(),
+    Bus.remove().exec(),
+    Route.remove().exec()
+    // Event.remove().exec()
   ]);
 }
 
@@ -95,5 +118,6 @@ module.exports = {
   fillAllDBs,
   clear,
   fillStopDB,
-  fillUserDB
+  fillUserDB,
+  fillBusDB
 };

@@ -120,7 +120,7 @@ const expectRoute = (route, isFull = false) => {
 const expectBus = (bus, isFull = false) => {
   expect(bus).to.be.an('object');
   // console.log(bus);
-  expect(bus).to.include.keys('name', '_id', 'seatsCount');
+  expect(bus).to.include.keys('name', '_id', 'seatsCount', 'number');
   expect(bus.name).to.be.a('string');
   expect(bus._id).to.be.a('string');
   expect(bus.seatsCount).to.be.a('number');
