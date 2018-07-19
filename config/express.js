@@ -10,12 +10,13 @@ const expressWinston = require('express-winston');
 const expressValidation = require('express-validation');
 const helmet = require('helmet');
 const winston = require('winston');
-const routes = require('@server/index.route');
+const routes = require('@/index.route');
 const config = require('./config');
 const APIError = require('@helpers/APIError');
 const path = require('path');
 const expressStaticGzip = require('express-static-gzip');
 const fileUpload = require('express-fileupload');
+const auth = require('./passport');
 
 const app = express();
 const winstonInstance = winston.createLogger({
@@ -35,6 +36,9 @@ if (config.env === 'development') {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload());
+
+// add auth
+app.use(auth.initialize());
 
 app.use(cookieParser());
 app.use(compress());

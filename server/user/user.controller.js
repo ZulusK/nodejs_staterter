@@ -1,8 +1,8 @@
 const User = require('./user.model');
-const PendingUser = require('@server/pendingUser/pendingUser.model');
+const PendingUser = require('@/pendingUser/pendingUser.model');
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
-const mailer = require('@server/mailer');
+const emailMailer = require('@/mailer/email');
 const config = require('@config/config');
 
 function load(req, res, next, id) {
@@ -57,26 +57,17 @@ async function create(req, res, next) {
     .then(() => removePendingUser(req.user.id))
     .then(pendingUser => createNewUser({ req, pendingUser }))
     .then((user) => {
-      const emailActivationToken = user.genActivationToken();
+      const emailActivationToken = user.genEmailActivationToken();
       // send email activation letter
-      mailer.sendEmailActivation({
+      emailMailer.sendEmailActivation({
         email: user.email,
         fullname: user.fullname,
         token: emailActivationToken
       });
-      if (config.env !== 'production') {
-        // send user info and email activation back token to user
-        return res.json({
-          user: user.toJSON(),
-          tokens: user.genAuthTokens(),
-          token: emailActivationToken
-        });
-      }
-      // send only to user info back to user
       return res.json({
         user: user.toJSON(),
         tokens: user.genAuthTokens(),
-        emailActivationToken // TODO: remove this
+        emailActivationToken: config.env !== 'production' ? emailActivationToken : undefined
       });
     })
     .catch(next);

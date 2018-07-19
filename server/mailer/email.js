@@ -41,7 +41,6 @@ function sendEmailActivation({ email, token, fullname }) {
     fullname,
     host: config.host
   });
-  //   log.debug(renderedText);
   const mail = {
     from: config.emailAddress,
     to: email,

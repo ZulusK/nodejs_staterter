@@ -1,8 +1,5 @@
 require('module-alias/register');
-// const chai = require('chai'); // eslint-disable-line import/newline-after-import
-// const config = require('@config/config');
 const request = require('supertest-as-promised');
-// const httpStatus = require('http-status');
 const app = require('@app');
 
 function makeSignupReq(data) {
@@ -10,6 +7,7 @@ function makeSignupReq(data) {
     .post('/api/auth/signup')
     .send(data);
 }
+
 function makePhoneConfirmReq(data) {
   return request(app)
     .post('/api/auth/confirm-phone')

@@ -116,6 +116,7 @@ const expectRoute = (route, isFull = false) => {
     route.waypoints.forEach(s => expect(s).to.be.an('string'));
   }
 };
+
 const expectBus = (bus, isFull = false) => {
   expect(bus).to.be.an('object');
   // console.log(bus);

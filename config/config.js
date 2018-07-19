@@ -1,5 +1,3 @@
-// apply module name aliases
-require('module-alias/register');
 const path = require('path');
 const Joi = require('joi');
 const JoiExt = require('./joi.extentions');
@@ -14,9 +12,9 @@ const envVarsSchema = customJoi
   .object({
     NODE_ENV: customJoi
       .string()
-      .allow(['development', 'production', 'test', 'provision'])
+      .allow(['development', 'production', 'test'])
       .default('development'),
-    PORT: customJoi.number().default(4040),
+    PORT: customJoi.number().default(3000),
     MONGOOSE_DEBUG: customJoi.boolean().when('NODE_ENV', {
       is: customJoi.string().equal('development'),
       then: customJoi.boolean().default(true),
@@ -35,18 +33,16 @@ const envVarsSchema = customJoi
       .when('NODE_ENV', {
         is: customJoi.string().equal('test'),
         then: customJoi.number().default(1),
-        otherwise: customJoi.number().default(60 * 60 * 24 * 30)
+        otherwise: customJoi.number().default(60 * 60 * 24 * 30) //  30 days
       })
-      // .default(60 * 60 * 24 * 30) //  30 days
       .description('Lifetime of JWT refresh token'),
     JWT_ACCESS_EXP: customJoi
       .number()
       .when('NODE_ENV', {
         is: customJoi.string().equal('test'),
         then: customJoi.number().default(1),
-        otherwise: customJoi.number().default(60 * 60)
+        otherwise: customJoi.number().default(60 * 60) // 1 hour
       })
-      // .default(60 * 60) // 1 hour
       .description('Lifetime of JWT access token'),
     JWT_SECRET_EMAIL_CONFIRMATION: customJoi
       .string()
@@ -124,8 +120,8 @@ const config = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
   mongooseDebug: envVars.MONGOOSE_DEBUG,
-  jwtSecretAccess: envVars.JWT_SECRET_ACCESS,
-  jwtSecretRefresh: envVars.JWT_SECRET_REFRESH,
+  jwtSecretAccessUser: envVars.JWT_SECRET_ACCESS,
+  jwtSecretRefreshUser: envVars.JWT_SECRET_REFRESH,
   jwtExpAccess: envVars.JWT_ACCESS_EXP,
   jwtExpRefresh: envVars.JWT_REFRESH_EXP,
   mongo: {

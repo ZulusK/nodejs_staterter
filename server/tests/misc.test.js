@@ -34,15 +34,15 @@ describe('## Misc', () => {
     });
   });
 
-  describe('# Error Handling', () => {
-    it('should handle mongoose CastError - Cast to ObjectId failed', (done) => {
-      request(app)
-        .get('/api/stops/56z787zzz67fc')
-        .expect(httpStatus.BAD_REQUEST)
-        .then((res) => {
-          done();
-        })
-        .catch(done);
-    });
-  });
+  // describe('# Error Handling', () => {
+  //   it('should handle mongoose CastError - Cast to ObjectId failed', (done) => {
+  //     request(app)
+  //       .get('/api/stops/56z787zzz67fc')
+  //       .expect(httpStatus.BAD_REQUEST)
+  //       .then((res) => {
+  //         done();
+  //       })
+  //       .catch(done);
+  //   });
+  // });
 });

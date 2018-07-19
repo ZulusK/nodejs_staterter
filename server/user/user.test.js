@@ -6,16 +6,18 @@ const httpStatus = require('http-status');
 const chai = require('chai'); // eslint-disable-line import/newline-after-import
 const { expect } = chai;
 const app = require('@app');
-const User = require('@server/user/user.model');
-const PendingUser = require('@server/pendingUser/pendingUser.model');
-const usefullReqs = require('@tests/tests.reqs');
-const usefullTests = require('@tests/tests.tests');
+const User = require('@/user/user.model');
+const PendingUser = require('@/pendingUser/pendingUser.model');
+const dbFiller = require('@helpers/dbFiller');
+const reqs = require('@tests/reqs');
+const tests = require('@tests/tests');
 const config = require('@config/config');
 
 chai.config.includeStack = true;
 
 function clean(done) {
-  Promise.all([User.remove().exec(), PendingUser.remove().exec()])
+  dbFiller
+    .clear()
     .then(() => done())
     .catch(done);
 }
@@ -37,9 +39,8 @@ const userData = {
 function testUserCreation() {
   after(clean);
   let phoneActivationToken = null;
-  let tokens = null;
   beforeEach((done) => {
-    clean(() => usefullReqs.createPendingUser(userData).then((token) => {
+    clean(() => reqs.createPendingUser(userData).then((token) => {
       phoneActivationToken = token;
       done();
     }));
@@ -47,7 +48,7 @@ function testUserCreation() {
   after(clean);
 
   it('should return valid user info', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({ userData, phoneActivationToken })
       .then((res) => {
         expect(res.status).to.be.eq(httpStatus.OK);
@@ -56,30 +57,41 @@ function testUserCreation() {
         delete etaloneData.creditCardNumber;
         delete etaloneData.creditCardCVV;
         delete etaloneData.creditCardExpDate;
-        usefullTests.expectUser(res.body.user, etaloneData);
+        tests.expectUser(res.body.user, etaloneData);
         done();
       })
       .catch(done);
   });
   it('should return JWT tokens', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({ userData, phoneActivationToken })
       .then((res) => {
         expect(res.status).to.be.eq(httpStatus.OK);
-        usefullTests.expectAuthTokens(res.body.tokens);
-        tokens = res.body.tokens;
+        tests.expectAuthTokens(res.body.tokens);
         done();
       })
       .catch(done);
   });
   it('should not fail, verify access token', (done) => {
-    usefullTests.expectAccessTokenIsValid(app, tokens.access.token, done);
+    reqs
+      .makeUserCreateReq({ userData, phoneActivationToken })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.OK);
+        tests.expectAccessTokenIsValid(app, res.body.tokens.access.token, done);
+      })
+      .catch(done);
   });
   it('should not fail, verify refresh token', (done) => {
-    usefullTests.expectRefreshTokenIsValid(app, tokens.refresh.token, done);
+    reqs
+      .makeUserCreateReq({ userData, phoneActivationToken })
+      .then((res) => {
+        expect(res.status).to.be.eq(httpStatus.OK);
+        tests.expectRefreshTokenIsValid(app, res.body.tokens.refresh.token, done);
+      })
+      .catch(done);
   });
   it('should reject, use invalid email', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -94,7 +106,7 @@ function testUserCreation() {
       .catch(done);
   });
   it('should reject, use invalid phone activation token', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData,
         phoneActivationToken: '123456'
@@ -106,7 +118,7 @@ function testUserCreation() {
       .catch(done);
   });
   it('should reject, use empty phone activation token', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData
       })
@@ -117,12 +129,12 @@ function testUserCreation() {
       .catch(done);
   });
   it('should reject, use already existed email', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData,
         phoneActivationToken
       })
-      .then(() => usefullReqs.makeUserCreateReq({
+      .then(() => reqs.makeUserCreateReq({
         userData,
         phoneActivationToken
       }))
@@ -133,7 +145,7 @@ function testUserCreation() {
       .catch(done);
   });
   it('should reject, use invalid password ( < 8 symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -147,7 +159,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid password ( > 20 symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -161,7 +173,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid password (without uppercase symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -175,7 +187,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid password (without lowercase symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -189,7 +201,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid password (without special symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -203,7 +215,7 @@ function testUserCreation() {
       });
   });
   it('should not reject, use invalid fullname (use digits)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -217,7 +229,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid creditCardNumber (<15 symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -231,7 +243,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid creditCardNumber (>15 symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -245,7 +257,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid creditCardNumber (invalid symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -259,7 +271,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid creditCardCVV (<3 symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -273,7 +285,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid creditCardCVV (>3 symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -287,7 +299,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid creditCardCVV (invalid symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -301,7 +313,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid creditCardExpDate (invalid symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -315,7 +327,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid creditCardExpDate (too match symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,
@@ -329,7 +341,7 @@ function testUserCreation() {
       });
   });
   it('should reject, use invalid creditCardExpDate (too less symbols)', (done) => {
-    usefullReqs
+    reqs
       .makeUserCreateReq({
         userData: {
           ...userData,

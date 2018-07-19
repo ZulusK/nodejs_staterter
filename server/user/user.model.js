@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const privatePaths = require('mongoose-private-paths');
 const config = require('@config/config');
 const jwt = require('jsonwebtoken');
-
+const mongoosePaginate = require('mongoose-paginate');
 /**
  * @swagger
  * definitions:
@@ -73,6 +73,10 @@ const UserSchema = new mongoose.Schema(
       required: true,
       private: true
     },
+    jwtSecret: {
+      private: true,
+      type: String
+    },
     creditCard: {
       private: true,
       required: true,
@@ -96,7 +100,7 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 UserSchema.plugin(privatePaths);
-
+UserSchema.plugin(mongoosePaginate);
 UserSchema.set('toJSON', { virtuals: true });
 UserSchema.set('toObject', { virtuals: true });
 
@@ -106,49 +110,58 @@ UserSchema.virtual('securedCreditCardNumber').get(function getSecuredCreditCard(
 // Hash the user's password before inserting a new user
 UserSchema.pre('save', function preSave(next) {
   if (this.isModified('password') || this.isNew) {
-    bcrypt.hash(this.password, 10).then((hp) => {
-      this.password = hp;
-      next();
-    });
+    bcrypt
+      .hash(this.password, 10)
+      .then((hp) => {
+        this.password = hp;
+        return bcrypt.genSalt(8);
+      })
+      .then((salt) => {
+        this.jwtSecret = salt;
+        next();
+      });
   }
 });
 
 /**
  * Generate auth JWT tokens
  */
-UserSchema.method('genAuthTokens', function genAuthTokens() {
+UserSchema.methods.genAuthTokens = function genAuthTokens() {
   return {
     access: this.genJWTAccessToken(),
     refresh: this.genJWTRefreshToken()
   };
-});
+};
 
 /**
  * Generate activation token
  */
-UserSchema.method('genActivationToken', function genActivationToken() {
+UserSchema.methods.genEmailActivationToken = function genEmailActivationToken() {
   return jwt.sign({ id: this.id }, config.jwtSecretEmailConfirmation);
-});
+};
+
 /**
  * Generate access token
  */
-UserSchema.method('genJWTAccessToken', function genJWTAccessToken() {
+UserSchema.methods.genJWTAccessToken = function genJWTAccessToken() {
   return {
     expiredIn: config.jwtExpAccess + Math.floor(Date.now() / 1000),
-    token: jwt.sign({ id: this.id }, config.jwtSecretAccess, {
+    token: jwt.sign({ id: this.id, secret: this.jwtSecret }, config.jwtSecretAccessUser, {
       expiresIn: config.jwtExpRefresh
     })
   };
-});
+};
 /**
  * Generate refresh token
  */
-UserSchema.method('genJWTRefreshToken', function genJWTRefreshToken() {
+UserSchema.methods.genJWTRefreshToken = function genJWTRefreshToken() {
   return {
     expiredIn: config.jwtExpRefresh + Math.floor(Date.now() / 1000),
-    token: jwt.sign({ id: this.id }, config.jwtSecretRefresh, { expiresIn: config.jwtExpRefresh })
+    token: jwt.sign({ id: this.id, secret: this.jwtSecret }, config.jwtSecretRefreshUser, {
+      expiresIn: config.jwtExpRefresh
+    })
   };
-});
+};
 
 // Compare password input to password saved in database
 UserSchema.methods.comparePassword = function comparePassword(pw) {
@@ -164,12 +177,16 @@ UserSchema.statics = {
    * @param {email} -email
    */
   async getByCredentials({ email, password }) {
-    const user = await this.findOne({ email });
+    const user = await this.findOne({ email }).exec();
     if (user && (await user.comparePassword(password))) {
       return user;
     }
     const err = new APIError('No such user exists!', httpStatus.NOT_FOUND, true);
     throw err;
+  },
+
+  async getByToken(payload) {
+    return this.findOne({ _id: payload.id, jwtSecret: payload.secret });
   },
   /**
    * Get entity by it's id

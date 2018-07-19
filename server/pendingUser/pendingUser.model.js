@@ -1,12 +1,11 @@
-const Promise = require('bluebird');
 const mongoose = require('mongoose');
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
 const config = require('@config/config');
 const jwt = require('jsonwebtoken');
-const Messanger = require('@server/messanger');
+const SmsMessanger = require('@/mailer/sms');
 const _ = require('lodash');
-const privatePaths = require('mongoose-private-paths');
+const utils = require('@/utils');
 
 const PendingUserSchema = new mongoose.Schema({
   mobileNumber: {
@@ -27,19 +26,12 @@ const PendingUserSchema = new mongoose.Schema({
     default: []
   }
 });
-PendingUserSchema.plugin(privatePaths);
 
 PendingUserSchema.methods.genOtpSMS = function genOtpSMS() {
   const body = `Here is your activation code\n${this.otp}\nYours Rush-Owl `;
   return body;
 };
 
-function genOtp() {
-  return (
-    Math.floor(Math.random() * (Math.pow(10, config.otpLen - 1) * 9))
-    + Math.pow(10, config.otpLen - 1)
-  );
-}
 PendingUserSchema.methods.checkOtp = function checkOtp(otp) {
   const lastSMSTime = _.max(this.timeOfMessageSending);
   const now = Date.now();
@@ -57,28 +49,19 @@ PendingUserSchema.methods.checkOtp = function checkOtp(otp) {
   }
   return true;
 };
+
 PendingUserSchema.methods.sendOtpViaSMS = function sendOtpViaSMS() {
   if (this.canReceiveSMS()) {
-    this.otp = genOtp();
+    this.otp = utils.genOtp(config.otpLen);
     this.timeOfMessageSending.push(Date.now());
     return this.save()
-      .then(() => Messanger.sendSMS({
+      .then(() => SmsMessanger.sendSMS({
         to: this.mobileNumber,
         body: this.genOtpSMS()
       }))
       .then(() => this.otp);
   }
   return null;
-};
-/**
- * Updates times of received sms by user
- */
-PendingUserSchema.methods.updateSMSTimings = function updateSMSTimings() {
-  const now = Date.now();
-  this.timeOfMessageSending = _.filter(
-    this.timeOfMessageSending,
-    d => now - d <= 1000 * 3600 // one hour
-  );
 };
 /**
  * Check, can user receive sms
@@ -107,6 +90,17 @@ PendingUserSchema.methods.canReceiveSMS = function canReceiveSMS() {
     true
   );
 };
+/**
+ * Updates times of received sms by user
+ */
+PendingUserSchema.methods.updateSMSTimings = function updateSMSTimings() {
+  const now = Date.now();
+  this.timeOfMessageSending = _.filter(
+    this.timeOfMessageSending,
+    d => now - d <= 1000 * 3600 // one hour
+  );
+};
+
 /**
  * Generate activation token
  */
@@ -153,21 +147,6 @@ PendingUserSchema.statics = {
         const err = new APIError('No such user exists!', httpStatus.NOT_FOUND);
         return Promise.reject(err);
       });
-  },
-
-  /**
-   * List entities in descending order of 'createdAt' timestamp.
-   * @param {number} skip - Number of entities to be skipped.
-   * @param {number} limit - Limit number of entities to be returned.
-   * @returns {Promise<route[]>}
-   */
-  list({ skip = 0, limit = 50 } = {}) {
-    return this.find()
-      .deselect(['otp'])
-      .sort({ createdAt: -1 })
-      .skip(+skip)
-      .limit(+limit)
-      .exec();
   }
 };
 
