@@ -1,4 +1,4 @@
-const Stop = require('./stop.model');
+const Route = require('./route.model');
 const { ObjectId } = require('mongoose').Types;
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
@@ -10,16 +10,16 @@ function load(req, res, next, id) {
       .status(httpStatus.BAD_REQUEST)
       .json({ message: 'Parameter id is not a valid object id' });
   }
-  return Stop.get(id)
-    .then((stop) => {
-      req.$stop = stop;
+  return Route.get(id)
+    .then((route) => {
+      req.$route = route; // eslint-disable-line no-param-reassign
       return next();
     })
     .catch(next);
 }
 
 function get(req, res) {
-  return res.json(req.$stop.toJSON());
+  return res.json(req.$route.toJSON());
 }
 
 function create() {
@@ -27,8 +27,8 @@ function create() {
 }
 
 function list(req, res, next) {
-  const { limit = 50, skip = 0 } = req.query;
-  return Stop.list({ limit, skip })
+  const { limit = 50, skip = 0, populate = false } = req.query;
+  Route.list({ limit, skip, populate })
     .then(result => res.json({
       ...result,
       docs: result.docs.map(e => e.toJSON())
@@ -37,9 +37,9 @@ function list(req, res, next) {
 }
 
 function remove(req, res, next) {
-  req.$stop
+  req.$route
     .remove()
-    .then(removedStop => res.json(removedStop.toJSON()))
+    .then(removedRoute => res.json(removedRoute.toJSON()))
     .catch(next);
 }
 

@@ -1,6 +1,6 @@
 const User = require('@/user/user.model');
 const Stop = require('@/stop/stop.model');
-// const Route = require('@/route/route.model');
+const Route = require('@/route/route.model');
 // const Bus = require('@/bus/bus.model');
 const PendingUser = require('@/pendingUser/pendingUser.model');
 // const Event = require('@/event/event.model');
@@ -9,6 +9,35 @@ const _ = require('lodash');
 const routesData = require('./routesData');
 const usersData = require('./usersData');
 // const eventsData = require('./eventsData');
+
+/**
+ * Fills User's DB and return saved  docs
+ */
+async function fillRouteDB() {
+  await Route.remove({}).exec();
+  await Promise.all(
+    routesData.map(async (r) => {
+      const origin = (await Stop.findOne({ name: r.origin.name }).exec())._id;
+      const destination = (await Stop.findOne({ name: r.destination.name }).exec())._id;
+      const waypoints = await Promise.all(
+        r.waypoints.map(async w => (await Stop.findOne({ name: w.name }).exec())._id)
+      );
+      const {
+        routeName: name, strokeColor: color, estimatedTime, distance
+      } = r;
+      return new Route({
+        name,
+        origin,
+        estimatedTime,
+        distance,
+        destination,
+        waypoints,
+        color
+      }).save();
+    })
+  );
+  log.debug(`fill route db with ${await Route.countDocuments({}).exec()} docs`);
+}
 
 async function fillStopDB() {
   Stop.remove({}).exec();
@@ -44,8 +73,8 @@ async function fillUserDB() {
 function fillAllDBs() {
   return clear()
     .then(() => fillUserDB())
-    .then(() => fillStopDB());
-  // .then(() => fillRouteDB())
+    .then(() => fillStopDB())
+    .then(() => fillRouteDB());
   // .then(() => fillBusDB())
   // .then(() => fillEventDB());
 }

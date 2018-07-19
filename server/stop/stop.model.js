@@ -3,6 +3,7 @@ require('mongoose-geojson-schema');
 const httpStatus = require('http-status');
 const APIError = require('@helpers/APIError');
 const mongoosePaginate = require('mongoose-paginate');
+const privatePaths = require('mongoose-private-paths');
 
 const StopSchema = new mongoose.Schema({
   name: {
@@ -12,7 +13,6 @@ const StopSchema = new mongoose.Schema({
     trim: true
   },
   location: {
-    private: true,
     type: mongoose.Schema.Types.Point,
     required: true
   },
@@ -23,14 +23,6 @@ const StopSchema = new mongoose.Schema({
 });
 
 StopSchema.index({ name: 1, location: '2dsphere' });
-StopSchema.set('toJSON', { virtuals: true });
-
-StopSchema.virtual('coordinates').get(function getCoordinates() {
-  return {
-    longitude: this.location.coordinates[0],
-    latitude: this.location.coordinates[1]
-  };
-});
 
 /**
  * Statics
@@ -63,7 +55,7 @@ StopSchema.statics = {
     return this.paginate(
       {},
       {
-        sort: { createdAt: -1 },
+        sort: { name: -1 },
         limit: +limit,
         offset: +skip
       }
@@ -71,6 +63,8 @@ StopSchema.statics = {
   }
 };
 StopSchema.plugin(mongoosePaginate);
+StopSchema.plugin(privatePaths);
+
 /**
  * @typedef Stop
  */
