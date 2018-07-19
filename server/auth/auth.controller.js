@@ -34,11 +34,7 @@ function signup(req, res, next) {
       }
     })
     .then(pendingUser => pendingUser.sendOtpViaSMS())
-    .then(
-      otp => res.json({ otp }) // TODO remove this
-      // }
-      // return res.status(httpStatus.OK).send();
-    )
+    .then(otp => res.json({ otp: config.env !== 'production' ? otp : undefined }))
     .catch(next);
 }
 

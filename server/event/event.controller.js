@@ -33,10 +33,7 @@ function list(req, res, next) {
       ...result,
       docs: result.docs.map(e => e.toJSON())
     }))
-    .catch((err) => {
-      console.log(err);
-      next();
-    });
+    .catch(next);
 }
 
 function remove(req, res, next) {
