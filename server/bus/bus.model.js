@@ -5,6 +5,54 @@ const APIError = require('@helpers/APIError');
 const mongoosePaginate = require('mongoose-paginate');
 // const config = require('@config/config');
 
+/**
+ * @swagger
+ * definitions:
+ *  Bus:
+ *    type: object
+ *    properties:
+ *      name:
+ *        type: string
+ *        example: "Bus#1"
+ *      _id:
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439443
+ *      number:
+ *         type: string
+ *         example: "AH 2567 EA"
+ *      location:
+ *        $ref: "#/definitions/Point"
+ *      driver:
+ *        description: Id of current driver
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439011
+ *      route:
+ *        description: Id of current route
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439011
+ *  Bus-full:
+ *    type: object
+ *    properties:
+ *      name:
+ *        type: string
+ *        example: "Bus#1"
+ *      number:
+ *         type: string
+ *         example: "AH 2567 EA"
+ *      _id:
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439443
+ *      location:
+ *        $ref: "#/definitions/Point"
+ *      driver:
+ *        $ref: "#/definitions/Driver"
+ *      route:
+ *        $ref: "#/definitions/Route"
+ */
 const BusSchema = new mongoose.Schema({
   name: {
     type: String,

@@ -5,6 +5,26 @@ const APIError = require('@helpers/APIError');
 const mongoosePaginate = require('mongoose-paginate');
 const privatePaths = require('mongoose-private-paths');
 
+/**
+ * @swagger
+ * definitions:
+ *  Stop:
+ *    summary: Defines public stop model
+ *    type: object
+ *    properties:
+ *      name:
+ *        type: string
+ *        example: "Tan Tye Place"
+ *      _id:
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439443
+ *      location:
+ *        $ref: "#/definitions/Point"
+ *      address:
+ *        type: string
+ *        example: "MRT"
+ */
 const StopSchema = new mongoose.Schema({
   name: {
     type: String,

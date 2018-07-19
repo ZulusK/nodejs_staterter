@@ -20,7 +20,7 @@ const mongoosePaginate = require('mongoose-paginate');
  *        example: "some.mail@mail.com"
  *      fullname:
  *        type: string
- *        expamle: "Johnny Stark"
+ *        example: "Johnny Stark"
  *      _id:
  *        type: string
  *        format: byte

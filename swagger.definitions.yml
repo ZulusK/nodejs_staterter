@@ -107,7 +107,13 @@ parameters:
       type: integer
       format: int32
       minimum: 0
-      default: 0   
+      default: 0
+  populate-p:
+        name: populate
+        description: populate target records
+        in: path
+        type: boolean
+        example: true
   id-p:
       name: id
       description: id of target object

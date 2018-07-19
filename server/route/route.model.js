@@ -5,6 +5,74 @@ const APIError = require('@helpers/APIError');
 const mongoosePaginate = require('mongoose-paginate');
 // const config = require('@config/config');
 
+/**
+ * @swagger
+ * definitions:
+ *  Route:
+ *    summary: Defines short public route model
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439011
+ *      name:
+ *        type: string
+ *        example: "West Route"
+ *      origin:
+ *        description: Id of Stop, used as origin of route
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439011
+ *      destination:
+ *        description: Id of Stop, used as destination of route
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439011
+ *      color:
+ *        type: string
+ *        example: "#ff12ad"
+ *      distance:
+ *        type: string
+ *        example: "12 km"
+ *      estimatedTime:
+ *        type: string
+ *        example: "1h 30m"
+ *      waypoints:
+ *        type: array
+ *        items:
+ *          type: string
+ *          format: byte
+ *          example: 507f1f77bcf86cd799439011
+ *  Route-full:
+ *    summary: Defines full public route model
+ *    type: object
+ *    properties:
+ *      _id:
+ *        type: string
+ *        format: byte
+ *        example: 507f1f77bcf86cd799439011
+ *      name:
+ *        type: string
+ *        example: "West Route"
+ *      origin:
+ *        $ref: "#/definitions/Stop"
+ *      destination:
+ *        $ref: "#/definitions/Stop"
+ *      color:
+ *        type: string
+ *        example: "#ff12ad"
+ *      distance:
+ *        type: string
+ *        example: "12 km"
+ *      estimatedTime:
+ *        type: string
+ *        example: "1h 30m"
+ *      waypoints:
+ *        type: array
+ *        items:
+ *          $ref: "#/definitions/Stop"
+ */
 const RouteSchema = new mongoose.Schema({
   name: {
     type: String,
