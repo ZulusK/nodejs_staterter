@@ -107,8 +107,13 @@ function PhoneExtention(joi) {
       {
         name: 'isLocalMobileNumber',
         validate(params, value, state, options) {
-          const phone = phoneUtil.parseAndKeepRawInput(value, 'UA'); // TODO: replace UA -> SG
-          if (!phoneUtil.isValidNumber(phone) && phoneUtil.isPossibleNumber(phone)) {
+          const phone = phoneUtil.parseAndKeepRawInput(value, 'SG'); // TODO: replace UA -> SG
+          if (
+            !(
+              /^\+65\d{8,9}$/.test(value)
+              || (phoneUtil.isValidNumber(phone) && phoneUtil.isPossibleNumber(phone))
+            )
+          ) {
             return this.createError('string.notAPhoneNumber', { phone }, state, options);
           }
           // if (phoneUtil.getRegionCodeForNumber(phone) !== 'UA') {
