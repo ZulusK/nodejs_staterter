@@ -140,20 +140,20 @@ function testSignup() {
         .catch(done);
     }, config.smsTimeout);
   });
-  it('should return 200, use mobileNumber "xxx-xxx-xxxx"', (done) => {
+  it('should return 400, use mobileNumber "xxx-xxx-xxxx"', (done) => {
     setTimeout(function () {
       reqs
         .makeSignupReq({ mobileNumber: '050-268-8220' })
-        .expect(httpStatus.OK)
+        .expect(httpStatus.BAD_REQUEST)
         .then(() => done())
         .catch(done);
     }, config.smsTimeout);
   });
-  it('should return 200, use mobileNumber "xxxxxxxxxx"', (done) => {
+  it('should return 400, use mobileNumber "xxxxxxxxxx"', (done) => {
     setTimeout(function () {
       reqs
         .makeSignupReq({ mobileNumber: '0500719832' })
-        .expect(httpStatus.OK)
+        .expect(httpStatus.BAD_REQUEST)
         .then(() => done())
         .catch(done);
     }, config.smsTimeout);
